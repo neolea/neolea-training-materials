@@ -34,6 +34,6 @@ echo "| ------------ | ----------- |">>table.md
 
 for t in ${slidedecks[@]}; do
         namefile=`echo $t | cut -d: -f1`
-        echo "| [${t}](https://github.com/neolea/neolea-training-materials/output/tree/master/${namefile}.pdf) | [source](https://github.com/neolea/neolea-training-materials/tree/master/${t}) |" >>table.md
+        echo "| [${t}](https://github.com/neolea/neolea-training-materials/blob/master/output/${namefile}.pdf) | [source](https://github.com/neolea/neolea-training-materials/blob/tree/master/${t}) |" >>table.md
 done
 
