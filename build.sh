@@ -33,6 +33,7 @@ echo "| Slides (PDF) | Source Code |">>table.md
 echo "| ------------ | ----------- |">>table.md
 
 for t in ${slidedecks[@]}; do
-        echo "| [${t}](https://github.com/neolea/neolea-training-materials/output/tree/master/${t}.pdf) | [source](https://github.com/neolea/neolea-training-materials/tree/master/${t}) |" >>table.md
+        namefile=`echo $t | cut -d: -f1`
+        echo "| [${t}](https://github.com/neolea/neolea-training-materials/output/tree/master/${namefile}.pdf) | [source](https://github.com/neolea/neolea-training-materials/tree/master/${t}) |" >>table.md
 done
 
