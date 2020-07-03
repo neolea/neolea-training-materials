@@ -1,0 +1,12 @@
+\lstset{%
+    language=bash,
+    backgroundcolor=\color{gray!25},
+    basicstyle=\ttfamily,
+    breaklines=true,
+    columns=fullflexible
+}
+
+\begin{lstlisting}
+pass in on vr0 proto udp from any to any port 1:65535 rdr-to 127.0.0.1 port 1235 label rdr-udp
+pass in on vr0 proto tcp from any to any port 1:65535 rdr-to 127.0.0.1 port 1234 label rdr-tcp
+\end{lstlisting}

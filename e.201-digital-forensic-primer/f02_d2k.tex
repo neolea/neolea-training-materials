@@ -1,0 +1,329 @@
+% DO NOT COMPILE THIS FILE DIRECTLY!
+% This is included by the other .tex files.
+
+
+\begin{frame}
+    \includegraphics[scale=0.3]{images/logo-circl-Forensics.png}
+    \begin{itemize}
+        \item[]
+        \item[]
+        \item[] 2. From data to knowledge
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.1 Data in a binary system}
+    \begin{itemize}
+        \item Binary digit $\to$ BIT
+        \item[] 
+        \item Data represented as binary patterns
+            \begin{itemize}
+                \item[] Ordered sequence
+                \item[] \begin{verbatim}x Bits --> 01010000011010010110111001100111 --> y Bits\end{verbatim}
+                \item[] Bit x + 2 = 1
+                \item[] Bit x + 3 = 0
+                \item[] 
+            \end{itemize}
+        \item Structurise the data: Apply addressing
+            \begin{itemize}
+                \item[] \begin{verbatim}-->   01010000   01101001   01101110   01100111   --> \end{verbatim}
+                \item[] \begin{verbatim}      --------   --------   --------   -------- \end{verbatim}
+                \item[] \begin{verbatim}-->   Byte 117   Byte 118   Byte 119   Byte 120   --> \end{verbatim}
+                \item[] 
+            \end{itemize}
+        \item Apply interpretative rules on addresses
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.1 Data in a binary system}
+    \begin{itemize}
+        \item Nibble
+            \begin{itemize}
+                \item[] \begin{verbatim} 0101 0000 0110 1001 0110 1110 0110 0111 \end{verbatim}
+            \end{itemize}
+        \item Byte
+            \begin{itemize}
+                \item[] \begin{verbatim} 01010000   01101001   01101110   01100111 \end{verbatim}
+            \end{itemize}
+        \item Word
+            \begin{itemize}
+                \item[] \begin{verbatim} 0101000001101001   0110111001100111 \end{verbatim}
+            \end{itemize}
+        \item Double Word
+        \item Big / Little Endian
+        \item Integer / Signed Integer
+        \item Floating Point
+        \item Binary Coded Decimal
+        \item ASCII, Unicode 
+        \item GIF / JPEG / PNG / EXE / ...
+        \item ...
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.2 Example: Integer Bytes}
+  \begin{verbatim}
+  0101 0000   0110 1001   0110 1110   0110 0111
+  ---------
+
+  0101 0000
+  |||| ||||__ 0 * 2^0 =   0
+  |||| |||___ 0 * 2^1 =   0
+  |||| ||____ 0 * 2^2 =   0
+  |||| |_____ 0 * 2^3 =   0
+  ||||_______ 1 * 2^4 =  16
+  |||________ 0 * 2^5 =   0
+  ||_________ 1 * 2^6 =  64
+  |__________ 0 * 2^7 =   0
+                        ---
+                         80
+  \end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.3 Example: Signed Integer Bytes}
+  \begin{verbatim}
+  1011 1111
+  ---------                 Two's complement:
+   011 1111                       1. Remove the sign
+   100 0000                       2. Invert
+   100 0001                       3. Add 1
+   ||| ||||__ 1 * 2^0 =   1
+   ||| |||___ 0 * 2^1 =   0
+   ||| ||____ 0 * 2^2 =   0
+   ||| |_____ 0 * 2^3 =   0
+   |||_______ 0 * 2^4 =   0
+   ||________ 0 * 2^5 =   0
+   |_________ 1 * 2^6 =  64
+                        ---
+                        -65
+  \end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.3 Exercise: Signed Integer Bytes}
+  \begin{verbatim}
+  1101 1100
+  ---------                 Two's complement:
+                                  1. Remove the sign
+                                  2. Invert
+                                  3. Add 1
+   ||| ||||__ ? * 2^0 =
+   ||| |||___ ? * 2^1 =
+   ||| ||____ ? * 2^2 =
+   ||| |_____ ? * 2^3 =
+   |||_______ ? * 2^4 =
+   ||________ ? * 2^5 =
+   |_________ ? * 2^6 =
+                        ---
+                        -
+  \end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.3 Exercise: Signed Integer Bytes}
+  \begin{verbatim}
+  1101 1100
+  ---------                 Two's complement:
+   101 1100                       1. Remove the sign
+   010 0011                       2. Invert
+   010 0100                       3. Add 1
+   ||| ||||__ 0 * 2^0 =   0
+   ||| |||___ 0 * 2^1 =   0
+   ||| ||____ 1 * 2^2 =   4
+   ||| |_____ 0 * 2^3 =   0
+   |||_______ 0 * 2^4 =   0
+   ||________ 1 * 2^5 =  32
+   |_________ 0 * 2^6 =   0
+                        ---
+                        -36
+  \end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.4 From Bin to Hex}
+    \begin{itemize}
+        \item[]
+        \item[] Example:
+            \begin{itemize}
+                \item[] \begin{verbatim} 0001 1000    0101 0101    0000 1111    1010 0110\end{verbatim}
+                \item[] \begin{verbatim} ---------    ---------    ---------    ---------\end{verbatim}
+                \item[] \begin{verbatim}    0x18         0x55         0x0F         0xA6  \end{verbatim}
+                \item[] 
+            \end{itemize}
+        \item[]
+        \item[] Exercise:
+            \begin{itemize}
+                \item[] \begin{verbatim} 1001 0110    1010 0101    0000 1111    1100 0011\end{verbatim}
+                \item[] \begin{verbatim} ---------    ---------    ---------    ---------\end{verbatim}
+                \item[] \begin{verbatim}    0x         0x         0x         0x  \end{verbatim}
+                \item[] 
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.4 From Bin to Hex}
+    \begin{itemize}
+        \item[]
+        \item[] Exercise:
+            \begin{itemize}
+                \item[] \begin{verbatim} 1001 0110    1010 0101    0000 1111    1100 0011\end{verbatim}
+                \item[] \begin{verbatim} ---------    ---------    ---------    ---------\end{verbatim}
+                \item[] \begin{verbatim}    0x         0x         0x         0x  \end{verbatim}
+                \item[] 
+            \end{itemize}
+        \item[]
+        \item[] Results:
+            \begin{itemize}
+                \item[] \begin{verbatim} 1001 0110    1010 0101    0000 1111    1100 0011\end{verbatim}
+                \item[] \begin{verbatim} ---------    ---------    ---------    ---------\end{verbatim}
+                \item[] \begin{verbatim}    0x96         0xA5         0x0F         0xC3  \end{verbatim}
+                \item[] 
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.5 Big Endian and Little Endian}
+	\begin{lstlisting}
+Big Endian representation:
+
+    2^: 15 14 13 12 11 10  9  8    7  6  5  4  3  2  1  0
+         -  -  -  -  -  -  -  -    -  -  -  -  -  -  -  - 
+         0  0  0  1  1  0  0  0    0  1  0  1  0  1  0  1 
+         -  -  -  -  -  -  -  -    -  -  -  -  -  -  -  - 
+Address: 10.000                    10.001 
+           
+            
+Little Endian representation:
+
+     2^: 7  6  5  4  3  2  1  0   15 14 13 12 11 10  9  8 
+         -  -  -  -  -  -  -  -    -  -  -  -  -  -  -  - 
+         0  1  0  1  0  1  0  1    0  0  0  1  1  0  0  0 
+         -  -  -  -  -  -  -  -    -  -  -  -  -  -  -  - 
+Address: 10.000                    10.001 
+	\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.5 Big Endian and Little Endian}
+    \begin{itemize}
+        \item[] Exercise: Convert 2 byte value to Little Endian representation:
+            \begin{itemize}
+                \item[] \begin{verbatim} 10010110 10100101\end{verbatim}
+                \item[] \begin{verbatim} -------- --------\end{verbatim}
+                \item[] \begin{verbatim}   0x96     0xA5   \end{verbatim}
+                \item[] 
+                \item[] 
+                \item[] \begin{verbatim} -------- --------\end{verbatim}
+                \item[] \begin{verbatim}   0x       0x     \end{verbatim}
+            \end{itemize}
+        \item[] 
+        \item[] Exercise: Read 4 byte value in Little Endian representation:
+            \begin{itemize}
+                \item[] \begin{verbatim} 0x 1B 2A 01 00\end{verbatim}
+                \item[] \begin{verbatim}    -- -- -- --\end{verbatim}
+                \item[] 
+                \item[] \begin{verbatim} 0x            \end{verbatim}
+                \item[] \begin{verbatim}    -- -- -- -- \end{verbatim}
+                \item[] \begin{verbatim}  =         \end{verbatim}
+                \item[] \begin{verbatim}    ======  \end{verbatim}
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.5 Big Endian and Little Endian}
+    \begin{itemize}
+        \item[] Exercise: Convert 2 byte value to Little Endian representation:
+            \begin{itemize}
+                \item[] \begin{verbatim} 10010110 10100101 \end{verbatim}
+                \item[] \begin{verbatim} -------- -------- \end{verbatim}
+                \item[] \begin{verbatim}   0x96     0xA5   \end{verbatim}
+                \item[] 
+                \item[] \begin{verbatim} 10100101 10010110 \end{verbatim}
+                \item[] \begin{verbatim} -------- -------- \end{verbatim}
+                \item[] \begin{verbatim}   0xA5     0x96   \end{verbatim}
+            \end{itemize}
+        \item[] 
+        \item[] Exercise: Read 4 byte value in Little Endian representation:
+            \begin{itemize}
+                \item[] \begin{verbatim} 0x 1B 2A 01 00\end{verbatim}
+                \item[] \begin{verbatim}    -- -- -- --\end{verbatim}
+                \item[] 
+                \item[] \begin{verbatim} 0x 00 01 2A 1B\end{verbatim}
+                \item[] \begin{verbatim}    -- -- -- --  11 + 1*16 + 10*16^2 + 2*16^3 + 1*16^4\end{verbatim}
+                \item[] \begin{verbatim}  = 76.315  \end{verbatim}
+                \item[] \begin{verbatim}    ======  \end{verbatim}
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.6 Example: Others}
+  \begin{itemize}
+    \item[] Packed BCD
+    \item[]
+  \begin{verbatim}
+  0110 1110 0110 0111
+  ---- ---- ---- ----
+    6   na    6    7
+  \end{verbatim}
+    \item[]
+    \item[] ASCII
+    \item[]
+  \begin{verbatim}
+  0101 000 0110 1001 0110 1110 0110 0111
+
+  01010000  01101001  01101110  01100111
+  --------  --------  --------  --------
+       80       105       110       103
+        P         i         n         g
+  \end{verbatim}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{2.7 Data, files, context}
+    \begin{itemize}
+        \item Sequence of Bits + Addressing + Interpretation $\to$ Information
+        \item Information $\to$ Stored in files
+        \item Where did you find the string "ping"?
+            \begin{itemize}
+                \item Binary inside TEMP folder
+                \item Autorun folder
+                \item Registry
+                \item Browser history
+                \item Command line history
+            \end{itemize}
+        \item [] $\to$ Data $\to$ Information $\to$ Knowledge
+	\item[] 
+	\item Files contains data
+	\item Files $\to$ Meta data describe files
+        \item Files $\to$ File systems organize files and meta data
+    \end{itemize}
+\end{frame}
+
+
+
+
+
+
+
+
+

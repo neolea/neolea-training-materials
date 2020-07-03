@@ -1,0 +1,9 @@
+Key-Type: RSA
+Key-Length: 4096
+Subkey-Type: ELG-E
+Subkey-Length: 2048
+Name-Real: Bad Guy
+Name-Email: drmad@angrycat.com
+Name-Comment: This is the key of the bad guy
+Expire-Date: 0
+Passphrase: badguypqssphrase

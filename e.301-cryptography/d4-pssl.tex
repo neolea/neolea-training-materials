@@ -1,0 +1,40 @@
+\begin{frame}
+  \frametitle{D4 - TLS Fingerprinting}
+        {\bf Keep} a log of links between:
+        \begin{itemize}
+          \item x509 certificates,
+          \item ports,
+          \item IP address,
+          \item client (ja3),
+          \item server (ja3s),
+        \end{itemize}
+        \begin{quote}
+        ``JA3 is a method for creating SSL/TLS client fingerprints that should be easy to produce on any platform and can be easily shared for threat intelligence.''\footnote{https://github.com/salesforce/ja3}
+        \end{quote}
+
+         {\bf Pivot} on additional data points during Incident Response 
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{D4 - TLS Fingerprinting}
+
+\begin{itemize}
+
+   \item {\bf Hands-on}:
+
+\begin{lstlisting}
+~/hands-on/TLSinspection
+\end{lstlisting}
+
+   \item open stripped.pcap
+   \item what is the admin password?
+   \item bummer, it's encrypted,
+   \item what is the admin password?
+   
+  \end{itemize}
+
+  \vspace{8mm}
+  {\bf D4 - full chain demo.}
+ 
+\end{frame}

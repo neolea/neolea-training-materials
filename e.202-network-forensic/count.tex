@@ -1,0 +1,26 @@
+\lstset{%
+    language=bash,
+    backgroundcolor=\color{gray!25},
+    basicstyle=\ttfamily,
+    breaklines=true,
+    columns=fullflexible
+}
+
+\begin{lstlisting}
+find parsed/ -type f | sort | parallel -j7 record.py {}
+\end{lstlisting}
+
+\lstset{%
+    language=python,
+    backgroundcolor=\color{gray!25},
+    basicstyle=\ttfamily,
+    breaklines=true,
+    columns=fullflexible
+}
+\begin{lstlisting}
+for line in open(sys.argv[1], "rb"):
+    (epoch, ipsrc,ipdst) = line.split(b"|")
+    t = datetime.datetime.fromtimestamp(float(epoch))
+    day =  bytes(t.strftime("%Y%m%d"),"ascii")
+    red.zincrby(k,ip.src,1)
+\end{lstlisting}

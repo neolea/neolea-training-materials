@@ -1,0 +1,307 @@
+% DO NOT COMPILE THIS FILE DIRECTLY!
+% This is included by the other .tex files.
+
+
+\begin{frame}
+    \includegraphics[scale=0.3]{images/logo-circl-Forensics.png}
+    \begin{itemize}
+        \item[]
+        \item[]
+        \item[] 6. File System Analysis - Overview
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{6.1 Overview: File system components}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+                       File System
+                     ----------------
+                     |  - Layout    |
+                     |  - Size      |
+                     ----------------
+                            |
+        ------------------------------------------
+        |                   |                    |
+        V                   V                    V
+
+    File Name            Metadata             Content     
+-----------------    -----------------    ---------------------------------- ...
+| file1.txt     |    | 13            |    |................................| 5001
+| -> Inode: 13  |    |Owner, Group   |    |................................| 5002
+|---------------|    |Rights: MACB   |    |....                            | 5003
+| file2.xyz     |    |5001,5002,5003 |    |................................| 5004
+| -> Inode: 14  |    |Size: 68 Byte  |    |.......................         | 5005
+|---------------|    |---------------|    |                                | 5006
+| file3.txt     |    | 14            |    |                                | ...
+| -> Inode: 21  |    |Owner, Group   |    |                                | ...
+|---------------|    |Rights: MACB   |    |                                | ...
+| ............  |    |5004,5005      |    |                                | ...
+| ............  |    |Size: 55 Byte  |    |                                | 5011
+-----------------    -----------------    ---------------------------------- ...
+                     | ............  |     32 Byte cluster
+                     | ............  |
+                     -----------------
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{6.2 Allocated, unallocated, deleted}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+                       File System
+                     ----------------
+                     |  - Layout    |
+                     |  - Size      |
+                     ----------------
+                            |
+        ------------------------------------------
+        |                   |                    |
+        V                   V                    V
+
+    File Name            Metadata             Content     
+-----------------    -----------------    ---------------------------------- ...
+| file1.txt     |    | 13            |    |................................| 5001
+| -> Inode: 13  |    |Owner, Group   |    |................................| 5002
+|---------------|    |Rights: MACB   |    |....                            | 5003
+| file2.xyz     |    |5001,5002,5003 |    |................................| 5004
+| -> Inode:x14  |    |Size: 68 Byte  |    |.......................         | 5005
+|---------------|    |---------------|    |                                | 5006
+| file3.txt     |    | 14            |    |                                | ...
+| -> Inode: 21  |    |Owner, Group   |    |                                | ...
+|---------------|    |Rights: MACB   |    |                                | ...
+| ............  |   x|x5004, x5005   |    |                                | ...
+| ............  |    |Size: 55 Byte  |    |                                | 5011
+-----------------    -----------------    ---------------------------------- ...
+                     | ............  |     32 Byte cluster
+                     | ............  |
+                     -----------------
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{6.3 Slack space}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+   ----------------------------------------------------------------------------
+   |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+   ----------------------------------------------------------------------------
+
+                  |                   |                   |                   |
+                  |                   |                   |                   |
+
+                  -------------------------------------------------------------
+                  |....+....+....+....|....+..00+????+????|                   |
+                  -------------------------------------------------------------
+                            1                   1                   0 
+
+0 = Unallocated
+1 = Allocated
+
+- Complete cluster is allocated to the file
+- Until end of sector: Filled with zeros or random memory
+- Until end of cluter: Not overwritten; File slack
+- Maybe there are rests of deleted file content.
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{6.4 File partialy over written}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+                          File deleted                        File created
+                 -------------------------------     -------------------------------
+                 |      Metadata entry 75      |     |      Metadata entry 76      |
+                 -------------------------------     -------------------------------
+                 |    7.123     |    7.124     |     |    7.122     |    7.123     |
+                 -------------------------------     -------------------------------
+                         |              |                   |              |
+                         |              |                   |              |
+                         V              V                   V              V
+ --------------- --------------- ---------------     --------------- ---------------
+ |  Data unit  | |  Data unit  | |  Data unit  |     |  Data unit  | |  Data unit  |
+ |    7.122    | |    7.123    | |    7.124    |     |    7.122    | |    7.123    |
+ --------------- --------------- ---------------     --------------- ---------------
+ |             | |    Hello    | |    World    |     |   This is   | |    Paula    |
+ --------------- --------------- ---------------     --------------- ---------------
+
+
+                   Data recovered by inode 75  
+ --------------- -------------------------------
+ |  Data unit  | |  Data unit  | |  Data unit  |
+ |    7.122    | |    7.123    | |    7.124    |
+ --------------- -------------------------------
+ |   This is   | |    Paula    | |    World    |
+ --------------- -------------------------------
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{6.5 Metadata based file recovery}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+ -------------------------------
+ |      Metadata entry 75      |
+ -------------------------------
+ |    7.123     |    7.124     |
+ -------------------------------
+
+         |              |
+         |              |
+         V              V
+
+ --------------- ---------------
+ |  Data unit  | |  Data unit  |
+ |    7.123    | |    7.124    |
+ --------------- ---------------
+ |    Hello    | |    World    |
+ --------------- ---------------
+  \end{lstlisting}
+    \begin{itemize}
+        \item[] Exercise: Recover deleted files from \texttt{/carving/deleted.dd}
+	\item[] Tools: \texttt{fls, istat, icat}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{6.6 Unallocted and slack space}
+    \begin{itemize}
+	    \item Slack: Manual approach with \texttt{dd}
+  \begin{lstlisting}[basicstyle=\tiny]
+fsstat deleted.dd
+    Cluster Size: 4096
+
+fls deleted
+
+istat deleted.dd 72
+    size: 12071
+    1131 1132 1133
+
+echo $((12071-4096))     echo $((12071-4096-4096))          echo $((4096-3879))
+    7975                     3879                               217
+
+dd if=deleted.dd bs=4096 skip=1131 count=1 | xxd | less     echo $((13*16 + 9))
+dd if=deleted.dd bs=4096 skip=1133 count=1 | xxd | less         217
+  \end{lstlisting}
+	    \item Slack: Automated approach with The Sleuthkit
+  \begin{lstlisting}[basicstyle=\tiny]
+blkls -s -b 4096 deleted.dd | xxd | less
+  \end{lstlisting}
+	    \item Blocks: With The Sleuthkit
+  \begin{lstlisting}[basicstyle=\tiny]
+blkls -a -b 4096 deleted.dd | xxd | less              # Allocated blocks
+blkls -A -b 4096 deleted.dd | xxd | less              # Unallocated blocks
+blkls -e -b 4096 deleted.dd | xxd | less              # All blocks
+  \end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{6.7 FAT Filesystems}
+    \begin{itemize}
+	    \item Layout and VBR Example
+  \begin{lstlisting}[basicstyle=\tiny]
+--------------------------------
+|      Volume Boot Record      |     0000: eb3c 906d 6b66 732e 6661 7400 0204 0400
+--------------------------------     0010: 0200 0200 00f8 4000 2000 4000 0000 0000
+|             FAT1             |     0020: 0000 0100 8000 2974 6812 e84e 4f20 4e41
+--------------------------------     0030: 4d45 2020 2020 4641 5431 3620 2020 0e1f
+|             FAT2             |     0040: be5b 7cac 22c0 740b 56b4 0ebb 0700 cd10
+--------------------------------     0050: 5eeb f032 e4cd 16cd 19eb fe54 6869 7320
+|   Root Directory (FAT12/16)  |     .....
+--------------------------------
+|                              |
+|                              |     Exercise: fat16.dd = 33.554.432 Byte
+|         Data Clusters        |     Can you calculate the size or this FAT16?
+|                              |
+|                              | 
+--------------------------------
+  \end{lstlisting}
+	    \item VBR interpretation
+  \begin{lstlisting}[basicstyle=\tiny]
+Offset      Length   Item             Interpretation
+00 (0x00)   3        Jump bootstrap   JMP 62 NOP
+03 (0x03)   8        OEM name         mkfs.fat
+11 (0x0B)   2        Bytes/sector     0x0002 --> 0x0200 =  512 Bytes
+13 (0x0D)   1        Sectors/Cluster  0x04              = 2048 Bytes
+14 (0x0E)   2        Sector before FS 0x0400 --> 0x0004 =    4 Sectors
+16 (0x10)   1        Copies of FAT    0x02
+.....
+  \end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{6.7 FAT Filesystems}
+    \begin{itemize}
+	    \item Examine the FAT16
+  \begin{lstlisting}[basicstyle=\tiny]
+fsstat FAT/fat16.dd
+     .....
+     Total Range: 0 - 65535
+     * Reserved: 0 - 3
+     ** Boot Sector: 0
+     * FAT 0: 4 - 67
+     * FAT 1: 68 - 131
+     * Data Area: 132 - 65535
+     ** Root Directory: 132 - 163
+     ** Cluster Area: 164 - 65535
+     .....
+     Sector Size: 512
+     Cluster Size: 2048
+     Total Cluster Range: 2 - 16344
+  \end{lstlisting}
+	    \item Test files:
+  \begin{lstlisting}[basicstyle=\tiny]
+     5000 Nov 27 14:21 file01.txt
+       50 Nov 28 10:38 file02.txt
+
+file01.txt
+     .....AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.....
+  
+file02.txt
+     .....XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.....
+  
+\end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{6.7 FAT Filesystems}
+    \begin{itemize}
+          \item Examine Data Clusters
+\begin{lstlisting}[basicstyle=\tiny]
+dd if=FAT/fat16.dd skip=164 count=4 | xxd | less    ................
+dd if=FAT/fat16.dd skip=168 count=4 | xxd | less    AAAAAAAAAAAAAAAA
+dd if=FAT/fat16.dd skip=172 count=4 | xxd | less    AAAAAAAAAAAAAAAA
+dd if=FAT/fat16.dd skip=176 count=4 | xxd | less    AAAAAAAA........
+dd if=FAT/fat16.dd skip=180 count=4 | xxd | less    XXXXX...........
+\end{lstlisting}
+	  \item Examine Root Directory
+  \begin{lstlisting}[basicstyle=\tiny]
+dd if=fat16.dd skip=132 count=1
+     0020: 4649 4c45 3031 2020 5458 5420 0064 c46a  FILE01  TXT .d.j
+     0030: 7b4d 7b4d 0000 c46a 7b4d 0300 8813 0000  {M{M...j{M......
+     .....
+     0060: 4649 4c45 3032 2020 5458 5420 0064 104d  FILE02  TXT .d.M
+     0070: 7c4d 7c4d 0000 104d 7c4d 0600 3200 0000  |M|M...M|M..2...
+  
+Offset      Length   Item             Interpretation
+00 (0x00)   11       File Name        FILE01  TXT
+.....
+26 (0x1A)    2       Low Cluster      0x0300 --> 03
+28 (0x1C)    4       Size in Byes     0x8813 --> 0x1388 == 5000
+  \end{lstlisting}
+	  \item Examine FAT
+  \begin{lstlisting}[basicstyle=\tiny]
+dd if=FAT/fat16.dd skip=4 count=64 | xxd | less
+     00000000: f8ff ffff 0000 0400 0500 ffff ffff 0000  ................
+  \end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+

@@ -1,0 +1,20 @@
+\lstset{%
+    language=bash,
+    backgroundcolor=\color{gray!25},
+    basicstyle=\ttfamily,
+    breaklines=true,
+    columns=fullflexible
+}
+
+\begin{lstlisting}
+find . -type f  | parallel -j 7 tshark -n -r {} -T fields  -e ip.src -e tcp.srcport  -e ip.ttl
+
+#Source IP       sport   TTL
+
+x.45.176.71   80      51
+x.45.176.71   80      51
+x.45.176.71   80      51
+x.45.176.71   80      51
+x.45.176.71   80      51
+
+\end{lstlisting}

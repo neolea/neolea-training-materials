@@ -1,0 +1,15 @@
+\frametitle{How to configure your router (without security)}
+\framesubtitle{Enable command logging and send the logs to a random syslog server}
+\begin{verbatim}
+Aug 13 10:11:51 M6000-G5 command-log:[10:11:51 08-13-2012
+  VtyNo: vty1  UserName: XXX IP: XXX ReturnCode: 1
+  CMDLine: show subscriber interface gei-0/2/1/12.60
+Aug 13 10:46:05 M6000-G5 command-log:[10:46:05 08-13-2012
+  VtyNo: vty2  UserName: XXX IP: XXX  ReturnCode: 1
+  CMDLine: conf t ]
+Aug 13 10:46:10 M6000-G5 command-log:[10:46:10 08-13-2012
+  VtyNo: vty2  UserName: XXX IP: XXX  ReturnCode: 1  CMD
+Line: aaa-authentication-template 1100 ]
+...
+\end{verbatim}
+We will let you guess the sensitive part afterwards...

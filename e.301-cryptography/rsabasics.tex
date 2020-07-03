@@ -1,0 +1,181 @@
+\begin{frame}
+  \begin{center}
+    {\bf Understanding RSA}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \frametitle{RSA Basics}
+  Ron {\bf R}ivest, Adi {\bf S}hamir, and Leonard {\bf A}dleman in 1977:
+  \begin{itemize}
+    \item asymmetric crypto system,
+    \item can encrypt and sign,
+    \item messages are big numbers,
+    \item encryption is basically multiplication of big numbers,
+    \item creates a \textit{trapdoor permutation}: turning x in y is easy, but
+      finding x from y is hard.
+  \end{itemize}
+
+\end{frame}
+\begin{frame}[fragile]
+  \frametitle{RSA ``by hand''}
+  \begin{itemize}
+  \item {\bf Hands-on,} a sagemath script that is a toy example of RSA: 
+
+\begin{lstlisting}
+cd ~/hands-on/UsingRSA
+sage rsa.sage
+\end{lstlisting}
+\item {\bf Outputs:}
+\end{itemize}
+\begin{lstlisting}[basicstyle=\tiny]
+PlainText is: 1234567890
+p = random_prime(2^32) = 2312340619
+q = random_prime(2^32) = 2031410981
+n = p*q = 4697314125248937239
+phi = (p-1)*(q-1) = 4697314120905185640
+e = random_prime(phi) = 2588085603940229747
+d = xgcd(e,phi)[1] = -2102894211931680277
+Does d*e == 1?
+ mod(d*e, phi) = 1
+CipherText y = power_mod(x, e, n) = 1454606910711062745
+Decrypted CT is: 1234567890
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{RSA - Use with openssl}
+  \begin{itemize}
+  \item {\bf Hands-on}:
+
+\begin{lstlisting}
+~/hands-on/UsingRSA
+\end{lstlisting}
+
+   \item Decrypt message.bin
+   \item generate a new private key,
+   \item generate the corresponding public key,
+   \item use this new key to encrypt a message,
+   \item use this new key to decrypt a message. 
+   
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{With only one key}
+  Several potential weaknesses:
+  \begin{itemize}
+    \item Key size too small: keys up to 1024 bits are breakable given the
+      right means,
+    \item close p and q,
+    \item unsafe primes, smooth primes,
+    \item broken primes (FactorDB, Debian OpenSSL bug).
+    \item signing with RSA-CRT (instead of RSA-PSS)
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{With a set of  keys}
+  Several potential weaknesses:
+  \begin{itemize}
+   \item share moduli: if n1 = n2 then the keys share p and q,
+   \item share p or q,
+  \end{itemize}
+ \vspace{10mm}
+  {\bf In both case, it is trivial to recover the private keys.}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Breaking small keys\footnote{https://www.sjoerdlangkemper.nl/2019/06/19/attacking-rsa/}}
+  \begin{itemize}
+\item {\bf Hands-on}:
+
+\begin{lstlisting}
+~/hands-on/SmallKey
+\end{lstlisting}
+
+   \item what is the key size of smallkey?
+   \item what is n?
+   \item what is the public exponent?
+   \item what is n in base10?
+   \item what are p and q?
+   
+  \end{itemize}
+
+  \vspace{8mm}
+  {\bf Let's generate the private key: }using p, then using q.
+  
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Close Prime Factors}
+  \begin{itemize}
+\item {\bf Hands-on}:
+
+\begin{lstlisting}
+~/hands-on/ClosePQ
+\end{lstlisting}
+
+   \item use Fermat Algorithm\footnote{\url{http://facthacks.cr.yp.to/fermat.html}} to find {\bf both p and q:}
+
+\begin{lstlisting}[basicstyle=\tiny]
+def fermatfactor(N):
+  if N <= 0: return [N]
+  if is_even(N): return [2,N/2]
+  a = ceil(sqrt(N))
+  while not is_square(a^2-N):
+    a = a + 1
+  b = sqrt(a^2-N)
+  return [a - b,a + b]
+\end{lstlisting}
+
+  \end{itemize}
+ 
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Shared prime factors}
+     Researchers have shown that several devices generated their keypairs
+   at boot time without enough entropy\footnote{Bernstein, Heninger, and Lange: \url{http://facthacks.cr.yp.to/}}:
+   
+\begin{lstlisting}[language=python, basicstyle=\tiny]
+prng.seed(seed)
+p = prng.generate_random_prime()
+// prng.add_entropy()
+q = prng.generate_random_prime()
+n = p*q
+\end{lstlisting}
+
+Given n=pq and n' = pq' it is trivial to recover the shared p by computing their
+{\bf Greatest Common Divisor (GCD)}, and therefore {\bf both private
+  keys}\footnote{\url{http://www.loyalty.org/~schoen/rsa/}}.\\
+\vspace{5mm}
+``They cracked cracked about 13000 of them''
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Shared prime factors}
+  \begin{itemize}
+\item {\bf Hands-on}:
+
+\begin{lstlisting}
+~/hands-on/SharedPrimeFactor
+\end{lstlisting}
+
+\item Read README.txt, you have a challenge to solve :
+
+  \begin{itemize}
+  \item the \emph{answers} folder should be left alone for now,
+  \item \emph{scripts} contains scripts that may be useful
+    to solve the challenge,
+  \item \emph{attempts} may hold your attempt are
+    generating private keys. 
+  \item \emph{bgcd-bd.sage} contains Daniel J. Berstein's algorithm for computing RSA
+    collisions in batches.
+  \end{itemize}
+
+  \end{itemize}
+ 
+\end{frame}

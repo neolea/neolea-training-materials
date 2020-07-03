@@ -1,0 +1,318 @@
+% DO NOT COMPILE THIS FILE DIRECTLY!
+% This is included by the other .tex files.
+
+
+\begin{frame}
+    \includegraphics[scale=0.3]{images/logo-circl-Forensics.png}
+    \begin{itemize}
+        \item[]
+        \item[]
+        \item[] 1. Introduction
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{1.1 Admin default behaviour}
+  \begin{itemize}
+    \item Get operational asap:
+    \begin{itemize}
+      \item Re-install
+      \item Re-image
+      \item Restore from backup
+      \item[] $\to$ Destroy of evidences
+      \item[]
+    \end{itemize}
+    \item Analyse the system on his own:
+    \begin{itemize}
+      \item Do some investigations
+      \item Run AV
+      \item Apply updates
+      \item[] $\to$ Overwrite evidences
+      \item[] $\to$ Create big noise
+      \item[]
+    \end{itemize}
+    \item[] $\to$ Negative impact on forensics
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{1.2 Preservation of evidences}
+  \begin{itemize}
+      \item Finding answers:
+      \begin{itemize}
+          \item[] $\to$ System compromised
+          \item[] $\to$ How, when, why
+          \item[] $\to$ Malware/RAT involved
+          \item[] $\to$ Persistence mechanisms
+          \item[] $\to$ Lateral movement inside LAN
+          \item[] $\to$ Detect the root cause of the incident
+          \item[] $\to$ Access sensitive data
+          \item[] $\to$ Data exfiltration
+          \item[] $\to$ Illegal content
+          \item[] $\to$ System involved at all
+          \item[]
+      \end{itemize}
+      \item Legal case:
+      \begin{itemize}
+	  \item[] $\to$ Collect \& safe evidences
+	  \item[] $\to$ Witness testimony for court
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{1.2 Preservation of evidences}
+  \begin{itemize}
+      \item CRC not sufficient:
+      \begin{itemize}
+          \item Example: Checksum
+          \begin{itemize}
+		  \item[] 4711 $\to$ 13
+          \end{itemize}
+          \item Example: Collision
+          \begin{itemize}
+		  \item[] 12343 $\to$ 13
+		  \item[] 
+          \end{itemize}
+      \end{itemize}
+      \item Cryptographic hash function:
+      \begin{itemize}
+          \item Output always same size
+	  \item Deterministic: if $m = m \to h(m) = h(m)$
+	  \item 1 Bit change in m $\to$ max. change in $h(m)$
+	  \item One way function: For $h(m)$ impossible to find m
+	  \item Simple collision resistance: For given $h(m1)$ hard to find $h(m2)$
+	  \item Strong collision resistance: For any $h(m1)$ hard to find $h(m2)$
+	  \item[]
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{1.3 Forensics Science}
+  \begin{itemize}
+    \item Classical forensic
+    \begin{itemize}
+      \item[] Locard's exchange principle
+      \item[] {\scriptsize \url{https://en.wikipedia.org/wiki/Locard\%27s\_exchange\_principle}}
+    \end{itemize}
+    \item[]
+    \item Write down everything you see, hear, smell and do
+    \item[]
+    \item Chain of custody
+    \begin{itemize}
+        \item[] $\to$ {\scriptsize \url{https://www.nist.gov/sites/default/files/documents/2017/04/28/Sample-Chain-of-Custody-Form.docx}}
+    \end{itemize}
+    \item[]
+    \item Scope of the analysis
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{1.4 Forensic disciplines}
+  \begin{itemize}
+      \item Reverse Engineering
+      \item Code-Deobfuscation
+      \item Memory Forensics
+        \begin{itemize}
+            \item[] $\to$ \url{https://www.circl.lu/pub/tr-22/}
+            \item[] $\to$ \url{https://www.circl.lu/pub/tr-30/}
+        \end{itemize}
+      \item Network Forensics
+      \item Mobile Forensics
+      \item Cloud Forensics
+      \item Post-mortem Analysis
+        \begin{itemize}
+            \item[] $\to$ \url{https://www.circl.lu/pub/tr-22/}
+            \item[] $\to$ \url{https://www.circl.lu/pub/tr-30/}
+        \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{1.5 First Responder: Order of volatility}
+  \begin{itemize}
+      \item[] CPU registers $\to$ nanoseconds
+      \item[] CPU cache $\to$ nanoseconds
+      \item[] RAM memory $\to$ tens of nanoseconds
+      \item[] Network state $\to$ milliseconds
+      \item[] Processes running $\to$ seconds
+      \item[] Disk, system settings, data $\to$ minutes
+      \item[] External disks, backup $\to$ years
+      \item[] Optical storage, printouts $\to$ tens of ears
+      \item[] 
+      \item[] $\to$ \url{https://www.circl.lu/pub/tr-22/}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{1.5 First Responder: Be prepared}
+  \begin{itemize}
+      \item Prepare your toolbox
+      \begin{itemize}
+          \item Photo camera
+          \item Flash light, magnifying glasses
+          \item Labelling device, labels, tags, stickers
+          \item Toolkit, screwdriver kits
+          \item Packing boxes, bags, faraday bag
+          \item Cable kits, write blocker, storage devices
+          \item Anti-static band, network cables
+          \item Pens, markers, notepads
+          \item[] $\to$ Chain of custody
+      \end{itemize}
+      \item USB stick
+      \begin{itemize}
+          \item 256 GB USB3
+          \item File system: exFAT
+          \item Memory dump: Dumpit
+          \item FTK Imager Lite
+          \item Encrypted Disk Detector - Edd
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{1.5 First Responder: First steps}
+  \begin{itemize}
+      \item Did an incident occure
+      \begin{itemize}
+          \item Talk with people
+          \item Take notes
+      \end{itemize}
+      \item Mouse jiggler
+      \item Identify potential evidences
+      \begin{itemize}
+          \item Tower, desktop, laptop, tablets
+          \item Screen, printer, storage media
+          \item Router, switches, access point
+          \item Paper, notes, .....
+      \end{itemize}
+      \item Powered-on versus powered-off
+      \begin{itemize}
+          \item Shutdown: Lost of live data
+          \item Shutdown: Data on disk modified
+          \item Pull power: Corrupt file system
+          \item Live analysis: Modify memory and disk
+          \item Live analysis: Known good binaries?
+      \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{1.5 First Responder: Live response}
+  \begin{itemize}
+      \item Memory dump
+      \item Live analysis:
+      \begin{itemize}
+          \item[] $\to$ System time
+          \item[] $\to$ Logged-on users
+          \item[] $\to$ Open files
+          \item[] $\to$ Network -connections -status
+          \item[] $\to$ Process information -memory
+          \item[] $\to$ Process / port mapping
+          \item[] $\to$ Clipboard content
+          \item[] $\to$ Services
+          \item[] $\to$ Command history
+          \item[] $\to$ Mapped drives / shares
+          \item[] $\to$ !!! Do not store information on the subject system !!!
+      \end{itemize}
+      \item Image of live system $($Possible issues$)$
+      \item Shutdown and image if possible
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{1.6 Post-mortem Analysis}
+  \begin{itemize}
+      \item Hardware layer \& acquisition
+        \begin{itemize}
+            \item[] Best copy (in the safe)
+            \item[] Working copy (on a NAS)
+            \item[] Disk volumes and partitions
+            \item[] Simple tools: dd, dmesg, mount
+            \item[]
+        \end{itemize}
+      \item File system layer
+        \begin{itemize}
+            \item[] FAT, NTFS
+            \item[] File system timeline
+            \item[] Restore deleted files
+            \item[]
+        \end{itemize}
+      \item Data layer
+        \begin{itemize}
+            \item[] Carving: foremost, scalpel, testdisk/photorec
+            \item[] String search
+            \item[]
+        \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{1.7 Post-mortem Analysis}
+  \begin{itemize}
+      \item OS layer
+        \begin{itemize}
+            \item[] Registry
+            \item[] Event logs
+            \item[] Volume shadow copies
+            \item[] Prefetch files
+            \item[]
+        \end{itemize}
+      \item Application layer
+        \begin{itemize}
+            \item[] AV logs
+            \item[] Browser history: IE, firefox, chrome
+            \item[] Email
+            \item[] Office files \& PDFs
+            \item[]
+        \end{itemize}
+      \item Identify malware
+        \begin{itemize}
+            \item[] TEMP folders
+            \item[] Startup folders
+            \item[] Windows tasks
+            \item[]
+        \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{1.8 Forensic Distributions}
+  \begin{itemize}
+      \item Commercial
+        \begin{itemize}
+            \item[] \href{https://www.guidancesoftware.com/encase-forensic}{EnCase Forensic}
+            \item[] \href{https://www.f-response.com/}{F-Response}
+            \item[] \href{https://accessdata.com/products-services/forensic-toolkit-ftk}{Forensic Toolkit}
+            \item[] \href{http://www.e-fense.com/products.php}{Helix Enterprise}
+            \item[] \href{http://www.x-ways.net/forensics/index-d.html}{X-Ways Forensics}
+            \item[] \href{https://www.magnetforensics.com/magnet-axiom/}{Magnet Axiom}
+            \item[]
+        \end{itemize}
+      \item Open source tools
+        \begin{itemize}
+            \item[] \href{https://www.kali.org/}{Kali Linux}
+            \item[] \href{https://digital-forensics.sans.org/community/downloads}{SANS SIFT}
+            \item[] \href{http://www.deftlinux.net/}{Digital Evidence and Forensics Toolkit - DEFT}
+            \item[] \href{http://www.plainsight.info/}{PlainSight}
+            \item[] \href{https://www.caine-live.net/}{Computer Aided INvestigative Environment - CAINE}
+            \item[]
+        \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+

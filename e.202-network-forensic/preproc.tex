@@ -1,0 +1,20 @@
+\lstset{%
+    language=bash,
+    backgroundcolor=\color{gray!25},
+    basicstyle=\ttfamily,
+    breaklines=true,
+    columns=fullflexible
+}
+
+\begin{lstlisting}
+find 2017/ -type f | sort | parallel -j7 extract.sh {}
+
+#extract.sh
+T=`echo $F | sed 's#/sensors/#/anlysis/pcaps/#g' | sed 's/.gz//g'`
+D=`dirname $T`
+mkdir -p $D
+zcat $F | tcpdump -n -r - -w $T "`cat filter`"
+
+\end{lstlisting}
+
+

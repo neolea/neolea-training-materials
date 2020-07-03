@@ -1,0 +1,12 @@
+\lstset{%
+    language=bash,
+    backgroundcolor=\color{gray!25},
+    basicstyle=\ttfamily,
+    breaklines=true,
+    columns=fullflexible
+}
+
+\begin{lstlisting}
+    /usr/local/bin/socat -T 60 -u UDP4-LISTEN:1235,fork,max-children=$MAXFORKS CREATE:/dev/null
+\end{lstlisting}
+

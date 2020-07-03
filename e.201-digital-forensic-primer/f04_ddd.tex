@@ -1,0 +1,376 @@
+% DO NOT COMPILE THIS FILE DIRECTLY!
+% This is included by the other .tex files.
+
+
+\begin{frame}
+    \includegraphics[scale=0.3]{images/logo-circl-Forensics.png}
+    \begin{itemize}
+        \item[]
+        \item[]
+        \item[] 4. Disk Cloning / Disk Imaging
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.1 Disk cloning - imaging}
+    \begin{itemize}
+        \item Clone disk-2-disk
+        \begin{itemize}
+            \item Different sizes
+            \item Wipe target disk!
+        \end{itemize}
+        \item Clone disk-2-image
+        \begin{itemize}
+            \item Clear boundaries
+            \item One big file
+            \item Break file into chunks
+        \end{itemize}
+        \item Image file format
+        \begin{itemize}
+            \item RAW
+            \item AFF (Advanced Forensic Format)
+            \item EWF (Expert Witness Format)
+            \item Please no 3rd party formats
+        \end{itemize}
+        \item Write-Blockers
+        \begin{itemize}
+            \item Hardware
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.2 Connecting devices}
+    \begin{itemize}
+        \item \texttt{udev} 
+\begin{lstlisting}[basicstyle=\tiny]
+udevadm info /dev/sda                 # userspace /dev
+udevadm monitor
+\end{lstlisting}
+        \item \texttt{/dev/}
+\begin{lstlisting}[basicstyle=\tiny]
+/dev/sd*               # SCSI, SATA
+/dev/hd*               # IDE. EIDE
+/dev/md*               # RAID
+/dev/nvme*n*           # NVME devices
+
+/dev/sda1              # Partition 1 on disk 1
+/dev/sda2              # Partition 2 on disk 1
+...
+\end{lstlisting}
+        \item Block Devices
+        \begin{itemize}
+            \item Attaching
+            \item Mounting
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.2 Read partition table}
+    \begin{itemize}
+        \item \texttt{dmesg} 
+\begin{lstlisting}[basicstyle=\tiny]
+[106834.127269] sd 6:0:0:0: Attached scsi generic sg1 type 0
+[106834.127503] sd 6:0:0:0: [sdb] 15826944 512-byte logical blocks: (8.10 GB/7.54 GiB)
+[106834.130380] sd 6:0:0:0: [sdb] Write Protect is off
+\end{lstlisting}
+        \item \texttt{fdisk -l circl-dfir.dd}
+\begin{lstlisting}[basicstyle=\tiny]
+Disk circl-dfir.dd: 1536 MB, 1536000000 bytes
+4 heads, 7 sectors/track, 107142 cylinders, total 3000000 sectors
+Units = sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x8f7e6594
+
+        Device Boot      Start         End      Blocks   Id  System
+circl-dfir.dd1            2048     3000000     1498976+   7  HPFS/NTFS/exFAT
+\end{lstlisting}
+        \item Exercise: Analyze output. Why \texttt{1498976}? $\to$ Conclusions?
+    \end{itemize}
+\begin{lstlisting}[basicstyle=\tiny]
+End:     echo $(( 3000000 * 512 ))                  --> 1536 MB, 1536000000 bytes 
+         echo $(( 3000000 * 512 / 1024 / 1024 ))    --> 1464
+
+1498976: echo $(( 1498976 * 2 ))                    --> 2997952
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.2 Mounting}
+    \begin{itemize}
+        \item \texttt{mount} 
+\begin{lstlisting}[basicstyle=\tiny]
+mkdir /mnt/ntfs                             # Create mount point
+mount /dev/sdb1 /mnt/ntfs                   # Mounting
+
+mount -o ro,remount /dev/sdb1 /mnt/ntfs     # Re-mounting
+
+umount /mnt/ntfs                            # Un-mounting
+umount /dev/sdb1                            # Also un-mounting
+
+
+# Mounting readonly, no journaling, no executable
+mount -o ro,noload,noexec /dev/sdb1 /mnt/ntfs
+mount -o ro,noload,noexec,remount /dev/sdb1 /mnt/ntfs
+
+
+# Mounting with offset. mounting from image files
+mount -o ro,noload,noexec,offset=$((512*2048)) circl-dfir.dd /mnt/ntfs
+
+
+# Mounting NTFS file systems
+mount -o ro,noload,noexec,offset=$((512*2048)),
+      show_sys_files,streams_interface=windows circl-dfir.dd /mnt/ntfs
+
+\end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.3 dd - disk imaging rudimentary}
+    \begin{itemize}
+        \item[] Copy files from: \texttt{/mnt/ntfs/dd/}
+\begin{lstlisting}[basicstyle=\tiny]
+$ dd if=img_1.txt of=out_1.txt bs=512
+
+     <input file>      <output file> <block size>
+                                      (default)
+3+0 records in
+3+0 records out
+1536 bytes (1.5 kB) copied, 0.000126 s, 12.2 MB/s
+
+$ ll
+-rw-rw-r-- 1 hamm hamm 1536 May 16 11:20 img_1.txt
+-rw-rw-r-- 1 hamm hamm 1536 May 16 11:16 out_1.txt
+
+
+
+$ dd if=img_2.txt of=out_2.txt bs=512
+3+1 records in
+3+1 records out
+1591 bytes (1.6 kB) copied, 0.00016048 s, 9.9 MB/s
+
+$ ll
+-rw-rw-r-- 1 hamm hamm 1591 May 16 11:20 img_2.txt
+-rw-rw-r-- 1 hamm hamm 1591 May 16 11:26 out_2.txt
+\end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.3 dd - disk imaging rudimentary}
+    \begin{itemize}
+        \item[] Demo: \texttt{skip} and \texttt{count} options
+\begin{lstlisting}[basicstyle=\tiny]
+dd if=img_3.txt bs=512 skip=0 count=1 status=none | less
+dd if=img_3.txt bs=512 skip=1 count=1 status=none | less
+dd if=img_3.txt bs=512 skip=2 count=1 status=none | less
+\end{lstlisting}
+        \item[] Exercise: Find the secret password behind sector 3
+        \item[] Exercise: Play with \texttt{bs, skip} and \texttt{count} options
+\begin{lstlisting}[basicstyle=\tiny]
+dd if=img_3.txt bs=1 skip=$((512*3)) count=16 status=none
+dd if=img_3.txt bs=16 skip=$((32*3)) count=1 status=none
+\end{lstlisting}
+        \item[] Exercise: \texttt{dd | xxd | less}
+\begin{lstlisting}[basicstyle=\tiny]
+dd if=img_3.txt bs=512 skip=3 count=1 status=none | xxd | less
+	0+1 records in
+	0+1 records out
+	55 bytes (55 B) copied, 5.04e-05 s, 1.1 MB/s
+
+0000000: 4f76 6572 6865 6164 2031 3233 3435 3637  Overhead 1234567
+0000010: 3839 3020 204d 6573 7361 6765 2d31 2020  890  Message-1  
+0000020: 3039 3837 3635 3433 3231 2020 2020 2020  0987654321      
+0000030: 2020 2020 2020 20
+\end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.3 dd - disk imaging rudimentary}
+    \begin{itemize}
+        \item[] Demo: Continue an interrupted imaging process
+\begin{lstlisting}[basicstyle=\tiny]
+dd if=img_2.txt of=broken.raw bs=512 skip=0 count=2 status=none
+
+ll  img_2.txt  ..... 1591 Aug 13 14:40 img_2.txt*
+ll broken.raw  ..... 1024 Aug 13 15:05 broken.raw
+
+dd if=img_2.txt of=broken.raw bs=512 skip=2 seek=2 status=none
+
+md5sum  img_2.txt f319b1cc9d424a923a8c83c3e67185f1
+md5sum broken.raw f319b1cc9d424a923a8c83c3e67185f1
+\end{lstlisting}
+        \item[] Error handling: Bad blocks
+\begin{lstlisting}[basicstyle=\tiny]
+$ dd if=img_3.txt of=out_3.txt bs=512 conv=noerror,sync
+\end{lstlisting}
+        \item[] Demo: Progress
+        \begin{itemize}
+            \item[] Option: \texttt{status=progress}
+            \item[] Signaling: \texttt{'\&' and 'kill -10'}
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.4 Disk acquisition}
+    \begin{itemize}
+        \item Forensic features
+        \begin{itemize}
+            \item Progress monitoring
+            \item Error handling \& logging
+            \item Meta data
+            \item Splitting output files \& support of forensic formats
+            \item Cryptographic hashing \& verification checking
+        \end{itemize}
+        \item Example: hashing
+        \begin{itemize}
+            \item[] \texttt{md5sum circl-dfir.dd} $\to$ \texttt{bd80672b9d1bef2f35b6e902f389e83}
+            \item[] \texttt{sha1sum circl-dfir.dd} $\to$ \texttt{e5ffc7233a..........7e53b9f783}
+        \end{itemize}
+        \item Tools
+        \begin{itemize}
+            \item dd
+            \item ddrescue, gddrescue, dd\_rescue
+            \item dc3dd - Department of Defense Cyber Crime Center
+            \item dcfldd - Defense Computer Forensic Labs
+	    \item rdd-copy, netcat, socat, ssh
+            \item Guymager
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.5 Exercise: dc3dd}
+  \begin{lstlisting}[basicstyle=\tiny]
+dc3dd if=/mnt/ntfs/carving/deleted.dd                   # Input file
+      log=usb.log  -/                                   # Logging
+      hash=md5 hash=sha1  -/                            # Hashing
+      ofsz=$((8*1024*1024)) ofs=usb.raw.000             # Chunk files of 8MB
+
+
+ls -l
+
+
+cat usb.log
+
+
+cat usb.raw.00* | md5sum                                # Verify hashes
+cat usb.raw.00* | sha1sum
+
+
+dc3dd wipe=/dev/sdx                                     # Wipe a drive
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.6 SuashFS as forensic container}
+    \begin{itemize}
+        \item Embedded systems
+        \item Read only file system
+        \item Supports very large files
+        \item Adding files possible
+        \item Deleting, modifying files not possible
+        \item Compressed
+	\item[] $\to$ Real case: 3*1TB disks stored in 293GB container
+	\item Bruce Nikkel: \url{http://digitalforensics.ch/sfsimage/}
+    \end{itemize}
+  \begin{lstlisting}[basicstyle=\tiny]
+mksquashfs circl-dfir.dd case_123.sfs
+mksquashfs analysis.txt case_123.sfs
+unsquashfs -ll case_123.sfs
+.....
+mksquashfs analysis.txt case_123.sfs
+.....
+sudo mount case_123.sfs /mnt/
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.7 Exercise: Modify data on RO mounted device}
+  \begin{lstlisting}[basicstyle=\tiny]
+mount
+mount -o ro,remount /media/michael/7515-6AA5/
+mount
+
+
+Demo: Modify Document
+
+strings -td /dev/sdb1
+    .....
+    299106 Hello World!
+    .....
+
+echo $((299106/512))
+    584
+
+dd if=/dev/sdb1 bs=512 skip=584 count=1 of=584.raw
+ll
+hexer 584.raw
+
+dd of=/dev/sdb1 bs=512 seek=584 count=1 if=584.raw
+mount
+
+
+Demo: Review Document
+  
+  
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{4.7 Exercise: RO Countermeasures}
+    \begin{itemize}
+        \item Try on board methods:
+        \begin{itemize}
+            \item[]
+            \begin{itemize}
+                \item \texttt{hdparm -r1 /dev/sdb}
+                \item \texttt{blockdev --setro /dev/sdb}
+                \item \texttt{udev} rules
+                \item[] $\to$ Attack on block device still possible
+            \end{itemize}
+        \end{itemize}
+        \item Try Forensics Linux Distributions:
+        \begin{itemize}
+            \item Live Kali 2018\_4 in forensic mode
+            \item SANS SIFT Workstation 3.0
+            \item DEFT X 8.2 DFIR Toolkit
+            \begin{itemize}
+                \item Some distributions do not auto mount
+                \item[] $\to$ Attack on block device still possible
+            \end{itemize}
+        \end{itemize}
+\item Kernel Patch: Linux write blocker (not tested)
+        \begin{itemize}
+                \item[] $\to$ \url{https://github.com/msuhanov/Linux-write-blocker}
+        \end{itemize}
+        \item Hardware Write Blocker
+        \begin{itemize}
+            \item[]
+            \begin{itemize}
+                \item[] $\to$ Effectively block attack
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+
+

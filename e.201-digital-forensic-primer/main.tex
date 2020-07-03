@@ -1,0 +1,82 @@
+\documentclass{beamer}
+\usetheme[pageofpages=of,% String used between the current page and the
+                         % total page count.
+          bullet=circle,% Use circles instead of squares for bullets.
+          titleline=true,% Show a line below the frame title.
+          alternativetitlepage=true,% Use the fancy title page.
+	  titlepagelogo=images/logo-circl.pdf,% Logo for the first page.
+%          watermark=watermark-polito,% Watermark used in every page.
+%          watermarkheight=100px,% Height of the watermark.
+%          watermarkheightmult=4,% The watermark image is 4 times bigger
+                                % than watermarkheight.
+          ]{Torino}
+
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{color}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{transparent}
+\usepackage{siunitx}
+
+\usepackage[norndcorners,customcolors]{hf-tikz}
+\hfsetbordercolor{yellow}
+\hfsetfillcolor{yellow}
+
+\lstset{ 
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,
+}
+
+
+\author{CIRCL \emph{TLP:WHITE}}
+\title{Digital Forensics}
+\subtitle{An introduction into Post-mortem Digital Forensics}
+\institute{info@circl.lu}
+\date{Version 1.0.2 2018 edition}
+
+
+
+\begin{document}
+\begin{frame}[t,plain]
+\titlepage
+\end{frame}
+
+\begin{frame}
+  \frametitle{Overview}
+  \begin{itemize}
+  \item[]
+      \begin{enumerate}
+          \item Introduction
+          \item From data to knowledge
+          \item Disk Acquisition
+          \item Disk Cloning / Disk Imaging
+          \item Disk Analysis
+          \item File System Analysis
+          \item Carving
+          \item Analysing files
+          \item String Search
+          \item Windows Registry Analysis
+          \item Memory Forensics
+          \item Outlook
+      \end{enumerate}
+  \end{itemize}
+\end{frame}
+
+
+
+\include{f01_int}
+\include{f02_d2k}
+\include{f03_hwl}
+\include{f04_ddd}
+\include{f05_dsk}
+\include{f06_fls}
+\include{f07_car}
+\include{f08_fil}
+\include{f09_str}
+\include{f11_reg}
+\include{f12_mem}
+\include{f13_out}
+
+\end{document}
+

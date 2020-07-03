@@ -1,0 +1,16 @@
+\lstset{%
+    language=bash,
+    backgroundcolor=\color{gray!25},
+    basicstyle=\ttfamily,
+    breaklines=true,
+    columns=fullflexible
+}
+
+\begin{lstlisting}
+find analysis/ -type f | sort | parallel -j 7 parse.sh {}
+#parse.sh
+T=`echo $F | sed 's#/source#/parsed/#g' | sed 's/cap$/txt/g'`
+D=`dirname $T`
+mkdir -p $D
+tshark -n -E separator='|' -r $F -T fields -e frame.time_epoch -e ip.src > $T
+\end{lstlisting}

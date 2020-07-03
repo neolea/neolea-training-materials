@@ -1,0 +1,635 @@
+\documentclass{beamer}
+\usepackage{listings}
+\usetheme[pageofpages=of,% String used between the current page and the
+                         % total page count.
+          bullet=circle,% Use circles instead of squares for bullets.
+          titleline=true,% Show a line below the frame title.
+          alternativetitlepage=true,% Use the fancy title page.
+          titlepagelogo=circl-logo.pdf,% Logo for the first page.
+%          watermark=watermark-polito,% Watermark used in every page.
+%          watermarkheight=100px,% Height of the watermark.
+%          watermarkheightmult=4,% The watermark image is 4 times bigger
+                                % than watermarkheight.
+          ]{Torino}
+
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usepackage{transparent}
+\usepackage{fancyvrb}
+\usepackage{listings}
+
+\author{Team CIRCL - \emph{TLP:WHITE}}
+\subtitle{How to better understand DDoS attacks from backscatter traffic, opportunistic network scanning and exploitation}
+\title{Analysing black-hole monitoring dataset}
+\institute{CIRCL}
+\date{\today}
+
+\begin{document}
+
+\begin{frame}[t,plain]
+\titlepage
+\end{frame}
+
+\begin{frame}
+    \frametitle{Outline}
+    \tableofcontents
+\end{frame}
+
+\section{Introduction}
+
+\begin{frame}
+ \frametitle{Introduction}
+ \includegraphics[scale=0.5]{logo-circl.pdf}
+ \begin{itemize}
+ \item The Computer Incident Response Center Luxembourg (CIRCL) is a government-driven initiative designed to provide a systematic response facility to computer security threats and incidents.
+ \item CIRCL is the CERT for the private sector, communes and non-governmental entities in Luxembourg.
+ \end{itemize}
+\end{frame}
+
+
+\section{Blackhole \& honeypot operation}
+\begin{frame}
+\frametitle{Blackhole \& honeypot operation}
+\framesubtitle{Motivation and background}
+\begin{itemize}
+    \item IP darkspace or blackhole is
+    \begin{itemize}
+        \item {\bf Routable non-used address space} of an ISP (Internet Service Provider),
+        \item incoming traffic is unidirectional
+        \item and {\bf unsolicited}.
+    \end{itemize}
+    \item Is there any traffic in those darkspaces?
+    \item If yes, what and why does it arrive there?
+    \begin{itemize}
+            \item And {\bf on purpose} or {\bf by mischance}?
+    \end{itemize}
+    \item What's the security impact?
+    \item What are the security recommendations?
+\end{itemize}
+\end{frame}
+
+%TODO add slide difference between honeypot and blackhole
+%Blackhole no interaction usually more IPS
+%Honeypots one IP 
+
+\begin{frame}
+        \frametitle{Blackhole \& honeypot operation}
+        \framesubtitle{Collection and analysis framework}
+        \includegraphics[scale=0.29]{overview-sensor.pdf}
+\end{frame}
+
+\begin{frame}
+\frametitle{Blackhole operation}
+    \begin{definition}[Principle]
+        \begin{itemize}
+            \item KISS (Keep it simple stupid)
+            \item Linux \& OpenBSD operating systems
+        \end{itemize}
+    \end{definition}
+
+    \begin{block}{Sensor}
+    \lstset{%
+        language=bash,
+        backgroundcolor=\color{gray!25},
+        basicstyle=\ttfamily,
+        breaklines=true,
+        columns=fullflexible
+    }
+    \input{tcpdump.tex}
+    \end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Honeypot operation (collection)}
+\begin{block}{Generic TCP server}
+    \input{cloak.tex}
+\end{block}
+
+\begin{block}{Generic UDP server}
+    \input{udpcloak.tex}
+\end{block}
+
+\begin{block}{Redirections}
+    \input{rdr.tex}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Blackhole \& honeypot operation}
+\framesubtitle{Data collection}
+\begin{block}{Server}
+\input{server.tex}
+\end{block}
+
+\begin{block}{File organization}
+\begin{columns}
+\begin{column}{0.6\textwidth}
+\begin{verbatim}
+2017/
+2017/11
+2017/11/H-20171113234424.cap.gz
+\end{verbatim}
+\end{column}
+\begin{column}{0.4\textwidth}
+\begin{itemize}
+    \item 288 files per day
+    \item SquashFS $\to$ reduce inodes
+\end{itemize}
+    \end{column}
+    \end{columns}
+\end{block}
+\end{frame}
+
+\section{Data processing}
+
+\begin{frame}
+\frametitle{Data processing}
+\framesubtitle{Network packet dissection}
+\tikzstyle{block} = [draw,fill=blue!20,minimum size=10px]
+\begin{tikzpicture}[scale=0.35]
+
+%Draw various buffers
+\foreach \x in {0,-3.5,-7,-10.5, -14} {
+    \draw (0,\x)--(20,\x);
+    \foreach \y in {0,...,20} {
+        \draw (\y,\x)--(\y,\x-1);
+    } i
+    \draw (0,\x-1)--(20,\x-1);
+}
+
+%Descriptions
+\node  [anchor=north east] at (-1,0) {$data$};
+\node  [anchor=north east] at (-1,-3.5) {$packets$};
+
+\foreach \x in {1,2,3} {
+    \node [anchor=north east] at (-1,-\x*3.5-3.5) {$protocol_{\x}$};
+}
+
+
+\node  [anchor=north west] at (21,-4.5) {$t_{1},t_{2},t_{3}, t_{4}$};
+\node  [anchor=north west] at (21,-8.5) {$ip$};
+\node  [anchor=north west] at (21,-12) {$port$};
+%\node  [anchor=north west] at (21,-15) {\tiny $b_{1}+b_{2}+b_{3}+b_{4}, $};
+
+%Draw packet dissection on level 1
+\foreach \x in {5,10,15} {
+    \draw[thick,red] (\x,-3.35)--(\x,-4.65);
+}
+
+%Draw packet dissection on level 2
+\foreach \x in {5,10,15} {
+    \draw[thick,red] (\x,-6.85)--(\x,-8.15);
+}
+
+%Draw packet dissection on level 3
+\foreach \x in {5,10,15} {
+    \draw[thick,red] (\x,-10.35)--(\x,-11.65);
+}
+
+%Draw packet dissection on level 4
+\foreach \x in {5,10,15} {
+    \draw[thick,red] (\x,-13.85)--(\x,-15.15);
+}
+
+%Timestamp arrow
+\draw[->] (1.5,-5) -- ( 21,-5);
+\draw (1.5,-5) -- ( 1.5,-4.5);
+
+\draw[->] (6.5,-5.5) -- (21,-5.5);
+\draw (6.5,-5.5)--(6.5,-4.5);
+
+\draw[->] (11.5,-6) -- (21,-6);
+\draw (11.5,-6)--(11.5,-4.5);
+
+
+\draw[->] (16.5,-6.5) -- (21,-6.5);
+\draw (16.5,-6.5)--(16.5,-4.5);
+
+% IP addresses lines
+\draw[->] (2.5,-8.5) -- ( 21,-8.5);
+\draw (2.5,-8.5) -- ( 2.5,-8);
+
+%Port
+\draw[->] (8.5,-12) -- ( 21,-12);
+\draw[-] (8.5,-12) -- (8.5,-11.5);
+
+\foreach \x in {5.5,10.5,15.5} {
+    \draw [->](\x,-15) -- (\x,-17);
+}
+
+\node [anchor=north west ] at (0,-17) {botnet command = $b_{1} + b_{2} + b_{3} + b_{4}$};
+
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+\frametitle{Data processing}
+\framesubtitle{How does the data look like?}
+\begin{center}
+    \includegraphics[scale=0.3]{ws.png}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Data processing}
+\framesubtitle{Principles}
+    \begin{itemize}
+        \item Avoid json exports such as provided by tshark\footnote{\url{https://www.wireshark.org/docs/man-pages/tshark.html}} (ek option) or Moloch\footnote{\url{https://github.com/aol/moloch}}
+        \item Multiplies data volume up to 15 times
+        \item On 2.18 TB compressed packet captures give 32 TB
+        \item Avoid writing and reading from the same disk
+        \item Keep raw data as long as possible
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Data processing}
+    \framesubtitle{Preprocessing data}
+    \input {preproc.tex}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Data processing}
+    \framesubtitle{Parsing data}
+    \input {parse.tex}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Data processing}
+    \framesubtitle{Distributed counting}
+    \input {count.tex}
+\end{frame}
+
+\section{Analysis of denial of service attacks}
+
+\begin{frame}
+    \huge{Analysis of denial of service attacks}
+\end{frame}
+
+\begin{frame}
+\frametitle{Observing SYN floods attacks in backscatter traffic}
+Attack description
+
+    \begin{tikzpicture}{scale=0.4}
+    \node[rectangle,draw,fill=red!80] (a) at (0,0) {Attacker};
+    \node[anchor=west] at (0.93,0.25) {Spoofed requests $H_{0},H_{1},H_{2},H_{3},...$};
+    \node [rectangle,draw,fill=blue!25,anchor=east] at (8,0) (v) {Victim};
+    \draw [->](a) --(v);
+
+    \foreach \x in {0,1,2,3} {
+        \node [rectangle,draw,fill=green!25,anchor=east] at (\x*2+1,-2) {$H_{\x}$};
+        %Horizontal lines
+        \draw (\x*2+1, -\x*0.25-0.5)--(7.0+\x*.25,-\x*0.25-0.5);
+        %Links to the victim
+        \draw (7.0+\x*.25,-\x*0.25-0.5) -- (7.0+\x*.25,-0.25);
+        %Links to hosts
+        \draw[->] (\x*2+1, -\x*0.25-0.5)--(\x*2+1,-1.70);
+    }
+    \end{tikzpicture}
+
+
+\begin{center}
+    \begin{tabular}{|l|}
+        \hline
+        Connections\\
+        \hline
+        $H_{0}$\\
+        \hline
+        $H_{1}$\\
+        \hline
+        $H_{2}$\\
+        \hline
+        $H_{3}$\\
+        \hline
+    \end{tabular}
+\end{center}
+
+\begin{center}
+Fill up state connection state table of the victim
+\end{center}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{How does backscatter look like?}
+\input{tcpout.tex}
+\begin{center}
+    \alert{What are the typical characteristics?}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{What can be derived from backscatter traffic?}
+
+\begin{itemize}
+    \item External point of view on ongoing denial of service attacks
+    \item Confirm if there is a DDOS attack
+    \item Recover time line of attacked targets
+    \item Confirm which services (DNS, webserver, $\dots$)
+    \item Infrastructure changes
+    \item Assess the state of an infrastructure under denial of service attack
+    \begin{itemize}
+        \item Detect failure/addition of  intermediate network equipments, firewalls, proxy servers etc
+        \item Detect DDOS mitigation devices
+    \end{itemize}
+    \item Create probabilistic models of denial of service attacks
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Confirm if there is a DDOS attack}
+    \begin{block}{Problem}
+        \begin{itemize}
+            \item Distinguish between compromised infrastructure and backscatter
+            \item Look at TCP flags $\to$ filter out single SYN flags
+            \item Focus on ACK, SYN/ACK, ...
+            \item Do not limit to SYN/ACK or ACK $\to$ ECE (ECN Echo)\footnote{\url{https://tools.ietf.org/html/rfc3168}}
+        \end{itemize}
+    \end{block}
+    \input{flags.tex}
+\end{frame}
+
+\begin{frame}
+\frametitle{Counting denial of service attacks}
+\begin{center}
+    \begin{tabular}{l}
+    20170311\\
+    20170328\\
+    20170504\\
+    20170505\\
+    20170529\\
+    20170808\\
+    20170913\\
+    20170914\\
+    20170915\\
+    20170922\\
+    \end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Discover targeted services}
+
+TCP services
+
+\input{tcpserv.tex}
+
+\begin{center}
+    \begin{tabular}{cc}
+        Frequency & TCP source port\\
+        \hline
+        868 & 53 \\
+        2625 & 80\\
+    \end{tabular}
+\end{center}
+
+\begin{itemize}
+    \item Do not forget UDP
+    \item ICMP $\to$ Network, Host Port unreachable
+    \item GRE
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Infrastructure assessment}
+\begin{itemize}
+    \item Inspect TTL (Time to Live Values)
+    \item Focus on initial TTL values (255,128,64)
+\end{itemize}
+
+\input {assess.tex}
+
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Infrastructure changes}
+    \begin{itemize}
+        \item Increase of TTL
+        \begin{itemize}
+            \item Focus on differences
+            \item Network equipment was removed  i.e. broken firewall
+        \end{itemize}
+        \item Decrease of TTL
+        \begin{itemize}
+            \item Network equipment was added 
+        \end{itemize}
+        \item Analyze distribution of absolute ACK numbers
+        \item DDOS cleaning tools use MSB for tagging traffic
+        \item Analyze source ports $\to$ detect load balancers
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Observing SYN floods attacks in backscatter traffic}
+    Plotting TCP acknowledgement numbers
+    \begin{center}
+        \scalebox{0.7}{\input{backscatter.tex}}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Plotting TCP initial sequence numbers}
+    \begin{center}
+        \centerline{\includegraphics[scale=0.23]{isn-1.png}}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Mirai case}
+    \begin{tikzpicture}{scale=0.4}
+    \node[rectangle,draw, anchor=center] (a) at (0,1) {Victim};
+    \node [rectangle,draw,anchor=center,minimum height=0.6cm] at (0,-3) (v) {$Attacker_{1 \dots n}$};
+    \node [rectangle,draw,anchor=center,minimum height=0.6cm] (m) at (2.6,-3) {$Botmaster$};
+    \foreach \x in {0,1,2} {
+        \node [rectangle,draw,anchor=west,minimum width=1.2cm] (b\x) at (2,\x) {$Bot_{\x}$};
+    }
+
+    \node [rectangle,draw,anchor=west,minimum width=1.2cm,minimum height=0.6cm] (cc) at (2,-1) {$C\&C$};
+
+    \node [rectangle,draw,anchor=east] (d0) at (0*1.3+4.5,-1) {$Dev_{0}$};
+    \node [rectangle,draw,anchor=east] (d1) at (1*1.3+4.5,-1) {$Dev_{1}$};
+    \node [rectangle,draw,anchor=east] (d2) at (2*1.3+4.5,-1) {$Dev_{\dots}$};
+
+    \node [rectangle,draw,anchor=west] (server) at (7.5,-1) {$Server$};
+    \node [rectangle,draw,anchor=west] (loader) at (9,-1) {$Loader$};
+%CC links
+    \draw [ -> ] (cc.north) -- (b0);
+%DDOS Links
+    \draw [->] (b0.west) .. controls (0,0) .. (a.south);
+    \draw [->] (b1.west) -- (a.east);
+    \draw [->] (b2.west) .. controls (0,2) .. (a.north);
+%Report scanning
+    \draw [ ->]  (b0.south east) .. controls (3.98,-0.3) .. (d0.north);
+    \draw [ ->]  (b1.south east) .. controls (5.27,0.7) .. (d1.north);
+    \draw [ ->]  (b2.south east) .. controls (6.6,1.7) .. (d2.north);
+%Report server
+    \draw[ -> ] (b2.east) .. controls (8.1,2) .. (server);
+%Loader
+    \draw [ <- ] (b2.north east) .. controls(9.7,2.3) .. (loader);
+%Botmaster
+    \draw [ -> ] (m.north) -- (cc.south);
+    \draw [ -> ] (m.east) .. controls (9.7,-3) .. (loader.south);
+    \draw [ -> ] (v.north) .. controls (0,-1) .. (cc.west);
+    \draw [ -> ] (m.east) .. controls (8.1, -3) .. (server.south);
+    \end{tikzpicture}
+
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Mirai case}
+    \framesubtitle{Discovering new devices}
+    \includegraphics[scale=0.23]{mirai-isn.png}
+\end{frame}
+
+\begin{frame}
+\frametitle{Mirai case}
+\includegraphics[scale=0.3]{scanner.png}
+\end{frame}
+\begin{frame}
+    \frametitle{Mirai case}
+    \scalebox{0.8}{\input{mirai.tex}}
+\end{frame}
+
+\begin{frame}
+\frametitle{Mirai case}
+\framesubtitle{New forks}
+\begin{center}
+    \includegraphics[scale=0.8]{prop.pdf}
+\end{center}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{IoT malware familes}
+\begin{itemize}
+    \item \texttt{Linux.Darlloz} (aka Zollard)
+    \item \texttt{Linux.Aidra} / Linux.Lightaidra
+    \item \texttt{Linux.Xorddos} (aka XOR.DDos)
+    \item \texttt{Linux.Ballpit} (aka LizardStresser)
+    \item \texttt{Linux.Gafgyt} (aka GayFgt, Bashlite)
+    \item \texttt{Linux.Moose}
+    \item \texttt{Linux.Dofloo} (aka AES.DDoS, Mr. Black)
+    \item \texttt{Linux.Pinscan} / Linux.Pinscan.B (aka PNScan)
+    \item \texttt{Linux.Kaiten} / Linux.Kaiten.B (aka Tsunami)
+    \item \texttt{Linux.Routrem} (aka Remainten, KTN-Remastered, KTN-RM)
+    \item \texttt{Linux.Wifatch} (aka Ifwatch)
+    \item \texttt{Linux.LuaBot}
+\end{itemize}
+
+    {\tiny Source: \url{https://www.symantec.com/connect/blogs/iot-devices-being-increasingly-used-ddos-attacks}}
+\end{frame}
+
+\begin{frame}
+\frametitle{Qbot}
+\framesubtitle{Brute force attacks telnet accounts}
+
+\begin{center}
+    \begin{tabular}{lll}
+        root &  admin &  user\\
+        login & guest & support\\
+        \alert{netgear} & \alert{cisco} & ubnt \\
+        telnet & Administrator & comcast\\
+        default & password & \alert{D-Link}\\
+        manager & \alert{pi} & \alert{VTech} \\
+        vagrant & & \\
+    \end{tabular}
+\end{center}
+
+\vspace{2em}
+{\tiny Source: \url{http://leakedfiles.org/Archive/Malware/Botnet\%20files/QboT\%20Sources/BASHLITE/aresselfrep.c}}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Qbot}
+\framesubtitle{Commands}
+\begin{itemize}
+    \item PING
+    \item GETLOCALIP
+    \item SCANNER $\to$ ON, OFF
+    \item JUNK
+    \item HOLD
+    \item UDP flood
+    \item HTTP flood
+    \item CNC
+    \item KILLATTK
+    \item GTFOFAG
+    \item FATCOCK
+\end{itemize}
+\end{frame}
+
+
+\lstset{%
+  language=bash,
+  backgroundcolor=\color{gray!25},
+  basicstyle=\ttfamily,
+  breaklines=true,
+  columns=fullflexible
+}
+
+\begin{frame}
+    \frametitle{Netcore/Netis routers backdoor exploits}
+    \begin{itemize}
+        \item Backdoor reported by Trendmicro the 8th August 2014\footnote{\url{http://blog.trendmicro.com/trendlabs-security-intelligence/netis-routers-leave-wide-open-backdoor/}}
+        \item Send UDP packet on port 53413
+        \item Payload must start with $AA \backslash 0 AAAA\backslash 0$ followed with shell commands\footnote{\url{https://www.seebug.org/vuldb/ssvid-90227}}
+        \item Last observed packet 2017-11-15
+        \item Pushed malware Mirai 748ea07b15019702cbf9c60934b43d82 Mirai variant?
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Injected URLS in UDP payloads}
+\input {stage1.tex}
+\end{frame}
+
+\lstset{%
+  language=bash,
+  backgroundcolor=\color{gray!25},
+  basicstyle=\ttfamily,
+  breaklines=true,
+  columns=fullflexible
+}
+
+\begin{frame}[fragile]
+\frametitle{Injected URLS in UDP payloads}
+\input {stage2.tex}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Injected URLS in UDP payloads}
+    \begin{center}
+        \scalebox{0.8}{\input {port53413.tex}}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Injected URLS in UDP payloads}
+    \begin{center}
+        \scalebox{0.8}{\input {loaders.tex}}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Conclusions}
+    \begin{itemize}
+        \item Backscatter is a very rich source of information
+        \item Could even be abused by DDOS bots for fine tunning attacks
+        \begin{itemize}
+            \item Detect infrastructure changes
+            \item Detect DDOS mitigation solutions
+            \item Risk need to introduce real traffic into spoofed traffic
+        \end{itemize}
+        \item Large amount of vulnerable devices that could be abused
+        \item Commodity routers were already abused in 2014
+        \item They are still being abused
+        \item Many variants are there $\to$ MISP
+        \item It usually takes a lot of time to get machines fixed
+        \item Want to get involved $\to$ host a sensor, provide unused IP space?
+        \item Contact info@circl.lu
+    \end{itemize}
+\end{frame}
+\end{document}

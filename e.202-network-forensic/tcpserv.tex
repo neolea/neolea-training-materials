@@ -1,0 +1,11 @@
+\lstset{%
+    language=bash,
+    backgroundcolor=\color{gray!25},
+    basicstyle=\ttfamily,
+    breaklines=true,
+    columns=fullflexible
+}
+
+\begin{lstlisting}
+find . -type f  | parallel -j 7 tshark -n -r {} -T fields  -e tcp.srcport  | sort | uniq -c 
+\end{lstlisting}

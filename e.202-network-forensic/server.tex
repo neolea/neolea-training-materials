@@ -1,0 +1,12 @@
+\lstset{%
+    language=bash,
+    backgroundcolor=\color{gray!25},
+    basicstyle=\ttfamily,
+    breaklines=true,
+    columns=fullflexible
+}
+
+\begin{lstlisting}
+socat OPENSSL-LISTEN:$PORT,reuseaddr,cert=server.pem,cafile=ca.crt,keepalive,keepidle=30,keepcnt=3 STDOUT | tcpdump -n -r - -G 300  -w data/honeypot-1-%Y%m%d%H%M%S.cap
+\end{lstlisting}
+

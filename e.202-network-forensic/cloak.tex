@@ -1,0 +1,11 @@
+\lstset{%
+    language=bash,
+    backgroundcolor=\color{gray!25},
+    basicstyle=\ttfamily,
+    breaklines=true,
+    columns=fullflexible
+}
+
+\begin{lstlisting}
+    socat -T 60 -u TCP4-LISTEN:1234,reuseaddr,fork,max-children=$MAXFORKS CREATE:/dev/null
+\end{lstlisting}
