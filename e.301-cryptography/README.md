@@ -3,8 +3,8 @@ This folder contains the training material for e.301 cryptography.
 
 ## Presentation support
 
-The presentation support were created using LaTeX: the main document `soc.tex`
-is compiled into `soc.pdf`.  During the presentation, trainees are invited to
+The presentation support were created using LaTeX: the main document `main.tex`
+is compiled into `main.pdf`.  During the presentation, trainees are invited to
 solve several challenges, or hands-on exercices. These exercises are located in
 the `hands-on` folder and go through several primers about cryptography use and
 workarounds:
@@ -44,3 +44,5 @@ are collected from an HTTPS connection (to an host known to be vulnerable),
 tested for their robustness, eventually cracked. A private key is then built
 and used in wireshark to decipher the previously captured TLS connection.
 
+## Scripts
+The script folder holds useful scripts used to create the ECB example image and manage users.
