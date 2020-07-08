@@ -12,7 +12,7 @@ The courses overview is centered around information sharing, collaboration aroun
 
 - E.100 MISP - Open Source Threat Intelligence Platform Supporting Digital Forensic and Incident Response
 - E.200 Post Mortem Analysis Techniques of Fake Invoices Manipulated PDF documents
-- E.201 Digital Forensics - An introduction into Post-mortem Digital Forensics
+- E.201 Digital Forensics - Introduction: Post-mortem Digital Forensics
 - E.202 Network forensic - Analysing black-hole monitoring dataset How to better understand DDoS attacks from backscatter traffic, opportunistic network scanning and exploitation
 - E.300 Data mining using the [AIL project](https://www.github.com/ail-project)
 - E.301 Cryptography Workarounds For Law Enforcement
