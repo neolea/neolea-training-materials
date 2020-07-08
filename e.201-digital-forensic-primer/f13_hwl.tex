@@ -1,3 +1,8 @@
+%
+% This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
+% http://creativecommons.org/licenses/by-sa/4.0/
+%
+
 % DO NOT COMPILE THIS FILE DIRECTLY!
 % This is included by the other .tex files.
 
@@ -15,23 +20,50 @@
 \begin{frame}[fragile]
   \frametitle{3.1 Storage devices / media}
     \begin{itemize}
-        \item IBM 305 RAMAC
+        \item IBM 305 RAMAC - IBM 350 Disk Storage
         \begin{itemize}
-            \item Random Access Method of Accounting and Control
-            \item 1956
-        \end{itemize}
-        \item IBM 350 Disk Storage
-        \begin{itemize}
-            \item 152 x 172 x 63 cm
+            \item 1956: Random Access Method of Accounting and Control
+            \item 152 x 172 x 63 cm; 500 kg
             \item 50.000 blocks of 100 Characters $\to$ 5MB
         \end{itemize}
     \end{itemize}
     \begin{figure}
-        \includegraphics[scale=0.4, angle=0, trim=0 0 0 0]{images/IBM_350.jpg}
+        \includegraphics[scale=0.4, angle=0, trim=0 0 0 0]{images/IBM_305.jpeg}
         \captionsetup{labelformat=empty,labelsep=none}
         \transparent{0.4}%
-        \caption[]{\tiny Image (c) wikipedia.org - Image used solely for illustration purposes}
+        \caption[]{\tiny Image (c) www.chip.de - Image used solely for illustration purposes}
     \end{figure}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.1 Storage devices / media}
+	\url{ftp://ftp.seagate.com/techsuppt/misc/jet.txt}
+  \begin{lstlisting}[basicstyle=\tiny]
+ The incredible feat of a read/write head:  Today's new generation of disc
+ drives achieve the engineering equivalent of a Boeing 747 flying at MACH 4
+ just two meters above the ground, counting each blade of grass as it flies
+ over.  The read/write head floats at 12 millionths of an inch above the
+ surface of the disc which is turning at 3,600 revolutions per minute.
+ Read/write heads position precisely over information tracks which are 800
+ millionths of an inch apart and the data is electronically recorded at
+ 20,000 bits per inch.
+
+
+
+                                          __.
+                                         / /   - - --
+                                       /  /e
+                                    ./   /e         /--u O O OO
+                              /oAAAAAAAAAAAAAAAAAAA/ 
+                            {  @@@  ooooooooooooooo @@'
+                              \AAAAAA\AAAA\AAAAAAAAAA/
+                                      ue\   \
+                                         e\  \
+                                            \_\. = = ==
+
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+  \end{lstlisting}
 \end{frame}
 
 
@@ -72,24 +104,27 @@
 \begin{frame}[fragile]
   \frametitle{3.2 Physical- / Logical layers}
   \begin{lstlisting}[basicstyle=\tiny]
-	  Physical disks
-----------  ----------  ----------
-| Disc 1 |  | Disc 2 |  | Disc 3 |
-----------  ----------  ----------
-     |          |           |
-     V          V           V
-     Logical hard disk volume
-----------------------------------
-| ------------------------------ |
-| |  P1  |    P2    |    P3    | |
-| ------------------------------ |
-----------------------------------
-      |        |          |
-      V        V          V
- --------  ---------- ----------
- |  P1  |  |   P2   | |   P3   |
- --------  ---------- ----------
-Volume C:  Volume D:  Volume E:
+	       Mass storage device
+ ---------    ---------    ---------    ---------     Considerations: Disk duplication
+| 8 TByte |  | 8 TByte |  | 8 TByte |  | 8 TByte |
+ ---------    ---------    ---------    ---------         Speed USB2: 480 Mbit/s
+     |            |            |            |               Capacity: 8 * 1024^4 * 8
+     V            V            V            V               Duration: ~40 hours per disk
+     RAID
+   --------------------------------------------
+  |  System  Data                              |        Speed USB3.1: 10 Gbit/s
+  |  ----------------------------------------  |            Capacity: 24 * 1024^4 * 8
+  | |  P1  |    P2 (24 TByte)                | |            Duration: ~5 hours per volume
+  |  ----------------------------------------  |
+   --------------------------------------------             (Theoretically)
+
+
+A solution:
+	- Local NAS
+	- 10 GBit network
+	- USB 3.1 / 3.2
+	- 60+ TB mass storage
+	- Virtual appliance
   \end{lstlisting}
 \end{frame}
 

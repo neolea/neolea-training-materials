@@ -1,3 +1,8 @@
+%
+% This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
+% http://creativecommons.org/licenses/by-sa/4.0/
+%
+
 % DO NOT COMPILE THIS FILE DIRECTLY!
 % This is included by the other .tex files.
 
@@ -174,7 +179,6 @@ dd if=img_3.txt bs=512 skip=0 count=1 status=none | less
 dd if=img_3.txt bs=512 skip=1 count=1 status=none | less
 dd if=img_3.txt bs=512 skip=2 count=1 status=none | less
 \end{lstlisting}
-        \item[] Exercise: Find the secret password behind sector 3
         \item[] Exercise: Play with \texttt{bs, skip} and \texttt{count} options
 \begin{lstlisting}[basicstyle=\tiny]
 dd if=img_3.txt bs=1 skip=$((512*3)) count=16 status=none
@@ -183,15 +187,14 @@ dd if=img_3.txt bs=16 skip=$((32*3)) count=1 status=none
         \item[] Exercise: \texttt{dd | xxd | less}
 \begin{lstlisting}[basicstyle=\tiny]
 dd if=img_3.txt bs=512 skip=3 count=1 status=none | xxd | less
-	0+1 records in
-	0+1 records out
-	55 bytes (55 B) copied, 5.04e-05 s, 1.1 MB/s
 
-0000000: 4f76 6572 6865 6164 2031 3233 3435 3637  Overhead 1234567
-0000010: 3839 3020 204d 6573 7361 6765 2d31 2020  890  Message-1  
-0000020: 3039 3837 3635 3433 3231 2020 2020 2020  0987654321      
-0000030: 2020 2020 2020 20
+    0000000: 4f76 6572 6865 6164 2031 3233 3435 3637  Overhead 1234567
+    0000010: 3839 3020 204d 6573 7361 6765 2d31 2020  890  Message-1  
+    0000020: 3039 3837 3635 3433 3231 2020 2020 2020  0987654321      
+    0000030: 2020 2020 2020 20
 \end{lstlisting}
+        \item[] Exercise: Find the secret password behind sector 3
+        \item[] 
     \end{itemize}
 \end{frame}
 
@@ -199,7 +202,7 @@ dd if=img_3.txt bs=512 skip=3 count=1 status=none | xxd | less
 \begin{frame}[fragile]
   \frametitle{4.3 dd - disk imaging rudimentary}
     \begin{itemize}
-        \item[] Demo: Continue an interrupted imaging process
+        \item[] Exercise: Continue an interrupted imaging process
 \begin{lstlisting}[basicstyle=\tiny]
 dd if=img_2.txt of=broken.raw bs=512 skip=0 count=2 status=none
 
@@ -216,10 +219,12 @@ md5sum broken.raw f319b1cc9d424a923a8c83c3e67185f1
 $ dd if=img_3.txt of=out_3.txt bs=512 conv=noerror,sync
 \end{lstlisting}
         \item[] Demo: Progress
-        \begin{itemize}
-            \item[] Option: \texttt{status=progress}
-            \item[] Signaling: \texttt{'\&' and 'kill -10'}
-        \end{itemize}
+\begin{lstlisting}[basicstyle=\tiny]
+ Signaling: & and 'kill -10'
+ Signaling: & and 'kill -USR1'
+ Signaling: & and 'kill -USR1 $(pidof dd)'
+ Option:    status=progress
+\end{lstlisting}
     \end{itemize}
 \end{frame}
 

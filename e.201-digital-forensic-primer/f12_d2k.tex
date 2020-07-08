@@ -1,0 +1,512 @@
+%
+% This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
+% http://creativecommons.org/licenses/by-sa/4.0/
+%
+
+% DO NOT COMPILE THIS FILE DIRECTLY!
+% This is included by the other .tex files.
+
+
+\begin{frame}
+    \includegraphics[scale=0.3]{images/logo-circl-Forensics.png}
+    \begin{itemize}
+        \item[]
+        \item[]
+        \item[] 2. Information
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.1 Data in a binary system}
+    \begin{itemize}
+        \item BIT $\to$ Binary digit
+        \item Data stored in binary form
+            \begin{itemize}
+                \item[] \begin{verbatim}x Bits --> 01010000011010010110111001100111 --> y Bits\end{verbatim}
+                \item[] Bit x + 2 = 1
+                \item[] Bit x + 3 = 0
+                \item[] $\to$ What information is stored within this data?
+            \end{itemize}
+    \item[]
+    \item \emph{"..... information is data arranged in a meaningful way for some perceived purpose ....."} $\to$ Interpretative rules
+    \item[]
+        \item Grouping, addressing and interpreting
+            \begin{itemize}
+                \item[] \begin{verbatim}-->   01010000   01101001   01101110   01100111   --> \end{verbatim}
+                \item[] \begin{verbatim}      --------   --------   --------   -------- \end{verbatim}
+                \item[] \begin{verbatim}-->   Byte 117   Byte 118   Byte 119   Byte 120   --> \end{verbatim}
+            \end{itemize}
+    \item[]
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.1 Data in a binary system}
+    \begin{itemize}
+        \item Grouping examples:
+        \begin{itemize}
+	    \item Nibble:\begin{footnotesize} \texttt{0101 0000 0110 1001 0110 1110 0110 0111} \end{footnotesize} 
+            \item Byte:\begin{footnotesize} \texttt{01010000 01101001 01101110 01100111} \end{footnotesize}
+            \item Word:\begin{footnotesize} \texttt{0101000001101001 0110111001100111} \end{footnotesize}
+            \item Double Word:\begin{footnotesize} \texttt{01010000011010010110111001100111} \end{footnotesize}
+	    \item[]
+        \end{itemize}
+        \item Interpreting:
+        \begin{itemize}
+	    \item Integer: (Signed, Unsigned)
+	    \item Endian: (Big, Little)
+            \item Floating Point
+            \item Binary Coded Decimal, Packed BCD
+	    \item Encoding: (ASCII, ISO8859, Unicode 16L, 16B, 32L, 32B)
+	    \item Binary: (ELF, MZ, PE, GIF, JPEG, ZIP, PDF, OLE, ...)
+            \item ...
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.2 Number Systems}
+    \begin{itemize}
+        \item Decimal:
+  \begin{lstlisting}[basicstyle=\tiny]
+  2145
+  ||||_   5 * 10^0 =      5
+  |||__   4 * 10^1 =     40
+  ||___   1 * 10^2 =    100
+  |____   2 * 10^3 =  2,000
+		      -----
+                      2,145
+  \end{lstlisting}
+        \item Hexadecimal:
+  \begin{lstlisting}[basicstyle=\tiny]
+  2A9F
+  ||||_  15 * 16^0 =     15
+  |||__  09 * 16^1 =    144
+  ||___  10 * 16^2 =  2,560
+  |____  02 * 16^3 =  8,192
+                     ------
+                     10,911
+  \end{lstlisting}
+        \item Binary:
+  \begin{lstlisting}[basicstyle=\tiny]
+  1111
+  ||||_   1 *  2^0 =      1
+  |||__   1 *  2^1 =      2
+  ||___   1 *  2^2 =      4
+  |____   1 *  2^3 =      8
+                       = 15
+  \end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.3 Interpreting binary data: Integer}
+  \begin{verbatim}
+  0 1 0 1 0 0 0 0
+  ---------------
+  | | | | | | | |_  0 * 2^0 =   0
+  | | | | | | |___  0 * 2^1 =   0
+  | | | | | |_____  0 * 2^2 =   0
+  | | | | |_______  0 * 2^3 =   0
+  | | | |_________  1 * 2^4 =  16
+  | | |___________  0 * 2^5 =   0
+  | |_____________  1 * 2^6 =  64
+  |_______________  0 * 2^7 =   0
+                              ---
+                               80
+  \end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.3 Interpreting binary data: Signed Integer}
+  \begin{verbatim}
+  1 0 1 1 1 1 1 1
+  ---------------           Two's complement:
+
+  0 1 0 0 0 0 0 0           1. Invert all single bits
+  0 1 0 0 0 0 0 1           2. Add the value 1
+
+    |           |
+
+   64           1
+   --------------
+              -65
+  \end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.4 Exercise: Signed Integer Bytes}
+  \begin{verbatim}
+  1 1 0 1 1 1 0 0
+  ---------------           Two's complement:
+
+                            1. Invert all single bits
+                            2. Add the value 1
+    
+    | | | | | | |
+
+    ? ? ? ? ? ? ?
+   --------------
+              -
+  \end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.4 Exercise: Signed Integer Bytes}
+  \begin{verbatim}
+  1 1 0 1 1 1 0 0
+  ---------------           Two's complement:
+
+  0 0 1 0 0 0 1 1           1. Invert all single bits
+  0 0 1 0 0 1 0 0           2. Add the value 1
+    
+      |     |
+
+     32     4
+   --------------
+              -36
+  \end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.5 From Bin to Hex}
+    \begin{itemize}
+        \item[]
+        \item[] Example:
+            \begin{itemize}
+                \item[] \begin{verbatim} 0001 1000    0101 0101    0000 1111    1010 0110\end{verbatim}
+                \item[] \begin{verbatim} ---------    ---------    ---------    ---------\end{verbatim}
+		\item[] \begin{verbatim}    1 8          5 5          0 F          A 6   \end{verbatim}
+                \item[] 
+            \end{itemize}
+        \item[]
+        \item[] Exercise:
+            \begin{itemize}
+                \item[] \begin{verbatim} 1001 0110    1010 0101    0000 1111    1100 0011\end{verbatim}
+                \item[] \begin{verbatim} ---------    ---------    ---------    ---------\end{verbatim}
+                \item[] \begin{verbatim}                                                 \end{verbatim}
+                \item[] 
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.5 From Bin to Hex}
+    \begin{itemize}
+        \item[]
+        \item[] Exercise:
+            \begin{itemize}
+                \item[] \begin{verbatim} 1001 0110    1010 0101    0000 1111    1100 0011\end{verbatim}
+                \item[] \begin{verbatim} ---------    ---------    ---------    ---------\end{verbatim}
+                \item[] \begin{verbatim}                                                 \end{verbatim}
+                \item[] 
+            \end{itemize}
+        \item[]
+        \item[] Results:
+            \begin{itemize}
+                \item[] \begin{verbatim} 1001 0110    1010 0101    0000 1111    1100 0011\end{verbatim}
+                \item[] \begin{verbatim} ---------    ---------    ---------    ---------\end{verbatim}
+                \item[] \begin{verbatim}    9 6          A 5          0 F          C 3   \end{verbatim}
+                \item[] 
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.6 Big Endian and Little Endian}
+	\begin{lstlisting}
+Large values (Example 256): Big Endian representation:
+
+    2^: 15 14 13 12 11 10  9  8    7  6  5  4  3  2  1  0
+         -  -  -  -  -  -  -  -    -  -  -  -  -  -  -  - 
+         0  0  0  0  0  0  0  1    0  0  0  0  0  0  0  0 
+         -  -  -  -  -  -  -  -    -  -  -  -  -  -  -  - 
+Address: 10.000                    10.001 
+           
+            
+Large values (Example 256): Little Endian representation:
+
+     2^: 7  6  5  4  3  2  1  0   15 14 13 12 11 10  9  8 
+         -  -  -  -  -  -  -  -    -  -  -  -  -  -  -  - 
+         0  0  0  0  0  0  0  0    0  0  0  0  0  0  0  1 
+         -  -  -  -  -  -  -  -    -  -  -  -  -  -  -  - 
+Address: 10.000                    10.001 
+	\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.6 Exercise: Little Endian}
+    \begin{itemize}
+        \item[] Read and interpret this little endian 'word'
+            \begin{itemize}
+                \item[] \begin{verbatim}        ------------- \end{verbatim}
+                \item[] \begin{verbatim} 0x96A5 | 9 6 | A 5 | \end{verbatim}
+                \item[] \begin{verbatim}        ------------- \end{verbatim}
+                \item[] \begin{verbatim}                      \end{verbatim}
+                \item[] \begin{verbatim}                      \end{verbatim}
+                \item[] \begin{verbatim}                      \end{verbatim}
+                \item[] \begin{verbatim}                      \end{verbatim}
+                \item[] \begin{verbatim}                      \end{verbatim}
+                \item[] \begin{verbatim}        ------------- \end{verbatim}
+                \item[] \begin{verbatim} 0x     |     |     | =  \end{verbatim}
+                \item[] \begin{verbatim}        ------------- \end{verbatim}
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.6 Exercise: Little Endian}
+    \begin{itemize}
+        \item[] Read and interpret this little endian 'word'
+            \begin{itemize}
+                \item[] \begin{verbatim}        ------------- \end{verbatim}
+                \item[] \begin{verbatim} 0x96A5 | 9 6 | A 5 | \end{verbatim}
+                \item[] \begin{verbatim}        ------------- \end{verbatim}
+                \item[] \begin{verbatim}          ---   ---   \end{verbatim}
+                \item[] \begin{verbatim}             \ /      \end{verbatim}
+                \item[] \begin{verbatim}              X       \end{verbatim}
+                \item[] \begin{verbatim}             / \      \end{verbatim}
+                \item[] \begin{verbatim}          ---   ---   \end{verbatim}
+                \item[] \begin{verbatim}        ------------- \end{verbatim}
+                \item[] \begin{verbatim} 0xA596 | A 5 | 9 6 | = 42,390 \end{verbatim}
+                \item[] \begin{verbatim}        ------------- \end{verbatim}
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.6 Exercise: Little Endian}
+    \begin{itemize}
+        \item[] Read and interpret this little endian 'double word'
+            \begin{itemize}
+                \item[] \begin{verbatim}            ------------------------- \end{verbatim}
+                \item[] \begin{verbatim} 0x1B2A0100 | 1 B | 2 A | 0 1 | 0 0 | \end{verbatim}
+                \item[] \begin{verbatim}            ------------------------- \end{verbatim}
+                \item[] \begin{verbatim}                                      \end{verbatim}
+                \item[] \begin{verbatim}                                      \end{verbatim}
+                \item[] \begin{verbatim}                                      \end{verbatim}
+                \item[] \begin{verbatim}                                      \end{verbatim}
+                \item[] \begin{verbatim}                                      \end{verbatim}
+                \item[] \begin{verbatim}            ------------------------- \end{verbatim}
+                \item[] \begin{verbatim} 0x         |     |     |     |     | =  \end{verbatim}
+                \item[] \begin{verbatim}            ------------------------- \end{verbatim}
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.6 Exercise: Little Endian}
+    \begin{itemize}
+        \item[] Read and interpret this little endian 'double word'
+            \begin{itemize}
+                \item[] \begin{verbatim}            ------------------------- \end{verbatim}
+                \item[] \begin{verbatim} 0x1B2A0100 | 1 B | 2 A | 0 1 | 0 0 | \end{verbatim}
+                \item[] \begin{verbatim}            ------------------------- \end{verbatim}
+                \item[] \begin{verbatim}              ---   ---   ---   ---   \end{verbatim}
+                \item[] \begin{verbatim}                 \___  \ /  ___/      \end{verbatim}
+                \item[] \begin{verbatim}                  ___   X   ___       \end{verbatim}
+                \item[] \begin{verbatim}                 /     / \     \      \end{verbatim}
+                \item[] \begin{verbatim}              ---   ---   ---   ---   \end{verbatim}
+                \item[] \begin{verbatim}            ------------------------- \end{verbatim}
+                \item[] \begin{verbatim} 0x00012A1B | 0 0 | 0 1 | 2 A | 1 B | = 76,315 \end{verbatim}
+                \item[] \begin{verbatim}            ------------------------- \end{verbatim}
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.7 Example: Others}
+  \begin{itemize}
+    \item[] BCD / PBCD
+  \begin{verbatim}
+     2        9        1    
+  -------- -------- --------
+  00000010 00001001 00000001     0110 1111 0000 1001
+                                 ---- ---- ---- ----
+                                  6    na   0    9
+  \end{verbatim}
+    \item[] ASCII
+  \begin{verbatim}
+  01110000  01101001  01101110  01100111
+  --------  --------  --------  --------
+    0x70      0x65      0x6E      0x67
+     112       105       110       103
+      p         i         n         g
+  \end{verbatim}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.8 Data structures: Example}
+\begin{lstlisting}[basicstyle=\tiny]
+  0                                           15
+ -------------------------------------------------
+ |4B|50|08|0E|00|74|65|73|74|2E|74|78|74|22|48|65|
+ -------------------------------------------------
+ 
+
+ 16                                           31
+ -------------------------------------------------
+ |6C|6C|6F|20|57|6F|72|6C|64|22|0D|4B|50|1A|11|01|
+ -------------------------------------------------
+  
+
+ 32                                           47
+ -------------------------------------------------
+ |..|..|..|..|..|..|..|..|..|..|..|..|..|..|..|..|
+ -------------------------------------------------
+ .
+ .
+ .
+ .
+ .
+ .
+ .
+ .
+ .
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.8 Data structures: Example}
+\begin{lstlisting}[basicstyle=\tiny]
+  0                                           15
+ -------------------------------------------------
+ |4B|50|08|0E|00|74|65|73|74|2E|74|78|74|22|48|65|
+ -------------------------------------------------
+ | K P | 8|  14 | 
+
+ 16                                           31
+ -------------------------------------------------
+ |6C|6C|6F|20|57|6F|72|6C|64|22|0D|4B|50|1A|11|01|
+ -------------------------------------------------
+  
+
+ 32                                           47
+ -------------------------------------------------
+ |..|..|..|..|..|..|..|..|..|..|..|..|..|..|..|..|
+ -------------------------------------------------
+ 
+ 
+ 
+Offset Size Description
+     0    2 Header signature (ASCII)
+     2    1 Lenght of file name (Integer)
+     3    2 Lenght of data (Integer little endian)
+     5   -- Variable file name (ASCII)
+    5+   -- Data (Binary)
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.8 Data structures: Example}
+\begin{lstlisting}[basicstyle=\tiny]
+  0                                           15
+ -------------------------------------------------
+ |4B|50|08|0E|00|74|65|73|74|2E|74|78|74|22|48|65|
+ -------------------------------------------------
+ | K P | 8|  14 | t  e  s  t  .  t  x t | "  H  e
+
+ 16                                           31
+ -------------------------------------------------
+ |6C|6C|6F|20|57|6F|72|6C|64|22|0D|4B|50|1A|11|01|
+ -------------------------------------------------
+   l  l  o     W  o  r  l  d  "   | 
+
+ 32                                           47
+ -------------------------------------------------
+ |..|..|..|..|..|..|..|..|..|..|..|..|..|..|..|..|
+ -------------------------------------------------
+ 
+ 
+ 
+Offset Size Description
+     0    2 Header signature (ASCII)
+     2    1 Lenght of file name (Integer)
+     3    2 Lenght of data (Integer little endian)
+     5   -- Variable file name (ASCII)
+    5+   -- Data (Binary)
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.8 Data structures: Example}
+\begin{lstlisting}[basicstyle=\tiny]
+  0                                           15
+ -------------------------------------------------
+ |4B|50|08|0E|00|74|65|73|74|2E|74|78|74|22|48|65|
+ -------------------------------------------------
+ | K P | 8|  14 | t  e  s  t  .  t  x t | "  H  e
+
+ 16                                           31
+ -------------------------------------------------
+ |6C|6C|6F|20|57|6F|72|6C|64|22|0D|4B|50|1A|11|01|
+ -------------------------------------------------
+   l  l  o     W  o  r  l  d  "   | K P |26| 273 |
+
+ 32                                           47
+ -------------------------------------------------
+ |..|..|..|..|..|..|..|..|..|..|..|..|..|..|..|..|
+ -------------------------------------------------
+ 
+ 
+ 
+Offset Size Description
+     0    2 Header signature (ASCII)
+     2    1 Lenght of file name (Integer)
+     3    2 Lenght of data (Integer little endian)
+     5   -- Variable file name (ASCII)
+    5+   -- Data (Binary)
+\end{lstlisting}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{2.9 Data, files, context}
+    \begin{itemize}
+        \item Sequence of Bits + Addressing + Interpretation $\to$ Information
+        \item Information $\to$ Stored in files
+        \item Where did you find the string "ping"?
+            \begin{itemize}
+                \item Binary inside TEMP folder
+                \item Autorun folder
+                \item Registry
+                \item Browser history
+                \item Command line history
+            \end{itemize}
+        \item [] $\to$ Data $\to$ Information $\to$ Knowledge
+	\item[] 
+	\item Files contains data
+	\item Files $\to$ Meta data describe files
+        \item Files $\to$ File systems organize files and meta data
+    \end{itemize}
+\end{frame}
+
+
+
+
+
+
+
+
+
