@@ -1,5 +1,7 @@
 # Neolea training materials overview
 
+![neolea logo](https://raw.githubusercontent.com/neolea/neolea-training-materials/master/images/neolea-small.png)
+
 The courses overview is centered around information sharing, collaboration around the different aspects of DFIR (digital forensic and incident response). The training setup includes a set of MISP instances in order to support the activities during the training and especially to improve collaboration between teams and sharing at large. The neolea training materials are part of the [neolea model](methodology.md) which is a concept in development to improve the capabilities for LEA while improving the tooling used in DFIR.
 
 ## Terminology
@@ -42,6 +44,18 @@ The neolea project training materials developed by [CIRCL Computer Incident Resp
 All the source code is available at [https://www.github.com/neolea/neolea-training-materials](https://www.github.com/neolea/neolea-training-materials).
 
 If you reuse the training materials, don't forget to include the above for attribution.
+
+# Contributors in alphabetical order
+
+- [Alexandre Dulaunoy](https://github.com/adulau)
+- [Michael Hamm](https://github.com/michael-hamm)
+- [Jean-Louis Huynen](https://github.com/gallypette)
+- [Aurelien Thirion](https://github.com/terrtia)
+- [Gerard Wagener](https://github.com/haegardev)
+
+# How to contribute
+
+Feel free to fork the training materials, play with it, make some updates or create new content and send us the pull requests. If you have some proposals, ideas or updates, you can also open an [issue](https://github.com/neolea/neolea-training-materials/issues).
 
 # Complementary materials
 
