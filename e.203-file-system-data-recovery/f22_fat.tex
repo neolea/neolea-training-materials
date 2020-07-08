@@ -1,0 +1,364 @@
+%
+% This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
+% http://creativecommons.org/licenses/by-sa/4.0/
+%
+
+% DO NOT COMPILE THIS FILE DIRECTLY!
+% This is included by the other .tex files.
+
+
+\begin{frame}
+    \includegraphics[scale=0.3]{images/logo-circl-Forensics.png}
+    \begin{itemize}
+        \item[]
+        \item[]
+        \item[] 2. FAT - File Allocation Table
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.1 FAT file system structure}
+    \begin{itemize}
+	    \item Layout and VBR Example
+  \begin{lstlisting}[basicstyle=\tiny]
+--------------------------------
+|      Volume Boot Record      |     0000: eb3c 906d 6b66 732e 6661 7400 0204 0400
+--------------------------------     0010: 0200 0200 00f8 4000 2000 4000 0000 0000
+|             FAT1             |     0020: 0000 0100 8000 2974 6812 e84e 4f20 4e41
+--------------------------------     0030: 4d45 2020 2020 4641 5431 3620 2020 0e1f
+|             FAT2             |     0040: be5b 7cac 22c0 740b 56b4 0ebb 0700 cd10
+--------------------------------     0050: 5eeb f032 e4cd 16cd 19eb fe54 6869 7320
+|   Root Directory (FAT12/16)  |     .....
+--------------------------------
+|                              |
+|                              |     Exercise: fat16.dd = 33.554.432 Byte
+|         Data Clusters        |     Can you calculate the size or this FAT16?
+|                              |
+|                              | 
+--------------------------------
+  \end{lstlisting}
+	    \item VBR interpretation
+  \begin{lstlisting}[basicstyle=\tiny]
+Offset      Length   Item             Interpretation
+00 (0x00)   3        Jump bootstrap   JMP 62 NOP
+03 (0x03)   8        OEM name         mkfs.fat
+11 (0x0B)   2        Bytes/sector     0x0002 --> 0x0200 =  512 Bytes
+13 (0x0D)   1        Sectors/Cluster  0x04              = 2048 Bytes
+14 (0x0E)   2        Sector before FS 0x0400 --> 0x0004 =    4 Sectors
+16 (0x10)   1        Copies of FAT    0x02
+.....
+  \end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.1 FAT Filesystem structures}
+    \begin{itemize}
+	    \item Layout and VBR Example
+  \begin{lstlisting}[basicstyle=\tiny]
+--------------------------------
+|      Volume Boot Record      |     0000: eb3c 906d 6b66 732e 6661 7400 0204 0400
+--------------------------------     0010: 0200 0200 00f8 4000 2000 4000 0000 0000
+|             FAT1             |     0020: 0000 0100 8000 2974 6812 e84e 4f20 4e41
+--------------------------------     0030: 4d45 2020 2020 4641 5431 3620 2020 0e1f
+|             FAT2             |     0040: be5b 7cac 22c0 740b 56b4 0ebb 0700 cd10
+--------------------------------     0050: 5eeb f032 e4cd 16cd 19eb fe54 6869 7320
+|   Root Directory (FAT12/16)  |     .....
+--------------------------------
+|                              |
+|                              |     Exercise: fat16.dd = 33.554.432 Byte
+|         Data Clusters        |     Can you calculate the size or this FAT16?
+|                              |
+|                              |     Solution: 33554432 / 512 / 4 * 2 /  512
+--------------------------------     
+  \end{lstlisting}
+	    \item VBR interpretation                      
+  \begin{lstlisting}[basicstyle=\tiny]
+Offset      Length   Item             Interpretation
+00 (0x00)   3        Jump bootstrap   JMP 62 NOP
+03 (0x03)   8        OEM name         mkfs.fat
+11 (0x0B)   2        Bytes/sector     0x0002 --> 0x0200 =  512 Bytes
+13 (0x0D)   1        Sectors/Cluster  0x04              = 2048 Bytes
+14 (0x0E)   2        Sector before FS 0x0400 --> 0x0004 =    4 Sectors
+16 (0x10)   1        Copies of FAT    0x02
+.....
+  \end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.2 FAT components simplified}
+  \begin{lstlisting}[basicstyle=\tiny]
+Root Directory:                         |       Content of file:  
+                                        |                                  
+     Name     Ext    Start   Size       |       Not part of Root directory
+    -----------------------------       |       ----------------------------
+     file_A   txt        3     28       |       aaaaaaaaaaaaaaaaaaaaaaaaaaaa
+     file_B   txt        7      4       |       bbbb
+          .....                                                             
+                                                                             
+                                                                             
+Data Clusters: (Size of 8 characters)
+     -------------------------------------------------------------------------
+     |        |aaaaaaaa|aaaaaaaa|aaaaaaaa|        |bbbb    |        |        |
+     -------------------------------------------------------------------------
+            0        1        2        3        4        5        6        7  
+     -------------------------------------------------------------------------
+     |        |        |aaaa    |        |        |        |        |        |
+     -------------------------------------------------------------------------
+            8        9        A        B        C        D        E        F
+
+  
+FAT: FAT16 in this example                                                 
+     -----------------------------------------------------------------------
+     |f8ff|ffff|0000|0004|0005|000C|0000|ffff|0000|0000|0000|0000|ffff|0000|
+     -----------------------------------------------------------------------
+        0    1    2    3    4    5    6    7    8    9    A    B    C    D
+       Reserved 
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.3 FAT Filesystems}
+    \begin{itemize}
+	    \item Examine the FAT16
+  \begin{lstlisting}[basicstyle=\tiny]
+fsstat FAT/fat16.dd
+     .....
+     Total Range: 0 - 65535
+     * Reserved: 0 - 3
+     ** Boot Sector: 0
+     * FAT 0: 4 - 67
+     * FAT 1: 68 - 131
+     * Data Area: 132 - 65535
+     ** Root Directory: 132 - 163
+     ** Cluster Area: 164 - 65535
+     .....
+     Sector Size: 512
+     Cluster Size: 2048
+     Total Cluster Range: 2 - 16344
+  \end{lstlisting}
+	    \item Test files:
+  \begin{lstlisting}[basicstyle=\tiny]
+     5000 Nov 27 14:21 file01.txt
+       50 Nov 28 10:38 file02.txt
+
+file01.txt
+     .....AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA.....
+  
+file02.txt
+     .....XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.....
+  
+\end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.4 FAT file system analyzed}
+  \begin{lstlisting}[basicstyle=\tiny]
+Root Directory: dd if=FAT/fat16.dd skip=132 count=1 | xxd | less
+
+     0020: 4649 4c45 3031 2020 5458 5420 0064 c46a  FILE01  TXT .d.j
+     0030: 7b4d 7b4d 0000 c46a 7b4d 0300 8813 0000  {M{M...j{M......
+     .....
+     0060: 4649 4c45 3032 2020 5458 5420 0064 104d  FILE02  TXT .d.M
+     0070: 7c4d 7c4d 0000 104d 7c4d 0600 3200 0000  |M|M...M|M..2...
+ 
+     Offset      Length   Item             Interpretation
+     00 (0x00)   11       File Name        FILE01  TXT
+     .....
+     26 (0x1A)    2       Low Cluster      0x0300 --> 03
+     28 (0x1C)    4       Size in Byes     0x8813 --> 0x1388 == 5000
+
+
+Data Clusters:
+
+     dd if=FAT/fat16.dd skip=164 count=4 | xxd | less    ................
+     dd if=FAT/fat16.dd skip=168 count=4 | xxd | less    AAAAAAAAAAAAAAAA
+     dd if=FAT/fat16.dd skip=172 count=4 | xxd | less    AAAAAAAAAAAAAAAA
+     dd if=FAT/fat16.dd skip=176 count=4 | xxd | less    AAAAAAAA........
+     dd if=FAT/fat16.dd skip=180 count=4 | xxd | less    XXXXX...........
+
+
+FAT: dd if=FAT/fat16.dd skip=4 count=1 | xxd | less
+
+     0000: f8ff ffff 0000 0400 0500 ffff ffff 0000  ................
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.5 FAT Exercise: Delete file01.txt}
+  \begin{lstlisting}[basicstyle=\tiny]
+Root Directory: dd if=FAT/fat16.dd skip=132 count=1 | xxd | less
+
+     0020: e549 4c45 3031 2020 5458 5420 0064 c46a  .ILE01  TXT .d.j
+     0030: 7b4d 7b4d 0000 c46a 7b4d 0300 8813 0000  {M{M...j{M......
+     .....
+     0060: 4649 4c45 3032 2020 5458 5420 0064 104d  FILE02  TXT .d.M
+     0070: 7c4d 7c4d 0000 104d 7c4d 0600 3200 0000  |M|M...M|M..2...
+  
+     Offset      Length   Item             Interpretation
+     00 (0x00)   11       File Name        .ILE01  TXT
+     .....
+     26 (0x1A)    2       Low Cluster      0x0300 --> 03
+     28 (0x1C)    4       Size in Byes     0x8813 --> 0x1388 == 5000
+
+
+Data Clusters:
+
+     dd if=FAT/fat16.dd skip=164 count=4 | xxd | less    ................
+     dd if=FAT/fat16.dd skip=168 count=4 | xxd | less    AAAAAAAAAAAAAAAA
+     dd if=FAT/fat16.dd skip=172 count=4 | xxd | less    AAAAAAAAAAAAAAAA
+     dd if=FAT/fat16.dd skip=176 count=4 | xxd | less    AAAAAAAA........
+     dd if=FAT/fat16.dd skip=180 count=4 | xxd | less    XXXXX...........
+
+
+FAT: dd if=FAT/fat16.dd skip=4 count=1 | xxd | less
+
+     0000: f8ff ffff 0000 0000 0000 0000 ffff 0000  ................
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.6 FAT Exercise: Create subdirectory}
+  \begin{lstlisting}[basicstyle=\tiny]
+Root Directory: dd if=FAT/fat16.dd skip=132 count=1 | xxd | less
+
+     0020: 5445 5354 4449 5220 2020 2010 0000 334d  TESTDIR    ...3M
+     0030: 7d4f 7d4f 0000 334d 7d4f 0300 0000 0000  }O}O..3M}O......
+     .....
+     0060: 4649 4c45 3032 2020 5458 5420 0064 104d  FILE02  TXT .d.M
+     0070: 7c4d 7c4d 0000 104d 7c4d 0600 3200 0000  |M|M...M|M..2...
+  
+     Offset      Length   Item             Interpretation
+     00 (0x00)   11       File Name        TESTDIR   
+     .....
+     26 (0x1A)    2       Low Cluster      0x0300 --> 03
+     28 (0x1C)    4       Size in Byes     0x00000000
+
+  
+Data Clusters: dd if=FAT/fat16.dd skip=168 count=4 | xxd | less
+
+     0000: 2e20 2020 2020 2020 2020 2010 0000 cc4c  .          ....L
+     0010: 7d4f 7d4f 0000 cc4c 7d4f 0300 0000 0000  }O}O...L}O......
+     0020: 2e2e 2020 2020 2020 2020 2010 0000 cc4c  ..         ....L
+     0030: 7d4f 7d4f 0000 cc4c 7d4f 0000 0000 0000  }O}O...L}O......
+
+
+FAT: dd if=FAT/fat16.dd skip=4 count=1 | xxd | less
+
+     0000: f8ff ffff 0000 ffff 0000 0000 ffff 0000  ................
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.7 FAT Exercise: File slack}
+  \begin{lstlisting}[basicstyle=\tiny]
+Root Directory: dd if=FAT/fat16.dd skip=132 count=1 | xxd | less
+
+     0020: 2e2e 2020 2020 2020 2020 2010 0000 cc4c  ..         ....L
+     0030: 7d4f 7d4f 0000 cc4c 7d4f 0000 0000 0000  }O}O...L}O......
+     .....
+     0060: 4649 4c45 3737 2020 5458 5420 0000 334d  FILE77  TXT ..3M
+     0070: 7d4f 7d4f 0000 334d 7d4f 0400 2500 0000  }O}O..3M}O..%...
+ 
+ 
+     Offset      Length   Item             Interpretation
+     00 (0x00)   11       File Name        FILE77  TXT
+     .....
+     26 (0x1A)    2       Low Cluster      0x0400 --> 04
+     28 (0x1C)    4       Size in Byes     0x25000000 --> 0x25 == 37
+
+  
+Data Clusters:
+
+     dd if=FAT/fat16.dd skip=172 count=4 | xxd | less    1234567890ABCDEF
+                                                         ................
+                                                         AAAAAAAAAAAAAAAA
+                                                         AAAAAAAAAAAAAAAA
+     dd if=FAT/fat16.dd skip=176 count=4 | xxd | less    AAAAAAAA........
+
+  
+FAT: dd if=FAT/fat16.dd skip=4 count=1 | xxd | less
+
+     0000: f8ff ffff 0000 ffff ffff 0000 ffff 0000  ................
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.8 FAT Hiding data in Bad Sectors}
+    \begin{itemize}
+	  \item Prepararation:
+  \begin{lstlisting}[basicstyle=\tiny]
+FAT: Mark a sector as bad
+
+     00800   F8FF FFFF 0000 0000 FFF7 0000 0000 0000  ................
+     .....
+     08800   F8FF FFFF 0000 0000 FFF7 0000 0000 0000  ................
+
+
+     --> The 3rd block is marked as bad sector
+     --> Calculate: Data cluster start at sector 164
+                    Cluster 3 is marked as bad
+		    164 + (2 * 4) = 172
+     --> We can use sector 172, 173, 174, 175 (cluster 3) to hide data
+     --> Byte offset: 172 * 512 = 88064
+                                = 0x15800
+                    
+
+Data Cluster: Hide your secrets
+
+     15800   2020 2020 2020 2020 2020 2020 2020 2020                  
+     15810   4D79 2073 6563 7265 743A 2020 2020 2020  My secret:      
+     15820   6131 6232 6333 6434 6535 6636 6737 6838  a1b2c3d4e5f6g7h8
+     15830   2020 2020 2020 2020 2020 2020 2020 2020                  
+
+
+Copy file on disk
+\end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.8 FAT Hiding data in Bad Sectors}
+    \begin{itemize}
+	  \item Analyze:
+  \begin{lstlisting}[basicstyle=\tiny]
+Root Directory: dd if=FAT/fat16.dd skip=132 count=1 | xxd | less
+
+     0020: 4649 4c45 5f4f 2020 5458 5420 0000 3637  FILE_O  TXT ..67
+     0030: 8a50 8a50 0000 3637 8a50 0300 1027 0000  .P.P..67.P...'..
+
+
+FAT: dd if=FAT/fat16.dd skip=4 count=1 | xxd | less
+
+     0000: f8ff ffff 0000 0500 fff7 0600 0700 0800  ................
+     0010: ffff 0000 0000 0000 0000 0000 0000 0000  ................
+
+
+Data: dd if=fat16.test skip=168 count=4 | xxd | less
+     0000: 4f4f 4f4f 4f4f 4f4f 4f4f 4f4f 4f4f 4f4f  OOOOOOOOOOOOOOOO
+
+Data: dd if=fat16.test skip=172 count=4 | xxd | less
+     0000: 2020 2020 2020 2020 2020 2020 2020 2020                  
+     0010: 4d79 2073 6563 7265 743a 2020 2020 2020  My secret:      
+     0020: 6131 6232 6333 6434 6535 6636 6737 6838  a1b2c3d4e5f6g7h8
+     0030: 2020 2020 2020 2020 2020 2020 2020 2020                  
+  
+Data: dd if=fat16.test skip=176 count=4 | xxd | less
+     0000: 4f4f 4f4f 4f4f 4f4f 4f4f 4f4f 4f4f 4f4f  OOOOOOOOOOOOOOOO
+\end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+

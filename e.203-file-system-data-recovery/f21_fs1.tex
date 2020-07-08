@@ -1,0 +1,327 @@
+%
+% This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
+% http://creativecommons.org/licenses/by-sa/4.0/
+%
+
+% DO NOT COMPILE THIS FILE DIRECTLY!
+% This is included by the other .tex files.
+
+
+\begin{frame}
+    \includegraphics[scale=0.3]{images/logo-circl-Forensics.png}
+    \begin{itemize}
+        \item[]
+        \item[]
+        \item[] 1. File System Analysis - Overview
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.1 Abstract: Components of a file system}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+             File System: - Organize data on a block device
+			  - Maintain an allocation table
+                          - Utilize meta data
+                            
+        ---------------------------------------------
+        |                   |                       |
+        V                   V                       V
+
+    File Name            Metadata                Content     
+-----------------    -----------------       ---------------------------------- ...
+| file1.txt     |    |Time stamps,   | 13    |................................| 5001
+| -> Inode: 13  |    |Owner, Group,  |       |................................| 5002
+|---------------|    |Rights: MACB,  |       |....                            | 5003
+| file2.txt     |    |5001,5002,5003 |       |................................| 5004
+| -> Inode: 14  |    |Size: 68 Byte  |       |.......................         | 5005
+|---------------|    |---------------|       |                                | 5006
+| file3.txt     |    |Time stamps,   | 14    |                                | ...
+| -> Inode: xyz |    |Owner, Group,  |       |                                | ...
+|---------------|    |Rights: MACB,  |       |                                | ...
+| ............  |    |5004,5005      |       |                                | ...
+| ............  |    |Size: 55 Byte  |       |      ( 32 Byte cluster )       | 5011
+-----------------    -----------------       ---------------------------------- ...
+                     | ............  |        |       |       |       |      |
+                     | ............  |        0       8      16      24     31
+                     -----------------    
+
+Allocation table (Meta): 13, 14
+       Allocation table: 5001, 5002, 5003, 5004, 5005
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.2 Delete a file: Allocated $\to$ Unallocated}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+             File System: - Organize data on a block device
+			  - Maintain an allocation table
+                          - Utilize meta data
+                            
+        ---------------------------------------------
+        |                   |                       |
+        V                   V                       V
+
+    File Name            Metadata                Content     
+-----------------    -----------------       ---------------------------------- ...
+| file1.txt     |    |Time stamps,   | 13    |................................| 5001
+| -> Inode: 13  |    |Owner, Group,  |       |................................| 5002
+|---------------|    |Rights: MACB,  |       |....                            | 5003
+| file2.txt XX  |    |5001,5002,5003 |       |................................| 5004
+| -> Inode: 14  |    |Size: 68 Byte  |       |.......................         | 5005
+|---------------|    |---------------|       |                                | 5006
+| file3.txt     |    |Time stamps,   | 14    |                                | ...
+| -> Inode: xyz |    |Owner, Group,  |       |                                | ...
+|---------------|    |Rights: MACB,  |       |                                | ...
+| ............  |    |5004,5005      |       |                                | ...
+| ............  |    |Size: 55 Byte  |       |      ( 32 Byte cluster )       | 5011
+-----------------    -----------------       ---------------------------------- ...
+                     | ............  |        |       |       |       |       |
+                     | ............  |        0       8      16      24     31
+                     -----------------    
+
+Allocation table (Meta): 13
+       Allocation table: 5001, 5002, 5003
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.3 Slack space}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+   ----------------------------------------------------------------------------
+   +    +    +    |    +    +    +    |    +    +    +    |    +    +    +    |
+   ----------------------------------------------------------------------------
+
+                  |                   |                   |                   |
+                  |                   |                   |                   |
+
+                  -------------------------------------------------------------
+                  |....+....+....+....|....+..00+????+????|                   |
+                  -------------------------------------------------------------
+                            1                   1                   0 
+
+0 = Unallocated
+1 = Allocated
+
+
+Evolution of slack space:
+-------------------------
+	- Complete cluster is allocated to the file
+	- Until end of sector: Filled with zeros (or random memory --> RAM slack)
+	- Until end of cluter: Don't touch at all --> File slack
+	- Maybe there are rests of deleted file content.
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.4 Metadata based file recovery: Abstract}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+1. Create file: file1.txt
+
+    File Name              Inode                 Content     
+-----------------    -----------------       ---------------------------------- ...
+| file1.txt     |    |7123, 7124     | 13    |                                | 7122
+| -> Inode: 13  |    |.....          |       |  H e l l o                     | 7123
+|---------------|    |---------------|       |  W o r l d                     | 7124
+| ............  |    |               | 14    |                                | ...
+| ............  |    |               |       |                                | ...
+-----------------    -----------------       ---------------------------------- 
+                     | ............  |
+		     | ............  |       Allocation table (Meta): 13
+                     -----------------              Allocation table: 7123, 7124
+
+
+2. Delete file: file1.txt
+
+    File Name              Inode                 Content     
+-----------------    -----------------       ---------------------------------- ...
+| file1.txt XX  |    |7123, 7124     | 13    |                                | 7122
+| -> Inode: 13  |    |.....          |       |  H e l l o                     | 7123
+|---------------|    |---------------|       |  W o r l d                     | 7124
+| ............  |    |               | 14    |                                | ...
+| ............  |    |               |       |                                | ...
+-----------------    -----------------       ---------------------------------- 
+                     | ............  |
+		     | ............  |       Allocation table (Meta): 14
+                     -----------------              Allocation table: 7122, 7123
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.4 Metadata based file recovery: Abstract}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+2. Delete file: file1.txt
+
+    File Name              Inode                 Content     
+-----------------    -----------------       ---------------------------------- ...
+| file1.txt XX  |    |7123, 7124     | 13    |                                | 7122
+| -> Inode: 13  |    |.....          |       |  H e l l o                     | 7123
+|---------------|    |---------------|       |  W o r l d                     | 7124
+| ............  |    |               | 14    |                                | ...
+| ............  |    |               |       |                                | ...
+-----------------    -----------------       ---------------------------------- 
+                     | ............  |
+		     | ............  |       Allocation table (Meta): 
+                     -----------------              Allocation table: 
+
+
+3. Create file: file2.txt (Partially overwrite data of file1.txt)
+
+    File Name              Inode                 Content     
+-----------------    -----------------       ---------------------------------- ...
+| file1.txt XX  |    |7123, 7124     | 13    |  T h i s   i s                 | 7122
+| -> Inode: 13  |    |.....          |       |  P a u l a                     | 7123
+|---------------|    |---------------|       |  W o r l d                     | 7124
+| file2.txt     |    |7122, 7123     | 14    |                                | ...
+| -> Inode: 14  |    |               |       |                                | ...
+-----------------    -----------------       ---------------------------------- 
+                     | ............  |
+		     | ............  |       Allocation table (Meta): 14
+                     -----------------              Allocation table: 7122, 7123
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.4 Metadata based file recovery: Abstract}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+3. Create file: file2.txt (Partially overwrite data of file1.txt)
+
+    File Name              Inode                 Content     
+-----------------    -----------------       ---------------------------------- ...
+| file1.txt XX  |    |7123, 7124     | 13    |  T h i s   i s                 | 7122
+| -> Inode: 13  |    |.....          |       |  P a u l a                     | 7123
+|---------------|    |---------------|       |  W o r l d                     | 7124
+| file2.txt     |    |7122, 7123     | 14    |                                | ...
+| -> Inode: 14  |    |               |       |                                | ...
+-----------------    -----------------       ---------------------------------- 
+                     | ............  |
+		     | ............  |       Allocation table (Meta): 14
+                     -----------------              Allocation table: 7122, 7123
+
+
+ 
+
+  # Recovery of a (deleted) file
+  $ dd if=deleted.dd of=file2.txt bs=32 skip=7122 count=2
+            --> This is Paula
+
+  
+  # Recovery of a reallocated file
+  $ dd if=deleted.dd of=file1.txt bs=32 skip=7123 count=2
+            --> Paula World
+
+
+  Discussion: What did we miss in this abstract example?
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.5 The Sleuth Kit}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+  mmstat	# Volume system information
+  mmls		# List partition table
+  mmcat		# Cat a partition
+
+  fsstat	# File system information
+
+  fls		# List files and directories
+  fcat		# Cat a file
+  ffind		# Find filename of an inode
+
+  istat		# Inode information
+  ils		# List inodes
+  icat		# Cat an inode
+  ifind		# Find inode of a sector
+
+  blkstat	# Information of a data unit
+  blkls		# Output data units
+  blkcat	# Cat a data unit
+
+  jls		# List content of journal
+  jcat		# Cat a block from journal
+
+  mactime	# File system time line
+  srch_strings	# Display printable characters
+  hfind		# Hash database lookup
+  ....
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.6 Metadata based file recovery: The Sleuth Kit}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+3. Create file: file2.txt (Partially overwrite data of file1.txt)
+
+    File Name              Inode                 Content     
+-----------------    -----------------       ---------------------------------- ...
+| file1.txt XX  |    |7123, 7124     | 13    |  T h i s   i s                 | 7122
+| -> Inode: 13  |    |.....          |       |  P a u l a                     | 7123
+|---------------|    |---------------|       |  W o r l d                     | 7124
+| file2.txt     |    |7122, 7123     | 14    |                                | ...
+| -> Inode: 14  |    |               |       |                                | ...
+-----------------    -----------------       ---------------------------------- 
+                     | ............  |
+		     | ............  |       Allocation table (Meta): 14
+                     -----------------              Allocation table: 7122, 7123
+
+
+
+  # Recovery of a (deleted) file
+  $ icat deleted 14 > file2.txt
+            --> This is Paula
+ 
+
+  # Recovery of a reallocated file
+  $ icat deleted 13 > file1.txt
+            --> Paula World
+  \end{lstlisting}
+    \begin{itemize}
+        \item[] Exercise: Recover deleted files from \texttt{/carving/deleted.dd}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.7 File slack and unallocted clusters}
+    \begin{itemize}
+	    \item Slack: Manual approach with \texttt{dd}
+  \begin{lstlisting}[basicstyle=\tiny]
+fsstat deleted.dd
+    Cluster Size: 4096
+
+fls -r deleted.dd
+
+istat deleted.dd 72
+    size: 12071
+    1131 1132 1133
+
+$ echo $(( (3*4096) - 12071 ))
+  217
+
+dd if=deleted.dd bs=4096 skip=1133 count=1 | xxd | less 
+  \end{lstlisting}
+	    \item Slack: Automated approach with The Sleuthkit
+  \begin{lstlisting}[basicstyle=\tiny]
+blkls -s -b 4096 usb.dd
+  \end{lstlisting}
+	    \item Exercise: Does file recovery incl. slack?
+	    \item Blocks: With The Sleuthkit
+  \begin{lstlisting}[basicstyle=\tiny]
+blkls -a -b 4096 deleted.dd | xxd | less              # Allocated blocks
+blkls -A -b 4096 deleted.dd | xxd | less              # Unallocated blocks
+blkls -e -b 4096 deleted.dd | xxd | less              # All blocks
+  \end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+
+
+
+

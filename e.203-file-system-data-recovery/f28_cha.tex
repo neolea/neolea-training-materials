@@ -1,0 +1,380 @@
+%
+% This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
+% http://creativecommons.org/licenses/by-sa/4.0/
+%
+
+% DO NOT COMPILE THIS FILE DIRECTLY!
+% This is included by the other .tex files.
+
+
+\begin{frame}
+    \includegraphics[scale=0.3]{images/logo-circl-Forensics.png}
+    \begin{itemize}
+        \item[]
+        \item[]
+        \item[] 8. Forensics Challenges
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{8.1 NTFS - Resident file becomes Non-Resident}
+  \begin{itemize}
+    \item Situation:
+    \begin{itemize}
+      \item NTFS formated partition
+      \item A small resident file
+      \item[]
+    \end{itemize}
+    \item Challenge:
+    \begin{itemize}
+      \item Analyze MFT record
+      \item Let the file grow
+      \item Analyze MFT record
+      \item Analyze data clusters
+      \item Modify content of the file
+      \item Analyze data clusters
+      \item Analyze MFT record
+      \item[]
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{8.1 NTFS - Resident file becomes Non-Resident}
+  \begin{lstlisting}[basicstyle=\tiny]
+$ ls -l /cdrom/NTFS_Sub_Dir/sub_Dir_File1.txt 
+     13 Dez  9 14:38 /cdrom/NTFS_Sub_Dir/sub_Dir_File1.txt
+
+
+$ fls -r -o 2048 ntfs.raw | grep File1
+     + r/r 74-128-2:	sub_Dir_File1.txt
+
+
+$ istat -o 2048 ntfs.raw 74 
+     Attributes:
+     Type: $DATA (128-2)   Name: N/A   Resident   size: 13
+
+
+$ dd if=ntfs.raw skip=$((2048 + 4*8 + 74*2)) count=2 | xxd | less
+     00000000: 4649 4c45 3000 0300 0000 0000 0000 0000  FILE0...........
+     00000010: 0100 0100 3800 0100 9801 0000 0004 0000  ....8...........
+     .....
+     00000170: 0000 0000 0000 0200 0d00 0000 1800 0000  ................
+     00000180: 4865 6c6c 6f20 576f 726c 6421 0a00 0000  Hello World!....
+     00000190: ffff ffff 0000 0000 0000 0000 0000 0000  ................
+
+
+$ for x in {1..1000}; do echo -n "$x "; done >> /cdrom/NTFS_Sub_Dir/sub_Dir_File1.txt
+
+$ less /cdrom/NTFS_Sub_Dir/sub_Dir_File1.txt
+     Hello World!
+     1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21
+     .....
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{8.1 NTFS - Resident file becomes Non-Resident}
+  \begin{lstlisting}[basicstyle=\tiny]
+$ ls -l /cdrom/NTFS_Sub_Dir/sub_Dir_File1.txt 
+     3906 Apr 24 14:39 /cdrom/NTFS_Sub_Dir/sub_Dir_File1.txt
+
+
+$ fls -r -o 2048 ntfs.raw | grep File1
+     + r/r 74-128-2:	sub_Dir_File1.txt
+
+
+$ istat -o 2048 ntfs.raw 74
+     Attributes:
+     Type: $DATA (128-2)   Name: N/A   Non-Resident   size: 3906  init_size: 3906
+     4173
+
+
+$ dd if=ntfs.raw skip=$((2048 + 4173*8)) count=8 | xxd | less
+     00000000: 4865 6c6c 6f20 576f 726c 6421 0a31 2032  Hello World!.1 2
+     00000010: 2033 2034 2035 2036 2037 2038 2039 2031   3 4 5 6 7 8 9 1
+     00000020: 3020 3131 2031 3220 3133 2031 3420 3135  0 11 12 13 14 15
+     .....
+
+
+$ dd if=ntfs.raw skip=$((2048 + 4*8 + 74*2)) count=2 | xxd | less
+     000001a0: 420f 0000 0000 0000 2101 4d10 0020 3135  B.......!.M.. 15
+     000001b0: ffff ffff 0000 0000 3820 3139 2032 3020  ........8 19 20
+     000001c0: 3231 2032 3220 3233 2032 3420 3235 2032  21 22 23 24 25 2
+     .....
+     000003e0: 2031 3737 2031 3738 2031 3739 2031 3830   177 178 179 180
+     000003f0: 2031 3831 2000 0000 ffff ffff 0000 d607   181 ...........
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{8.1 NTFS - Resident file becomes Non-Resident}
+  \begin{lstlisting}[basicstyle=\tiny]
+Update file content: What happen with MFT Record?
+-------------------------------------------------
+
+
+$ echo -n 'We modify the content of the file. What is updated:
+           Cluster? MFT Record? We will see.' | dd of=/cdrom/
+	   NTFS_Sub_Dir/sub_Dir_File1.txt bs=44 seek=2 conv=notrunc
+
+
+$ fls -r -o 2048 ntfs.raw | grep File1
+     + r/r 74-128-2:	sub_Dir_File1.txt
+
+
+$ istat -o 2048 ntfs.raw 74
+     4173
+
+
+$ dd if=ntfs.raw skip=$((2048 + 4173*8)) count=8 | xxd | less
+     00000040: 3231 2032 3220 3233 2032 3420 3235 2032  21 22 23 24 25 2
+     00000050: 3620 3237 2032 3820 5765 206d 6f64 6966  6 27 28 We modif
+     00000060: 7920 7468 6520 636f 6e74 656e 7420 6f66  y the content of
+     .....
+
+$ dd if=ntfs.raw skip=$((2048 + 4*8 + 74*2)) count=2 | xxd | less
+     000001c0: 3231 2032 3220 3233 2032 3420 3235 2032  21 22 23 24 25 2
+     000001d0: 3620 3237 2032 3820 3239 2033 3020 3331  6 27 28 29 30 31
+     000001e0: 2033 3220 3333 2033 3420 3335 2033 3620   32 33 34 35 36 
+     .....
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{8.2 File System Tunneling}
+  \begin{itemize}
+    \item Situation:
+    \begin{itemize}
+      \item NTFS formated partition
+      \item A normal file from before
+      \item[]
+    \end{itemize}
+    \item Challenge:
+    \begin{itemize}
+      \item Analyze timestamps
+      \item Delete the file
+      \item Copy a file with the same filename
+      \item Analyze timestamps
+      \item Discover the behavior
+      \item[]
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{8.2 File System Tunneling}
+  \begin{lstlisting}[basicstyle=\tiny]
+1. Analyze time stamps of a file on NTFS
+----------------------------------------
+
+$ ll /cdrom/AaaA.txt
+     15051 Dez  4 14:42 /cdrom/AaaA.txt*
+
+$ fls -o 2048 ntfs.raw | grep AaaA
+     r/r 64-128-2:	AaaA.txt
+
+$ istat -o 2048 ntfs.raw 64
+
+     $STANDARD_INFORMATION Attribute Values:
+     Created:   	2019-12-04 14:41:27.333050500 (CET)
+     File Modified:	2019-12-04 14:42:06.235661600 (CET)
+     MFT Modified:	2019-12-04 14:42:06.235661600 (CET)
+     Accessed:   	2019-12-04 14:41:27.333050500 (CET)
+
+     $FILE_NAME Attribute Values:
+     Created:   	2019-12-04 14:41:27.333050500 (CET)
+     File Modified:	2019-12-04 14:41:27.333050500 (CET)
+     MFT Modified:	2019-12-04 14:41:27.333050500 (CET)
+     Accessed:  	2019-12-04 14:41:27.333050500 (CET)
+
+
+2. Delete a file and create a new one with same filename
+------------------------------------------
+     # Do something like this on a Windows PC
+     $ rm /cdrom/AaaA.txt; cp data_un.dd /cdrom/AaaA.txt
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{8.2 File System Tunneling}
+  \begin{lstlisting}[basicstyle=\tiny]
+3. Analyze time stamps of the new file
+--------------------------------------
+
+$ ll /cdrom/AaaA.txt 
+     16384 Apr 27 15:51 /cdrom/AaaA.txt*
+
+
+$ fls -o 2048 ntfs.raw | grep AaaA
+     r/r 64-128-2:	AaaA.txt
+
+
+$ istat -o 2048 ntfs.raw 64
+
+     $STANDARD_INFORMATION Attribute Values:
+     Created:   	2019-12-04 14:41:27.333050500 (CET)
+     File Modified:	2019-12-04 14:42:06.235661600 (CET)
+     MFT Modified:	2019-12-04 14:42:06.235661600 (CET)
+     Accessed:  	2020-04-27 16:11:38.144645700 (CEST)
+
+     $FILE_NAME Attribute Values:
+     Created:   	2019-12-04 14:41:27.333050500 (CET)
+     File Modified:	2019-12-04 14:41:27.333050500 (CET)
+     MFT Modified:	2019-12-04 14:41:27.333050500 (CET)
+     Accessed:  	2019-12-04 14:41:27.333050500 (CET)
+
+  
+  
+.....
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{8.3 Un-Delete a file}
+  \begin{itemize}
+    \item Situation:
+    \begin{itemize}
+      \item NTFS formated partition
+      \item A file is deleted
+      \item[]
+    \end{itemize}
+    \item Challenge:
+    \begin{itemize}
+      \item Analyze MFT record before delete
+      \item Analyze \$BITMAP file before delete
+      \item Undo the modifications
+      \item Analyze MFT record after undo
+      \item Analyze \$BITMAP file after undo
+      \item What is missing
+      \item[]
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{8.3 Un-Delete a file}
+  \begin{lstlisting}[basicstyle=\tiny]
+$ ls -l /cdrom/
+
+  
+$ fls -o 2048 ntfs.raw 
+     -/r * 73-128-2:	small_text_file.txt
+
+
+$ istat -o 2048 ntfs.raw 73
+     Type: $DATA (128-2)   Name: N/A   Non-Resident   size: 15000  init_size: 15000
+     4169 4170 4171 4172
+  
+
+Data cluster:
+$ dd if=ntfs.raw skip=$((2048 + 4169*8)) count=$((4*8)) | xxd | less
+ 
+
+MFT record 73: 
+$ dd if=ntfs.raw skip=$((2048 + 4*8 + 73*2)) count=2| xxd | less
+
+
+$Bitmap file
+4169 / 8 = 521.125  --> Byte 521 (0x209) in $Bitmap file for Cluster 4168 - 4175
+                    --> _ _ _ _  _ _ _ _
+		              x  x x x   
+
+$ icat -o 2048 ntfs.raw 6  | xxd | less
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{8.3 Un-Delete a file}
+  \begin{lstlisting}[basicstyle=\tiny]
+Fix $Bitmap file:
+-----------------
+
+$ istat -o 2048 ntfs.raw 6
+     Type: $DATA (128-1)   Name: N/A   Non-Resident   size: 4064  init_size: 4064
+     4071
+
+
+$ dd if=ntfs.raw skip=$((2048 + 4071*8)) count=8 | xxd | less
+     00000200: ffff ffff ffff ffff ffe1 0700 0000 0000  ................
+
+
+4169 / 8 = 521.125  --> Byte 521 (0x209) in $Bitmap file for Cluster 4168 - 4175
+                    --> _ _ _ _  _ _ _ _
+		              x  x x x   
+                        1 1 1 0  0 0 0 1
+		    --> 1 1 1 1  1 1 1 1
+
+
+$ dd if=ntfs.raw skip=$((2048 + 4071*8)) count=8 of=bitmap.dd
+$ hexedit of=bitmap.dd
+$ dd if=bitmap.dd seek=$((2048 + 4071*8)) of=ntfs.raw conv=notrunc
+
+
+$ dd if=ntfs.raw skip=$((2048 + 4071*8)) count=8 | xxd | less
+     00000200: ffff ffff ffff ffff ffff 0700 0000 0000  ................
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{8.3 Un-Delete a file}
+  \begin{lstlisting}[basicstyle=\tiny]
+Fix the MFT record:
+-------------------
+
+$ dd if=ntfs.raw skip=$((2048 + 4*8 + 73*2)) count=2 of=mft_73.dd
+
+
+$ hexedit mft_73.dd
+     00000000   46 49 4C 45  30 00 03 00  00 00 00 00  00 00 00 00  FILE0...........
+     00000010   02 00 00 00  38 00 00 00  B8 01 00 00  00 04 00 00  ....8...........
+
+
+      offset:     size:  old value:  new value:   description:
+     ----------------------------------------------------------------------
+         0010         2           2           1   Record sequence number
+         0012         2           0           1   Link count
+         0016         2           0           1   Record flag: 0000 = file deleted
+                                                               0100 = file in use
+         0030         2        1400               FixUp values
+         03fe         2        1400               CRC
+
+
+     00000000   46 49 4C 45  30 00 03 00  00 00 00 00  00 00 00 00  FILE0...........
+     00000010   01 00 01 00  38 00 01 00  B8 01 00 00  00 04 00 00  ....8...........
+
+
+$ dd if=mft_73.dd seek=$((2048 + 4*8 + 73*2)) count=2 of=ntfs.raw conv=notrunc
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{8.3 Un-Delete a file}
+  \begin{itemize}
+    \item What is missing?
+    \begin{itemize}
+      \item Compare output \texttt{ils} and \texttt{fls}
+      \item What about the directory
+      \item What is changed in a directory if a file is deleted?
+      \item[]
+    \end{itemize}
+    \item[] $\to$ Forensics Hackathon
+  \end{itemize}
+\end{frame}
+
+
+
+
+

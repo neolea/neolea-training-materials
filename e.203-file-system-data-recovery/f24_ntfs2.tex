@@ -1,0 +1,538 @@
+%
+% This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
+% http://creativecommons.org/licenses/by-sa/4.0/
+%
+
+% DO NOT COMPILE THIS FILE DIRECTLY!
+% This is included by the other .tex files.
+
+
+\begin{frame}
+    \includegraphics[scale=0.3]{images/logo-circl-Forensics.png}
+    \begin{itemize}
+        \item[]
+        \item[]
+        \item[] 4. NTFS - Advanced
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.1 Analyzing MFT Record manually}
+  \begin{lstlisting}[basicstyle=\tiny]
+$ dd if=ntfs.raw skip=$((2048 + 4*8 + 74*2)) count=2| xxd | less
+
+     0000: 4649 4c45 3000 0300 0000 0000 0000 0000  FILE0...........
+     0010: 0100 0100 3800 0100 9801 0000 0004 0000  ....8...........
+     0020: 0000 0000 0000 0000 0400 0000 4a00 0000  ............J...
+     0030: 0500 0000 0000 0000 1000 0000 4800 0000  ............H...
+     0040: 0000 0000 0000 0000 3000 0000 1800 0000  ........0.......
+     0050: d376 a1e4 95ae d501 2580 a1e4 95ae d501  .v......%.......
+     0060: 2580 a1e4 95ae d501 d376 a1e4 95ae d501  %........v......
+     0070: 2000 0000 0000 0000 0000 0000 0000 0000   ...............
+     0080: 3000 0000 8000 0000 0000 0000 0000 0300  0...............
+
+   Offset  Size                Value           Description:
+   ------------------------------------------------------------------
+     0000     4            4649 4c45   FILE    Signature
+     0006     2                 0300      3    Entries in Fixup Area
+     0008     8  0000 0000 0000 0000      0    $LogFile Seq Num
+     0010     2                 0100      1    Seq Num: Use of record
+     0012     2                 0100      1    Link Count
+     0014     2                 3800     56    Offset to first attribute
+     0016     2                 0100   file    file=1; directory=3
+     0018     4            9801 0000    408    Record size in use
+     001C     4            0004 0000   1024    Record size allocated
+     002C     4            4a00 0000     74    Record number
+     0031     3       0000 0000 0000      0    Fixup Area
+   ------------------------------------------------------------------
+     0038     4            1000 0000    $10    Attribute $10
+     003C     4            4800 0000   0x48    Attribute size
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.1 Analyzing MFT Record manually}
+  \begin{lstlisting}[basicstyle=\tiny]
+$ dd if=ntfs.raw skip=$((2048 + 4*8 + 74*2)) count=2| xxd | less
+
+     0030: 0500 0000 0000 0000 1000 0000 4800 0000  ............H...
+     0040: 0000 0000 0000 0000 3000 0000 1800 0000  ........0.......
+     0050: d376 a1e4 95ae d501 2580 a1e4 95ae d501  .v......%.......
+     0060: 2580 a1e4 95ae d501 d376 a1e4 95ae d501  %........v......
+     0070: 2000 0000 0000 0000 0000 0000 0000 0000   ...............
+     0080: 3000 0000 8000 0000 0000 0000 0000 0300  0...............
+     0090: 6400 0000 1800 0100 4800 0000 0000 0200  d.......H.......
+     00a0: d376 a1e4 95ae d501 d376 a1e4 95ae d501  .v.......v......
+     00b0: d376 a1e4 95ae d501 d376 a1e4 95ae d501  .v.......v......
+     00c0: 1000 0000 0000 0000 0000 0000 0000 0000  ................
+     00d0: 2000 0000 0000 0000 1100 7300 7500 6200   .........s.u.b.
+     00e0: 5f00 4400 6900 7200 5f00 4600 6900 6c00  _.D.i.r._.F.i.l.
+     00f0: 6500 3100 2e00 7400 7800 7400 1800 0000  e.1...t.x.t.....
+     0100: 5000 0000 6800 0000 0000 0000 0000 0100  P...h...........
+     0110: 5000 0000 1800 0000 0100 0480 1400 0000  P...............
+
+
+   Offset  Size                Value           Description:
+   ------------------------------------------------------------------
+     0038     4            1000 0000    $10    $STANDARD_INOFRMATION
+     003C     4            4800 0000   0x48    Attribute size
+     0080     4            3000 0000    $30    $FILE_NAME
+     0084     4            8000 0000   0x80    Attribute size
+     0100     4            5000 0000    $50    $SECURITY_DESCRIPTOR
+     0104     4            6800 0000   0x68    Attribute size
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.1 Analyzing MFT Record manually}
+  \begin{lstlisting}[basicstyle=\tiny]
+     0100: 5000 0000 6800 0000 0000 0000 0000 0100  P...h...........
+     0110: 5000 0000 1800 0000 0100 0480 1400 0000  P...............
+     0120: 2400 0000 0000 0000 3400 0000 0102 0000  $.......4.......
+     0130: 0000 0005 2000 0000 2002 0000 0102 0000  .... ... .......
+     0140: 0000 0005 2000 0000 2002 0000 0200 1c00  .... ... .......
+     0150: 0100 0000 0003 1400 ff01 1f00 0101 0000  ................
+     0160: 0000 0001 0000 0000 8000 0000 2800 0000  ............(...
+     0170: 0000 0000 0000 0200 0d00 0000 1800 0000  ................
+     0180: 4865 6c6c 6f20 576f 726c 6421 0a00 0000  Hello World!....
+     0190: ffff ffff 0000 0000 0000 0000 0000 0000  ................
+
+
+   Offset  Size                Value           Description:
+   ------------------------------------------------------------------
+     0100     4            5000 0000    $50    $SECURITY_DESCRIPTOR
+     0104     4            6800 0000   0x68    Attribute size
+     0168     4            8000 0000    $80    $SECURITY_DESCRIPTOR
+     016C     4            2800 0000   0x68    Attribute size
+     0170     1                   00      0    Non-Resident Flag
+     0171     1                   00      0    Name lenght
+     0172     2                 0000      0    Name offset
+     0174     2                 0000      0    Flags
+     0176     2                 0200      2    Attribute ID
+     0178     4            0d00 0000     13    Attribute lenght
+     017C     2                 1800   0x18    Attribute offset
+     017E     2                 0000      0    Padding
+     0180     F                                Content + Padding
+   ------------------------------------------------------------------
+     0190     4            ffff ffff    EOR    End Marker
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.2 Analyzing \$Bitmap file}
+  \begin{lstlisting}[basicstyle=\tiny]
+- $Bitmap file is located at MFT record 6
+- It contains the status of each cluster
+     -- Allocated or
+     -- Not allocated
+- Each bit represent a cluster
+- Example: Byte  1: 0x13  ==  0001 0100 
+           --> Allocated Cluster: 3, 5
+	   --> Not allocated Clusters: 1, 2, 4, 6, 7, 8
+           Byte 12: 0xC1  ==  1100 0001                        # 12 * 8 = 96
+           --> Allocated Cluster: 96, 102, 103
+	   --> Not allocated Clusters: 97, 98, 99, 100. 101
+
+
+Exercise: Calculate size of the $Bitmap file
+---------
+
+    $ fsstat -o 2048 ntfs.raw
+        Cluster Size: 4096
+	Total Cluster Range: 0 - 32510
+	Total Sector Range: 0 - 260094
+
+    32510 Clusters  -->  32510 Bits  -->  4064 Byts  --> 8 Sectors --> 1 Clusters
+
+    $ istat -o 2048 ntfs.raw 6
+
+        Attributes:
+        Type: $DATA (128-1)   Name: N/A   Non-Resident   size: 4064  init_size: 4064
+        4071
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.2 Analyzing \$Bitmap file}
+  \begin{lstlisting}[basicstyle=\tiny]
+Investigate bitmap for cluster 29056-29063
+
+    Calculate bitmap position: 29056 / 8 = 3632 = 0xe30
+  
+  $ icat -o 2048 ntfs.raw 6 | xxd | less
+     00000e30: 0000 0000 0000 0000  0000 0000 0000 0000  ................
+               ==
+
+Exercise: Create a 6 cluster test file to investigate $Bitmap file
+---------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     ---------
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.2 Analyzing \$Bitmap file}
+  \begin{lstlisting}[basicstyle=\tiny]
+Investigate bitmap for cluster 29056-29063
+
+    Calculate bitmap position: 29056 / 8 = 3632 = 0xe30
+  
+  $ icat -o 2048 ntfs.raw 6 | xxd | less
+     00000e30: 0000 0000 0000 0000  0000 0000 0000 0000  ................
+               ==
+
+Exercise: Create a 6 cluster test file to investigate $Bitmap file
+---------
+
+$ dd if=/dev/zero of=/cdrom/6-cluster.txt count=47
+
+$ ls -lh /cdrom/6-cluster.txt 
+     24064 Dez  5 12:10 /cdrom/6-cluster.txt
+
+$ fls -o 2048 ntfs.raw
+     r/r 66-128-2:	6-cluster.txt
+
+
+
+
+
+
+
+
+
+     ---------
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.2 Analyzing \$Bitmap file}
+  \begin{lstlisting}[basicstyle=\tiny]
+Investigate bitmap for cluster 29056-29063
+
+    Calculate bitmap position: 29056 / 8 = 3632 = 0xe30
+  
+  $ icat -o 2048 ntfs.raw 6 | xxd | less
+     00000e30: 0000 0000 0000 0000  0000 0000 0000 0000  ................
+               ==
+
+Exercise: Create a 6 cluster test file to investigate $Bitmap file
+---------
+
+$ dd if=/dev/zero of=/cdrom/6-cluster.txt count=47
+
+$ ls -lh /cdrom/6-cluster.txt 
+     24064 Dez  5 12:10 /cdrom/6-cluster.txt
+
+$ fls -o 2048 ntfs.raw
+     r/r 66-128-2:	6-cluster.txt
+
+$ istat -o 2048 ntfs.raw 66
+     Attributes: 
+     29056 29057 29058 29059 29060 29061
+
+     
+
+
+
+     ---------
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.2 Analyzing \$Bitmap file}
+  \begin{lstlisting}[basicstyle=\tiny]
+Investigate bitmap for cluster 29056-29063
+
+    Calculate bitmap position: 29056 / 8 = 3632 = 0xe30
+  
+  $ icat -o 2048 ntfs.raw 6 | xxd | less
+     00000e30: 0000 0000 0000 0000  0000 0000 0000 0000  ................
+               ==
+
+Exercise: Create a 6 cluster test file to investigate $Bitmap file
+---------
+
+$ dd if=/dev/zero of=/cdrom/6-cluster.txt count=47
+
+$ ls -lh /cdrom/6-cluster.txt 
+     24064 Dez  5 12:10 /cdrom/6-cluster.txt
+
+$ fls -o 2048 ntfs.raw
+     r/r 66-128-2:	6-cluster.txt
+
+$ istat -o 2048 ntfs.raw 66
+     Attributes: 
+     29056 29057 29058 29059 29060 29061
+
+$ icat -o 2048 ntfs.raw 6 | xxd | less
+     00000e30: 3f00 0000 0000 0000  0000 0000 0000 0000  ?...............
+               ==
+           0011  1111
+     --> Allocated clusters: 29056, 29057, 29058, 29059, 29060, 29061
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.3 Deleting a file: What will change?}
+  \begin{lstlisting}[basicstyle=\tiny]
+$ ls -l /cdrom/small_text_file.txt 
+     15000 Dez  9 16:09 /cdrom/small_text_file.txt
+  
+$ fls -o 2048 ntfs.raw 
+     r/r 73-128-2:	small_text_file.txt
+
+$ istat -o 2048 ntfs.raw 73
+     Type: $DATA (128-2)   Name: N/A   Non-Resident   size: 15000  init_size: 15000
+     4169 4170 4171 4172
+  
+
+Data cluster:
+$ dd if=ntfs.raw skip=$((2048 + 4169*8)) count=$((4*8)) | xxd | less
+$ icat -o 2048 ntfs.raw 73  | xxd | less
+  
+MFT record 73: 
+$ dd if=ntfs.raw skip=$((2048 + 4*8 + 73*2)) count=2| xxd | less
+
+$Bitmap file
+4169 / 8 = 521.125  --> Byte 521 (0x209) in $Bitmap file for Cluster 4168 - 4175
+                    --> _ _ _ _  _ _ _ _
+		              x  x x x   
+
+$ icat -o 2048 ntfs.raw 6  | xxd | less
+
+1. Extract the data
+2. $ rm /cdrom/small_text_file.txt
+3. Extract data and compare
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.3 Deleting a file: What will change?}
+  \begin{lstlisting}[basicstyle=\tiny]
+Before delete:
+==============
+  
+Data cluster:
+-------------
+
+00000000: 4141 4141 4141 4141 4141 4141 4141 4141  AAAAAAAAAAAAAAAA
+00000010: 4141 4141 4141 4141 4141 4141 4141 4141  AAAAAAAAAAAAAAAA
+.....
+00003a70: 4141 4141 4141 4141 4141 4141 4141 4141  AAAAAAAAAAAAAAAA
+00003a80: 4141 4141 4141 4141 4141 4141 4141 4141  AAAAAAAAAAAAAAAA
+00003a90: 4141 4141 4141 4141 0000 0000 0000 0000  AAAAAAAA........
+00003aa0: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+00003ab0: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+.....
+00003fe0: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+00003ff0: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+
+
+$Bitmap file:
+-------------
+
+00000200: ffff ffff ffff ffff ffff 0700 0000 0000  ................
+                                --
+
+	0x209 = 1 1 1 1  1 1 1 1
+	              x  x x x
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.3 Deleting a file: What will change?}
+  \begin{lstlisting}[basicstyle=\tiny]
+After delete:
+=============
+  
+Data cluster:
+-------------
+
+00000000: 4141 4141 4141 4141 4141 4141 4141 4141  AAAAAAAAAAAAAAAA
+00000010: 4141 4141 4141 4141 4141 4141 4141 4141  AAAAAAAAAAAAAAAA
+.....
+00003a70: 4141 4141 4141 4141 4141 4141 4141 4141  AAAAAAAAAAAAAAAA
+00003a80: 4141 4141 4141 4141 4141 4141 4141 4141  AAAAAAAAAAAAAAAA
+00003a90: 4141 4141 4141 4141 0000 0000 0000 0000  AAAAAAAA........
+00003aa0: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+00003ab0: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+.....
+00003fe0: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+00003ff0: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+
+
+$Bitmap file:
+-------------
+
+00000200: ffff ffff ffff ffff ffe1 0700 0000 0000  ................
+                                --
+
+	0x209 = 1 1 1 0  0 0 0 1
+	              x  x x x
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.3 Deleting a file: What will change?}
+  \begin{lstlisting}[basicstyle=\tiny]
+Before delete:
+==============
+  
+MFT record:
+-----------
+
+00000000: 4649 4c45 3000 0300 0000 0000 0000 0000  FILE0...........
+00000010: 0100 0100 3800 0100 b801 0000 0004 0000  ....8...........
+00000020: 0000 0000 0000 0000 0400 0000 4900 0000  ............I...
+00000030: 1300 0000 0000 0000 1000 0000 4800 0000  ............H...
+00000040: 0000 0000 0000 0000 3000 0000 1800 0000  ........0.......
+.....
+000003f0: 0000 0000 0000 0000 0000 0000 0000 1300  ................
+
+
+
+ offset:     size:    value:   description:
+----------------------------------------------------------------------
+    0010         2         1   Record sequence number
+    0012         2         1   Link count
+    0016         2         1   Record flag: 0000 = file deleted
+	                                    0100 = file in use
+				            0200 = dir deleted
+                                            0300 = dir in use
+    0030         2      1100   FixUp values
+    03fe         2      1300   CRC
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.3 Deleting a file: What will change?}
+  \begin{lstlisting}[basicstyle=\tiny]
+After delete:
+=============
+  
+MFT record:
+-----------
+
+00000000: 4649 4c45 3000 0300 0000 0000 0000 0000  FILE0...........
+00000010: 0200 0000 3800 0000 b801 0000 0004 0000  ....8...........
+00000020: 0000 0000 0000 0000 0400 0000 4900 0000  ............I...
+00000030: 1400 0000 0000 0000 1000 0000 4800 0000  ............H...
+00000040: 0000 0000 0000 0000 3000 0000 1800 0000  ........0.......
+.....
+000003f0: 0000 0000 0000 0000 0000 0000 0000 1400  ................
+
+
+
+ offset:     size:    value:   description:
+----------------------------------------------------------------------
+    0010         2         2   Record sequence number
+    0012         2         0   Link count
+    0016         2         0   Record flag: 0000 = file deleted
+	                                    0100 = file in use
+				            0200 = dir deleted
+                                            0300 = dir in use
+    0030         2      1400   FixUp values
+    03fe         2      1400   CRC
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.4 Directories}
+  \begin{lstlisting}[basicstyle=\tiny]
+$ mkdir NTFS_Sub_Dir
+$ echo "Hello World!" > NTFS_Sub_Dir/sub_Dir_File1.txt
+$ ls -la NTFS_Sub_Dir/
+          168 Dez  9 14:38 ./
+         4096 Dez  9 14:37 ../
+           13 Dez  9 14:38 sub_Dir_File1.txt
+
+$ fls -r -o 2048 ntfs.raw
+     d/d 72-144-2: NTFS_Sub_Dir
+     r/r 74-128-2: sub_Dir_File1.txt
+
+$ dd if=ntfs.raw skip=$((2048 + 4*8 + 72*2)) count=2 | xxd | less
+     00000000: 4649 4c45 3000 0300 0000 0000 0000 0000  FILE0...........
+     00000010: 0200 0100 3800 0300 3002 0000 0004 0000  ....8...0.......
+     00000020: 0000 0000 0000 0000 0400 0000 4800 0000  ............H...
+     00000030: 1000 7200 0000 0000 1000 0000 4800 0000  ..r.........H...
+     00000040: 0000 0000 0000 0000 3000 0000 1800 0000  ........0.......
+     00000050: 6e9d 97c1 95ae d501 5877 a1e4 95ae d501  n.......Xw......
+     00000060: 5877 a1e4 95ae d501 c624 dded 95ae d501  Xw.......$......
+     00000070: 2000 0000 0000 0000 0000 0000 0000 0000   ...............
+  
+  Offset:    Length:        Value:      Description:
+  -----------------------------------------------------------------------
+  00000000        4           FILE      Record header signature
+  00000014        2           3800      Pointer to first attribute
+  00000016        2           0300      Record flag: 3 = directory in use
+  00000038        4      1000 0000      Standard Information
+  0000003C        4      4800 0000      Size of the attribute (total)
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.4 Directories}
+  \begin{lstlisting}[basicstyle=\tiny]
+$ dd if=ntfs.raw skip=$((2048 + 4*8 + 72*2)) count=2 | xxd | less
+     00000080: 3000 0000 7800 0000 0000 0000 0000 0300  0...x...........
+     .....
+     000000d0: 2000 0010 0000 0000 0c00 4e00 5400 4600   .........N.T.F.
+     000000e0: 5300 5f00 5300 7500 6200 5f00 4400 6900  S._.S.u.b._.D.i.
+     000000f0: 7200 1800 0000 0200 5000 0000 6800 0000  r.......P...h...
+     .....
+     00000160: 9000 0000 c800 0000 0004 1800 0000 0200  ................
+     00000170: a800 0000 2000 0000 2400 4900 3300 3000  .... ...$.I.3.0.
+     00000180: 3000 0000 0100 0000 0010 0000 0100 0000  0...............
+     00000190: 1000 0000 9800 0000 9800 0000 0000 0000  ................
+     000001a0: 4a00 0000 0000 0100 7800 6400 0000 0000  J.......x.d.....
+     000001b0: 4800 0000 0000 0200 d376 a1e4 95ae d501  H........v......
+     000001c0: 2580 a1e4 95ae d501 2580 a1e4 95ae d501  %.......%.......
+     000001d0: d376 a1e4 95ae d501 1000 0000 0000 0000  .v..............
+     000001e0: 0d00 0000 0000 0000 2000 0000 0000 0000  ........ .......
+     000001f0: 1100 7300 7500 6200 5f00 4400 6900 1000  ..s.u.b._.D.i...
+     00000200: 5f00 4600 6900 6c00 6500 3100 2e00 7400  _.F.i.l.e.1...t.
+     00000210: 7800 7400 0000 0000 0000 0000 0000 0000  x.t.............
+     00000220: 1000 0000 0200 0000 ffff ffff 0000 0000  ................
+
+  Offset:    Length:        Value:      Description:
+  -----------------------------------------------------------------------
+  00000080        4      3000 0000      $FILE_NAME
+  00000084        4      7800 0000      Size of the attribute (total)
+  00000088        1           0000      Resident
+  00000160        4      9000 0000      $INDEX_ROOT
+  \end{lstlisting}
+\end{frame}
+
+
+

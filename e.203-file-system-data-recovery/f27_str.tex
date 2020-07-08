@@ -1,0 +1,373 @@
+%
+% This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
+% http://creativecommons.org/licenses/by-sa/4.0/
+%
+
+% DO NOT COMPILE THIS FILE DIRECTLY!
+% This is included by the other .tex files.
+
+
+\begin{frame}
+    \includegraphics[scale=0.3]{images/logo-circl-Forensics.png}
+    \begin{itemize}
+        \item[]
+        \item[]
+        \item[] 7. Carving and String Search
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{7.1 Magic Bytes - File signatures}
+  \begin{lstlisting}[basicstyle=\tiny]
+xxd logo_h4k-350x250.jpg | less
+0000000: ffd8 ffe0 0010 4a46 4946 0001 0100 0001  ......JFIF......
+...
+...
+0008cc0: 0fa5 0a28 141a 0028 a0d0 3a50 07ff d9    ...(...(..:P...
+
+
+
+
+xxd cases.jpg | less
+0000000: ffd8 ffe1 0018 4578 6966 0000 4949 2a00  ......Exif..II*.
+...
+...
+0001730: 4028 0500 a014 0280 501f ffd9            @(......P...
+
+
+
+
+/etc/scalpel/scalpel.conf
+-------------------------
+
+   jpg     y     200000000     \xff\xd8\xff\xe0\x00\x10     \xff\xd9
+   jpg     y     200000000     \xff\xd8\xff\xe1             \xff\xd9
+
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{7.1 Magic Bytes - File signatures}
+  \begin{lstlisting}[basicstyle=\tiny]
+xxd MECO-SMILE.pdf | less
+0000000: 2550 4446 2d31 2e34 0a25 c7ec 8fa2 0a35  %PDF-1.4.%.....5
+...
+...
+005c4d0: 3431 390a 2525 454f 460a                 419.%%EOF.
+
+
+
+
+xxd LU-NCSS-2-EN.pdf | less
+00000000: 2550 4446 2d31 2e35 0d25 e2e3 cfd3 0d0a  %PDF-1.5.%......
+...
+...
+0007a7e0: 6566 0d31 3136 0d25 2545 4f46 0d         ef.116.%%EOF.
+
+
+
+
+/etc/scalpel/scalpel.conf
+-------------------------
+
+   pdf     y       5000000     %PDF     %EOF\x0d     REVERSE
+   pdf     y       5000000     %PDF     %EOF\x0a     REVERSE
+
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{7.2 Carving tools}
+    \begin{itemize}
+        \item Foremost
+            \begin{itemize}
+                \item Version 1.5.7
+            \end{itemize}
+        \item Scalpel
+            \begin{itemize}
+                \item Version 1.60
+                \item Based on Foremost 0.69
+            \end{itemize}
+        \item Bulk Extractor
+            \begin{itemize}
+                \item Emails, Email addresses
+                \item URLs
+                \item Credit card numbers
+                \item Social media
+                \item Telephone numbers
+                \item ...
+            \end{itemize}
+        \item Testdisk - Photorec
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{7.3 Limitations}
+    \begin{itemize}
+        \item Basically file system independent
+        \item Data sequential
+            \begin{itemize}
+                \item Data must be sequential
+                \item Fragmented data leads to broken files
+                \item Very large files are more fragmented
+                \item Depends on file system
+                \item Depends on media type
+                \item Data could be overwritten partially
+            \end{itemize}
+        \item End of file
+            \begin{itemize}
+                \item Does the file format support end marker
+                \item Do we find a new magic byte
+                \item Overlapping files
+                \item Empty space at the end of a sector
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{7.4 Exercise: Recover data from formated drive}
+    \begin{itemize}
+	\item Try meta data based recovery with \texttt{fls}
+        \item Carving formated drive
+        \begin{lstlisting}[basicstyle=\tiny]
+mkdir out1/
+foremost -t all -i formated.dd -o out1/
+
+out1/audit.txt
+--------------
+
+File: deleted.dd
+Start: Wed Aug 22 16:20:43 2018
+Length: 32 MB (33554432 bytes)
+
+Num      Name (bs=512)         Size      File Offset     Comment
+0:      00009032.jpg           5 KB         4624384
+1:      00009080.jpg          35 KB         4648960
+2:      00037617.jpg          30 KB        19260232
+3:      00037678.jpg         106 KB        19291633
+.....
+16:     00037608.pdf           1 MB        19255296
+17:     00041288.pdf         489 KB        21139456       (PDF is Linearized)
+Finish: Wed Aug 22 16:20:43 2018
+18 FILES EXTRACTED
+
+jpg:= 9
+png:= 6
+pdf:= 3
+        \end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{7.5 What is 'String Search'?}
+    \begin{itemize}
+       \item Not sophisticated
+       \item Search for strings
+            \begin{itemize}
+                \item At least 4 characters long
+                \item From any file: Text, binary, disk image
+		\item Search for ASCII, Unicode, big/little endian
+            \end{itemize}
+       \item Search the disk image for known words
+            \begin{itemize}
+                \item Terms used in a secret document
+                \item IBAN ot other banking details
+                \item Email addresses or URLs
+            \end{itemize}
+       \item Search thrue all the blocks
+            \begin{itemize}
+                \item Allocated non sllocated blocks
+                \item File slack and outside partition boundaries
+            \end{itemize}
+       \item Goal
+            \begin{itemize}
+                \item Proof that the data was there once
+                \item Identify intresting data that are close
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{7.6 Examples}
+    \begin{itemize}
+       \item Search for strings
+            \begin{itemize}
+		    \item \texttt{strings -a circl-dfir.dd | less}
+            \end{itemize}
+       \item Min-Len
+            \begin{itemize}
+		    \item \texttt{strings -a -n 10 circl-dfir.dd | less}
+            \end{itemize}
+       \item Unicode 16 bit little endian
+            \begin{itemize}
+		    \item \texttt{strings -a -n 10 -el circl-dfir.dd | less}
+            \end{itemize}
+       \item Unicode 16 bit big endian
+            \begin{itemize}
+		    \item \texttt{strings -a -n 10 -eb circl-dfir.dd | less}
+            \end{itemize}
+       \item Offset in decimal
+            \begin{itemize}
+		    \item \texttt{strings -a -n 10 -eb -td circl-dfir.dd | less}
+            \end{itemize}
+       \item grep for your search term
+            \begin{itemize}
+		    \item \texttt{strings -a -n 10 -td circl-dfir.dd | grep -i paula}
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{7.7 Steps to do a String Search}
+    \begin{enumerate}
+       \item Identify block/cluster size
+            \begin{itemize}
+		\item[] \texttt{mmls, fsstat}
+            \end{itemize}
+       \item Search for the string and the offset
+            \begin{itemize}
+		\item[] \texttt{blkls | srch\_strings | grep }
+            \end{itemize}
+       \item Calculate block/cluster of the string
+	    \begin{itemize}
+		\item[] \texttt{xxxxxxxxxx / 4096 = yyyy}
+            \end{itemize}
+       \item Review block/cluster content
+	    \begin{itemize}
+		\item[] \texttt{blkcat}
+            \end{itemize}
+       \item Identify inode of the block/cluster
+	    \begin{itemize}
+		\item[] \texttt{ifind}
+            \end{itemize}
+       \item Identify associated file
+	    \begin{itemize}
+		\item[] \texttt{ffind}
+            \end{itemize}
+       \item Recover file
+	    \begin{itemize}
+		\item[] \texttt{icat}
+		\item[] Or mount and copy file
+            \end{itemize}
+    \end{enumerate}
+\end{frame}
+
+
+\newcounter{saveenumi}
+\newcommand{\seti}{\setcounter{saveenumi}{\value{enumi}}}
+\newcommand{\conti}{\setcounter{enumi}{\value{saveenumi}}}
+\resetcounteronoverlays{saveenumi}
+
+\begin{frame}[fragile]
+  \frametitle{7.8 Exercise: What about Paulas cat?}
+    \begin{enumerate}
+        \item Identify cluster size
+        \begin{lstlisting}[basicstyle=\tiny]
+mmls circl-dfir.dd
+
+    1      Slot      Start        End          Length       Description
+ 000:  Meta      0000000000   0000000000   0000000001   Primary Table (#0)
+ 001:  -------   0000000000   0000002047   0000002048   Unallocated
+ 002:  000:000   0000002048   0004917247   0004915200   NTFS / exFAT (0x07)
+
+
+
+fsstat -o 2048 circl-dfir.dd
+
+     File System Type: NTFS
+     Volume Serial Number: 7B6E5F9427919882
+     OEM Name: NTFS    
+     Volume Name: CIRCL-DFIR
+     Version: Windows XP
+
+     .....
+
+     Sector Size: 512
+     Cluster Size: 4096
+     Total Cluster Range: 0 - 614398
+     Total Sector Range: 0 - 4915198
+        \end{lstlisting}
+    \seti
+    \end{enumerate}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{7.8 Exercise: What about Paulas cat?}
+    \begin{enumerate}
+        \conti
+        \item Search for the string \texttt{'Paula'}
+        \begin{lstlisting}[basicstyle=\tiny]
+blkls -e -o 2048 circl-dfir.dd | strings -a -td | grep -i paula
+
+     157342 Paula's cat is fat.........
+     157370 Paula's cat is fat.........
+     .....
+     157510 Paula's cat is fat.........
+     157538 Paula's cat is fat.........
+        \end{lstlisting}
+
+        \item Calculate cluster of the string
+        \begin{lstlisting}[basicstyle=\tiny]
+echo $((157342/4096))
+     38
+
+echo $((157538/4096))
+     38
+        \end{lstlisting}
+
+        \item Review cluster content
+        \begin{lstlisting}[basicstyle=\tiny]
+blkcat -o 2048 circl-dfir2dd 38 | strings
+     .....
+     Paula's cat is fat.........
+     Paula's cat is fat.........
+     Paula's cat is fat.........
+     .....
+        \end{lstlisting}
+    \seti
+    \end{enumerate}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{7.8 Exercise: What about Paulas cat?}
+    \begin{enumerate}
+        \conti
+        \item Identify inode of the cluster
+        \begin{lstlisting}[basicstyle=\tiny]
+ifind -o 2048 -d 38 circl-dfir.dd 
+  0-128-1
+        \end{lstlisting}
+
+        \item Identify associated file
+        \begin{lstlisting}[basicstyle=\tiny]
+ffind -o 2048 circl-dfir.dd 0-128-1
+  //$MFT
+        \end{lstlisting}
+
+        \item Recover file
+        \begin{lstlisting}[basicstyle=\tiny]
+icat -o 2048 circl-dfir.dd 0-128-1 > MFT
+        \end{lstlisting}
+    \end{enumerate}
+    \begin{itemize}
+        \item[] Exercise: Manual approach - Learn from errors
+        \begin{lstlisting}[basicstyle=\tiny]
+dd if=circl-dfir.dd bs=4096 skip=38 count=1 | xxd | less
+dd if=circl-dfir.dd bs=4096 skip=$((2048 + 38)) count=1 | xxd | less
+dd if=circl-dfir.dd bs=4096 skip=$((2048/8 + 38)) count=1 | xxd | less
+        \end{lstlisting}
+        \end{itemize}
+\end{frame}
+
+
+

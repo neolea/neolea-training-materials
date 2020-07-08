@@ -1,0 +1,112 @@
+%
+% This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
+% http://creativecommons.org/licenses/by-sa/4.0/
+%
+\documentclass{beamer}
+\usetheme[pageofpages=of,% String used between the current page and the
+                         % total page count.
+          bullet=circle,% Use circles instead of squares for bullets.
+          titleline=true,% Show a line below the frame title.
+          alternativetitlepage=true,% Use the fancy title page.
+	  titlepagelogo=images/logoM-circl-Forensics.png,% Logo for the first page.
+%          watermark=watermark-polito,% Watermark used in every page.
+%          watermarkheight=100px,% Height of the watermark.
+%          watermarkheightmult=4,% The watermark image is 4 times bigger
+                                % than watermarkheight.
+          ]{Torino}
+
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage{color}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{transparent}
+\usepackage{siunitx}
+
+\usepackage[norndcorners,customcolors]{hf-tikz}
+\hfsetbordercolor{yellow}
+\hfsetfillcolor{yellow}
+
+\lstset{ 
+  backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}
+  basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+  breakatwhitespace=false,
+}
+
+
+\author{CIRCL \emph{TLP:WHITE}}
+\title{CIRCL - DFIR 1.0.2}
+\subtitle{Introduction: File System Forensics and Data Recovery}
+\institute{info@circl.lu}
+\date{Edition May 2020}
+
+
+
+\begin{document}
+\begin{frame}[t,plain]
+\titlepage
+\end{frame}
+
+\begin{frame}
+  \frametitle{Thanks to:}
+  \begin{itemize}
+  \item[] AusCERT
+    \begin{figure}
+        \includegraphics[scale=0.3, angle=0, trim=0 0 0 0]{images/auscert_logo.png}
+    \end{figure}
+  \item[] JISC
+    \begin{figure}
+        \includegraphics[scale=0.06, angle=0, trim=0 0 0 0]{images/jisc-logo.png}
+    \end{figure}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Overview}
+  \begin{itemize}
+  \item[]
+      \begin{enumerate}
+          \item File System Analysis - Overview
+          \item FAT - File Allocation Table
+          \item NTFS - New Technology File System
+          \item NTFS - Advanced
+          \item File System Time Line
+          \item Carving
+          \item String Search
+          \item Forensics Challenges
+          \item Bibliography and Outlook
+      \end{enumerate}
+  \end{itemize}
+\end{frame}
+
+
+\include{f21_fs1}
+\include{f22_fat}
+\include{f23_ntfs}
+\include{f24_ntfs2}
+\include{f25_fstl}
+\include{f26_car}
+\include{f27_str}
+\include{f28_cha}
+\include{f29_bib}
+
+\begin{frame}
+  \frametitle{Overview}
+  \begin{itemize}
+  \item[]
+      \begin{enumerate}
+          \item File System Analysis - Overview
+          \item FAT - File Allocation Table
+          \item NTFS - New Technology File System
+          \item NTFS - Advanced
+          \item File System Time Line
+          \item Carving
+          \item String Search
+          \item Forensics Challenges
+          \item Bibliography and Outlook
+      \end{enumerate}
+  \end{itemize}
+\end{frame}
+
+\end{document}
+

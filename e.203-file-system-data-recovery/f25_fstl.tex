@@ -1,0 +1,286 @@
+%
+% This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License.
+% http://creativecommons.org/licenses/by-sa/4.0/
+%
+
+% DO NOT COMPILE THIS FILE DIRECTLY!
+% This is included by the other .tex files.
+
+
+\begin{frame}
+    \includegraphics[scale=0.3]{images/logo-circl-Forensics.png}
+    \begin{itemize}
+        \item[]
+        \item[]
+        \item[] 5. File System Time Line
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{5.1 Time stamps: Nomenclature}
+    \begin{itemize}
+        \item FAT
+        \begin{itemize}
+            \item MAC times
+            \begin{itemize}
+                \item M time: Content last Modified
+                \item A time: Content last Accessed
+                \item C time: File Created
+            \end{itemize}
+        \end{itemize}
+        \item NTFS
+        \begin{itemize}
+            \item MACE times
+            \begin{itemize}
+                \item M time: Content last Modified
+                \item A time: Content last Accessed
+                \item C time: File Created
+                \item E-time: MFT Entry last mofidied
+            \end{itemize}
+            \item MACB times
+            \begin{itemize}
+                \item M time: Content last Modified
+                \item A time: Content last Accessed
+                \item C time: MFT record last Changed
+		\item B-time: File created (Born)
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{5.2 Time stamps: Example}
+  \begin{lstlisting}[basicstyle=\tiny]
+$ istat -o 2048 ntfs.raw 73
+
+     MFT Entry Header Values:
+     Entry: 73        Sequence: 2
+     $LogFile Sequence Number: 0
+     Not Allocated File
+     Links: 0
+
+     $STANDARD_INFORMATION Attribute Values:
+     Flags: Archive
+     Owner ID: 0
+     Security ID: 0  ()
+     Created:   	2019-12-02 16:25:22.099440400 (CET)
+     File Modified:	2019-12-09 16:09:46.183651100 (CET)
+     MFT Modified:	2019-12-09 16:09:46.183651100 (CET)
+     Accessed:  	2019-12-02 16:25:22.099440400 (CET)
+
+     $FILE_NAME Attribute Values:
+     Flags: Archive
+     Name: small_text_file.txt
+     Parent MFT Entry: 5 	Sequence: 5
+     Allocated Size: 16384   	Actual Size: 0
+     Created:   	2019-12-02 16:25:22.099440400 (CET)
+     File Modified:	2019-12-02 16:25:22.099440400 (CET)
+     MFT Modified:	2019-12-02 16:25:22.099440400 (CET)
+     Accessed:  	2019-12-02 16:25:22.099440400 (CET)
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{5.3 Last Access Time}
+    \begin{itemize}
+        \item Updated im memory, writen to disk after $\approx$1h
+        \item As of Win Vista
+        \begin{itemize}
+            \item Not updated per default
+            \begin{itemize}
+		\item \texttt{\footnotesize HKEY\_LOCAL\_MACHINE/SYSTEM/CurrentControlSet/Control/}
+		\item[] \texttt{\footnotesize /FileSystem/NtfsDisableLastAccessUpdate}
+			\includegraphics[scale=0.25]{images/lastAccess.png}
+                \item Performance reasons
+                \item Good for file server
+            \end{itemize}
+            \item Still updated some times
+            \begin{itemize}
+                \item File new created
+                \item File copied
+                \item File moved
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{5.4 Time Line: Exercise}
+  \begin{lstlisting}[basicstyle=\tiny]
+Reproduce file system activities
+--------------------------------
+  
+     Thu Jun 27 2013 12:23:08      113 ...b         35-128-1 c:/time-01.txt
+     Thu Jun 27 2013 12:24:20       75 m.cb         37-128-1 c:/time-02.txt
+     Thu Jun 27 2013 12:25:24       75 m.cb         38-128-1 c:/time-03.txt
+                                    75 m...         41-128-1 c:/time-03 - Copy.txt
+     Thu Jun 27 2013 12:26:05       75 m..b         39-128-1 c:/time-44.txt
+     Thu Jun 27 2013 12:27:00       75 macb         40-128-1 c:/time-05.txt (deleted)
+     Thu Jun 27 2013 12:33:50      113 m.c.         35-128-1 c:/time-01.txt
+     Thu Jun 27 2013 13:07:52       75 .acb         41-128-1 c:/time-03 - Copy.txt
+     Thu Jun 27 2013 13:10:36       75 ..c.         39-128-1 c:/time-44.txt
+     Thu Jun 27 2013 13:14:20       20 m...         42-128-1 c:/time-06.txt
+     Thu Jun 27 2013 13:56:30       20 .acb         42-128-1 c:/time-06.txt
+
+
+File: time-01.txt
+-----------------
+     Thu Jun 27 2013 12:23:08      113 ...b         35-128-1 c:/time-01.txt
+     Thu Jun 27 2013 12:33:50      113 m.c.         35-128-1 c:/time-01.txt
+
+
+File: time-02.txt
+-----------------
+     Thu Jun 27 2013 12:24:20       75 m.cb         37-128-1 c:/time-02.txt
+
+
+-----
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{5.4 Time Line: Exercise}
+  \begin{lstlisting}[basicstyle=\tiny]
+Reproduce file system activities
+--------------------------------
+  
+     Thu Jun 27 2013 12:23:08      113 ...b         35-128-1 c:/time-01.txt
+     Thu Jun 27 2013 12:24:20       75 m.cb         37-128-1 c:/time-02.txt
+     Thu Jun 27 2013 12:25:24       75 m.cb         38-128-1 c:/time-03.txt
+                                    75 m...         41-128-1 c:/time-03 - Copy.txt
+     Thu Jun 27 2013 12:26:05       75 m..b         39-128-1 c:/time-44.txt
+     Thu Jun 27 2013 12:27:00       75 macb         40-128-1 c:/time-05.txt (deleted)
+     Thu Jun 27 2013 12:33:50      113 m.c.         35-128-1 c:/time-01.txt
+     Thu Jun 27 2013 13:07:52       75 .acb         41-128-1 c:/time-03 - Copy.txt
+     Thu Jun 27 2013 13:10:36       75 ..c.         39-128-1 c:/time-44.txt
+     Thu Jun 27 2013 13:14:20       20 m...         42-128-1 c:/time-06.txt
+     Thu Jun 27 2013 13:56:30       20 .acb         42-128-1 c:/time-06.txt
+
+
+File: time-03.txt, time-03 - Copy.txt
+-------------------------------------
+     Thu Jun 27 2013 12:25:24       75 m.cb         38-128-1 c:/time-03.txt
+				    75 m...         41-128-1 c:/time-03 - Copy.txt
+     Thu Jun 27 2013 13:07:52       75 .acb         41-128-1 c:/time-03 - Copy.txt
+
+
+File: time-02.txt
+-----------------
+     Thu Jun 27 2013 12:26:05       75 m..b         39-128-1 c:/time-44.txt
+     Thu Jun 27 2013 13:10:36       75 ..c.         39-128-1 c:/time-44.txt
+-----
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{5.4 Time Line: Exercise}
+  \begin{lstlisting}[basicstyle=\tiny]
+Reproduce file system activities
+--------------------------------
+  
+     Thu Jun 27 2013 12:23:08      113 ...b         35-128-1 c:/time-01.txt
+     Thu Jun 27 2013 12:24:20       75 m.cb         37-128-1 c:/time-02.txt
+     Thu Jun 27 2013 12:25:24       75 m.cb         38-128-1 c:/time-03.txt
+                                    75 m...         41-128-1 c:/time-03 - Copy.txt
+     Thu Jun 27 2013 12:26:05       75 m..b         39-128-1 c:/time-44.txt
+     Thu Jun 27 2013 12:27:00       75 macb         40-128-1 c:/time-05.txt (deleted)
+     Thu Jun 27 2013 12:33:50      113 m.c.         35-128-1 c:/time-01.txt
+     Thu Jun 27 2013 13:07:52       75 .acb         41-128-1 c:/time-03 - Copy.txt
+     Thu Jun 27 2013 13:10:36       75 ..c.         39-128-1 c:/time-44.txt
+     Thu Jun 27 2013 13:14:20       20 m...         42-128-1 c:/time-06.txt
+     Thu Jun 27 2013 13:56:30       20 .acb         42-128-1 c:/time-06.txt
+
+
+File: time-05.txt
+-----------------
+     Thu Jun 27 2013 12:27:00       75 macb         40-128-1 c:/time-05.txt (deleted)
+
+
+File: time-06.txt
+-----------------
+     Thu Jun 27 2013 13:14:20       20 m...         42-128-1 c:/time-06.txt
+     Thu Jun 27 2013 13:56:30       20 .acb         42-128-1 c:/time-06.txt
+
+
+-----
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{5.4 Time Line: Exercise}
+  \begin{lstlisting}[basicstyle=\tiny]
+Summary: What could we reproduce                                       Yes/No
+-----------------------------------------------------------------------------
+  
+File: time-01.txt
+      1. 12:23:08 time-01.txt -> new create                            Yes
+      6. 12:29:07 time-01.txt -> modified content                          No
+      7. 12:33:50 time-01.txt -> 2nd modification                      Yes
+
+time-02.txt
+      2. 12:24:20 time-02.txt -> new create                            Yes
+      8. 12:29:50 time-02.txt -> open/access file                          No
+      9. 12:30:01 time-02.txt -> close                                     No
+
+time-03.txt, time-03 - Copy.txt
+      3. 12:25:24 time-03.txt -> new create                            Yes
+     10. 13:07:52 time-03.txt -> copy to time-0003 - Copy.txt          Yes/No
+
+time-44.txt
+      4. 12:26:05 time-04.txt -> new create                            Yes
+     11. 13:10:36 time-04.txt -> rename to time-0044.txt               Yes/No
+
+time-05.txt
+      5. 12:27:00 time-05.txt -> new create                            Yes
+     14. 13:58:07 time-05.txt -> delete file                               No
+
+time-06.txt
+     12. 13:14:20 time-06.txt -> new created on other drive            Yes/No
+     13. 13:56:30 time-06.txt -> copy to local drive                   Yes
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{5.5 Create a Time Line}
+  \begin{lstlisting}[basicstyle=\tiny]
+$ mkdir time
+
+
+$ fls -f ntfs -o 2048 -m D:/ -r ntfs.raw > time/d.body
+
+          -m    Time machine format
+	  D:/   Add D:/ as mountpoint in report
+          -r    Recursive
+
+
+$ cd time
+$ mactime -b d.body > d.time
+$ less d.time
+
+.....
+Mon Dec 02 2019 16:25:22    15000 .a.b      73-128-2 D:/small_text_file.txt (deleted)
+Wed Dec 04 2019 14:41:27    15051 .a.b      64-128-2 D:/AaaA.txt
+Wed Dec 04 2019 14:42:06    15051 m.c.      64-128-2 D:/AaaA.txt
+Wed Dec 04 2019 14:43:20    15000 macb      65-128-2 D:/Nonresident.txt (deleted)
+Thu Dec 05 2019 12:10:53    24064 m.cb      66-128-2 D:/6-cluster.txt
+Thu Dec 05 2019 12:11:12    24064 .a..      66-128-2 D:/6-cluster.txt
+Mon Dec 09 2019 14:37:09      168 ...b      72-144-2 D:/NTFS_Sub_Dir
+Mon Dec 09 2019 14:38:08      168 m.c.      72-144-2 D:/NTFS_Sub_Dir
+                               13 macb      74-128-2 D:/NTFS_Sub_Dir/sub_Dir_File1.txt
+Mon Dec 09 2019 14:38:24      168 .a..      72-144-2 D:/NTFS_Sub_Dir
+Mon Dec 09 2019 16:09:46    15000 m.c.      73-128-2 D:/small_text_file.txt (deleted)
+Sun Nov 29 2076 09:54:34    76800 macb       0-128-1 D:/$MFT
+  \end{lstlisting}
+\end{frame}
+
+
+
+
