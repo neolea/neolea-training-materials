@@ -5,24 +5,24 @@ Security is becoming part LEA daily duties to enforce laws in the cyber space
 as well as in real life. Cyber space can not be left untouched any longer.
 
 Adapting to cyber security requires new skills and tools that are sometimes
-hard to acquire. LEA and companies in general tend to "buy" equipment and
+hard to acquire. LEA and companies in general tend to "buy" equipments and
 solutions but this is a strategy that can not really fly with cyber security.
 One is quickly outrunned when posing as a customer in a fast-paced environment. 
 
 In cyber security more than anywhere success relies people, and how an
 organisation can support them acquiring the required skills for the task at
-hand.  LEA already provide such support to their officers in their core
-activities but we believe progress can be made regarding cyber security
-trainings.  The main goal of neolea is therefore transition from what is done
-by LEA  now to what already works for security practitioners: gaining and
-retaining skills and knowledge by building tools instead of buying them.
+hand. LEA already provide such support to their officers in their core
+activities but we believe progress can be made regarding cyber security. The
+main goal of neolea is therefore to help transitioning from what is done by LEA
+now to what already works for security practitioners: gaining and retaining
+skills and knowledge by building tools instead of buying them.
 
 Indeed, security practitioners, by philosophy, and by necessity, tend to build
 the tools required to do their job in the course of their daily activities.
-There is no off the shelve solution for cyber-security that works. Threat
+There is no off-the-shelf solution for cyber-security that works. Threat
 Intelligence, Incident Response, as well as Investigation in the cyber realm
-requires to engage with the material at hand to gain a deep understanding of
-adversaries techniques.
+require to engage with the material at hand to gain a deep understanding of
+adversaries' techniques and a create a tailored answer.
 
 Building software, often open source, therefore became increasingly important
 for security practitioners. The tools they write enact from a need to thwart
@@ -33,11 +33,11 @@ objectives. Fighting cyber-crime has often more resemblance to intelligence in
 this methods, techniques and ways to deal with uncertainty, rather than
 fighting crime in the streets.
 
-Security practitioners possess knowledge, and a craftsmanship that can be
-transposed to LEA. We discuss here in more details the methods we use to
-determine the gaps in LEO training and tooling, their training needs, as well
-as how we involve LEA in security communities to keep them sharp in their fight
-against cyber crime.
+Security practitioners developped a craftsmanship and a stance towards software
+that can be transposed to LEA. We discuss here in more details the methods we
+use to determine the gaps in LEO training and tooling, their training needs, as
+well as how we involve LEA in security communities to keep them sharp in their
+fight against cyber crime.
 
 # Training objectives
 
@@ -64,20 +64,21 @@ What is required - what they know = training needs
 
 ### What are the roadblocks
 
-Performing training need analysis to understand gaps in LEO training
-straightforward in theory but in practice, there are several challenges:
+Performing a training need analysis to understand gaps in LEO training appears
+straightforward in theory but in practice there are several challenges:
 
  - upfront, we usually only have access to line managers of the people that will
    be trained: LEA have hierarchies strictly defined and the people who decide
-   about training are not the one taking the training. This mismatch often lead
-   to discrepancies between what the trainers intend to convey and what the
+   about trainings are not the one taking the trainings. This mismatch often lead
+   to discrepancies between what the trainers intend to convey and the
    trainees' expectations. Remediation is to be found in the PMF loop explained
    below.
    
  - even if not ideal, several agencies can take part to training sessions. This
    is actually the most challenging part of training planning and delivery as
    the trainer has to accommodate everyone while trainees have different goals,
-   skills and motivations.
+   skills and motivations. Again, remediation is to be found in the PMF loop explained
+   below.
    
  - colliding philosophies: sometimes cyber security training requires to teach
    skills and knowledge that are frowned upon by LEO because of prejudices or
@@ -86,21 +87,21 @@ straightforward in theory but in practice, there are several challenges:
    reject the subject whereas mastering these skills can bring benefit.
    (Cryptography in one such subject for instance)
  
- - classified personnel: some personnel may keep a very low profile and no
+ - intel officers: some people may keep their participation private and no
    background information will be provided by their hierarchy beforehand.
  
 ## Preparing the training
 
-One main aspect of training preparation is the selection of use-cases to
-present during the training, and use-cases on which trainees will take a bite
+One main aspect of training preparation is the selection of use-cases to be
+presented during the training, and use-cases on which trainees will take a bite
 at. These need to be engaging and display the usefulness of the tools. That is
-why the best is usually to start with use-cases that trainers stumbled upon
+why the best is usually to start from use-cases that trainers stumbled upon
 during their daily jobs and found interesting. Also showing why certain
 use-cases called for the development of new software features, and how the said
-features now make a difference is a must.
+features makes a difference is a must.
 
 Then comes the selection of use-cases that are part of trainees' daily jobs.
-This may be some time challenging to define but trainers usually have an good
+This may be sometimes challenging to define but trainers usually have an good
 guess of what the trainee do by this time and can find several uses-cases the
 trainees should be able to relate to.
 
