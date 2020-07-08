@@ -15,7 +15,7 @@ The courses overview is centered around information sharing, collaboration aroun
 - E.201 Digital Forensics - Introduction: Post-mortem Digital Forensics
 - E.202 Network forensic - Analysing black-hole monitoring dataset How to better understand DDoS attacks from backscatter traffic, opportunistic network scanning and exploitation
 - E.203 Digital Forensics - Introduction: File System and Data Recovery
-- E.204 Digital Forensics - Introduction: Windows- memory- and File Forensics
+- E.204 Digital Forensics - Introduction: Windows- Memory- and File Forensics
 - E.300 Data mining using the [AIL project](https://www.github.com/ail-project)
 - E.301 Cryptography Workarounds For Law Enforcement
 
