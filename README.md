@@ -6,9 +6,9 @@ The courses overview is centered around information sharing, collaboration aroun
 
 ## Terminology
 
-- 100 Basis are required to benefit from the other trainings (MISP and information sharing)
-- 200 DFIR topics (from digital forensic to network forensic analysis)
-- 300 Advanced topics (data mining, cryptography)
+- 100 Introductory - Basis are required to benefit from the other trainings (MISP and information sharing)
+- 200 Intermediate - DFIR topics (from digital forensic to network forensic analysis)
+- 300 Advanced - Advanced topics (data mining, cryptography)
 
 ## List of training materials available
 
