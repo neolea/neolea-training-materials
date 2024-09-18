@@ -46,8 +46,7 @@ If you reuse the training materials, don't forget to include the above for attri
 
 The neolea project training materials is developed by [CIRCL Computer Incident Response Center Luxembourg](https://www.circl.lu/), and co-financed within the [MISP-LEA project](https://www.misp-lea.org/).
 
-MISP-LEA project started the first June 2023. It consists in an law enforcement agency information sharing community. 
-
+MISP-LEA project started the first June 2023. It consists in an law enforcement agency information sharing community supported by [CIRCL](https://www.circl.lu/) and [Shadowserver](https://www.shadowserver.org/). 
 ![](https://www.misp-lea.org/assets/img/eu_funded_en.jpg)
 
 ### Previous Funding
