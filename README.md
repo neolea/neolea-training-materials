@@ -13,6 +13,7 @@ The courses overview is centered around information sharing, collaboration aroun
 ## List of training materials available
 
 - E.100 [MISP](https://www.misp-project.org/) - Open Source Threat Intelligence Platform Supporting Digital Forensic and Incident Response
+- E.101 [MISP-LEA](https://www.misp-lea.org/) - MISP-LEA API and Automation
 - E.200 Post Mortem Analysis Techniques of Fake Invoices Manipulated PDF documents
 - E.201 Digital Forensics - Introduction: Post-mortem Digital Forensics
 - E.202 Network forensic - Analysing black-hole monitoring dataset How to better understand DDoS attacks from backscatter traffic, opportunistic network scanning and exploitation
@@ -37,19 +38,31 @@ The courses overview is centered around information sharing, collaboration aroun
 
 All the materials are dual-licensed under GNU Affero General Public License version 3 or later and the Creative Commons Attribution-ShareAlike 4.0 International. You can use either one of the licenses depending of your use case of the training materials.
 
-The neolea project training materials developed by [CIRCL Computer Incident Response Center Luxembourg](https://www.circl.lu/), and co-financed within ENFORCE.
-
-[ENFORCE](https://ceis.eu/en/cyber-ceis-coordinator-of-the-enforce-project-co-organizes-a-cybercrime-training-with-the-luxembourgian-circl-and-the-french-national-police/) is an 18-month European project co-funded by the European Commission in the framework of the Internal Security Fund – Police. The project runs from December 2018 to May 2020. The ENFORCE project aims at designing, setting-up, and disseminating a cybercrime training curriculum at the European level. This curriculum will be validated during a training exercise allowing different European public (e.g. law enforcement agencies and CSIRTs) and private actors fighting cybercrime to train together using state-of-the-art training technology. ENFORCE project is coordinated by CEIS and a partnership between [CIRCL](https://www.circl.lu/), French Ministry of Interior and [CEIS](https://ceis.eu/).
-
 All the source code is available at [https://www.github.com/neolea/neolea-training-materials](https://www.github.com/neolea/neolea-training-materials).
 
 If you reuse the training materials, don't forget to include the above for attribution.
+
+## Funding
+
+The neolea project training materials is developed by [CIRCL Computer Incident Response Center Luxembourg](https://www.circl.lu/), and co-financed within the [MISP-LEA project](https://www.misp-lea.org/).
+
+MISP-LEA project started the first June 2023. It consists in an law enforcement agency information sharing community. 
+
+![](https://www.misp-lea.org/assets/img/eu_funded_en.jpg)
+
+### Previous Funding
+
+The neolea project training materials was developed by [CIRCL Computer Incident Response Center Luxembourg](https://www.circl.lu/), and co-financed within ENFORCE.
+
+[ENFORCE](https://ceis.eu/en/cyber-ceis-coordinator-of-the-enforce-project-co-organizes-a-cybercrime-training-with-the-luxembourgian-circl-and-the-french-national-police/) is an 18-month European project co-funded by the European Commission in the framework of the Internal Security Fund – Police. The project runs from December 2018 to May 2020. The ENFORCE project aims at designing, setting-up, and disseminating a cybercrime training curriculum at the European level. This curriculum will be validated during a training exercise allowing different European public (e.g. law enforcement agencies and CSIRTs) and private actors fighting cybercrime to train together using state-of-the-art training technology. ENFORCE project is coordinated by CEIS and a partnership between [CIRCL](https://www.circl.lu/), French Ministry of Interior and [CEIS](https://ceis.eu/).
+
 
 # Contributors in alphabetical order
 
 - [Alexandre Dulaunoy](https://github.com/adulau)
 - [Michael Hamm](https://github.com/michael-hamm)
 - [Jean-Louis Huynen](https://github.com/gallypette)
+- [Luciano Righetti](https://github.com/righel)
 - [Aurelien Thirion](https://github.com/terrtia)
 - [Gerard Wagener](https://github.com/haegardev)
 
@@ -59,5 +72,6 @@ Feel free to fork the training materials, play with it, make some updates or cre
 
 # Complementary materials
 
-- [MISP Training Materials](https://github.com/MISP/misp-training)
+- [misp-training-lea - Practical Information Sharing between Law Enforcement and CSIRT communities using MISP](https://github.com/MISP/misp-training-lea)
+- [General MISP Training Materials](https://github.com/MISP/misp-training)
 - [AIL Project Training Materials](https://github.com/ail-project/ail-training)
