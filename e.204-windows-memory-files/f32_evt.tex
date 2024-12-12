@@ -22,28 +22,28 @@
     \begin{itemize}
         \item Up to Windows XP
             \begin{itemize}
-                \item Binary Event Log file format
-                \item Mainly 3 categories:
+		    \item Mainly 3 \texttt{.evt} files:
                 \begin{itemize}
 			\item[] Security:  \texttt{secevent.evt}
 			\item[] System:  \texttt{sysevent.evt}
 			\item[] Application:  \texttt{appevent.evt}
 			\item[] ... maybe some server service specific
-			\item[]
                 \end{itemize}
+		\item Location: \texttt{/Windows/System32/config/}
+                \item Binary Event Log file format
+		\item[]
             \end{itemize}
         \item Beginning with Vista
             \begin{itemize}
-                \item New binary XML format
-		\item New extension: \texttt{.evtx}
-		\item Location: \texttt{/Windows/System32/winevt/Logs/}
-                \item Many more files:
+		    \item Many \texttt{.evtx} files:
                 \begin{itemize}
 			\item[] \texttt{Security.evtx}
 			\item[] \texttt{System.evtx}
 			\item[] \texttt{Application.evtx}
 			\item[] $\to$ 120 files ++
                 \end{itemize}
+		\item Location: \texttt{/Windows/System32/winevt/Logs/}
+                \item New binary XML format
             \end{itemize}
     \end{itemize}
 \end{frame}
@@ -55,15 +55,15 @@
         \item Advantage
             \begin{itemize}
                 \item Full fledged logging
-                \item Logon Success: Importand events are logged
-                \item Detailed importand information
+                \item Logging important events: E.g. Logon Success, ...
+                \item Detailed information
 		\item[] 
             \end{itemize}
         \item Disadvantage
             \begin{itemize}
-                \item Cover only a limited period of time
-                \item Logon Fail: Importand events are not logged per default
-                \item Much information, hard to read
+                \item Limited period of time
+                \item Importand events not logged by default: E.g. Logon Fail
+                \item Manny events, hard to find related information
 		\item[]
             \end{itemize}
         \item Always interesting
@@ -71,6 +71,7 @@
                 \item Logon / Logoff
                 \item System boot
                 \item Services started
+		\item Hardware (dis)connected
 		\item[]
             \end{itemize}
     \end{itemize}
@@ -78,20 +79,14 @@
 
 
 \begin{frame}[fragile]
-  \frametitle{2.2 Example: Logon event}
-    \includegraphics[scale=0.24]{images/evtx.png}
+  \frametitle{2.2 Example: Event Viewer}
+    \includegraphics[scale=0.35]{images/evtx.png}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{2.3 In Forensics}
+  \frametitle{2.3 Get support}
     \begin{itemize}
-        \item Get support online:
-            \begin{itemize}
-                \item Microsoft TechNet
-		\item \url{https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/}
-		\item \url{http://eventid.net/}
-            \end{itemize}
         \item Review logging policies
   \begin{lstlisting}[basicstyle=\tiny]
 $ rip.pl -r SECURITY -p auditpol
@@ -109,18 +104,126 @@ Logon/Logoff:Network Policy Server                 S/F
 Object Access:File System                          N    
 .....
   \end{lstlisting}
+        \item Online:
+            \begin{itemize}
+                \item Microsoft TechNet
+		\item \url{https://www.ultimatewindowssecurity.com/securitylog/encyclopedia/}
+		\item \url{http://eventid.net/}
+            \end{itemize}
     \end{itemize}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{12.4 Explore and extract evtx}
+  \frametitle{2.4 Extracting and exploring event logs: Exercise}
+  \begin{lstlisting}[basicstyle=\tiny]
+Extracting event logs
+---------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.4 Extracting and exploring event logs: Exercise}
+  \begin{lstlisting}[basicstyle=\tiny]
+Extracting event logs
+---------------------
+
+     mkdir evtx
+     mkdir evtx/out
+
+     mmls nps-2008-jean.raw
+     sudo mount -o ro,offset=$((512*63)) nps-2008-jean.raw /media/sansforensics/casenps/
+
+     cp /media/sansforensics/casenps/WINDOWS/system32/config/AppEvent.Evt evtx/
+     cp /media/sansforensics/casenps/WINDOWS/system32/config/SecEvent.Evt evtx/
+     cp /media/sansforensics/casenps/WINDOWS/system32/config/SysEvent.Evt evtx/
+     ls -lh evtx/
+
+
+Exploring event logs
+--------------------
+
+
+
+
+
+
+
+
+
+_
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.4 Extracting and exploring event logs: Exercise}
+  \begin{lstlisting}[basicstyle=\tiny]
+Extracting event logs
+---------------------
+
+     mkdir evtx
+     mkdir evtx/out
+
+     mmls image.raw
+     sudo mount=o ro,offset=$((512*63)) image.raw/media/case1/
+
+     cp /media/case1/WINDOWS/system32/config/AppEvent.Evt evtx/
+     cp /media/case1/WINDOWS/system32/config/SecEvent.Evt evtx/
+     cp /media/case1/WINDOWS/system32/config/SysEvent.Evt evtx/
+     ls -lh evtx/
+
+
+Exploring event logs
+--------------------
+
+     sudo apt install libevt-utils
+
+     evtinfo evtx/AppEvent.Evt
+     evtinfo evtx/SecEvent.Evt
+     evtinfo evtx/SysEvent.Evt
+
+     evtexport AppEvent.Evt | less
+     evtexport SysEvent.Evt | less
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{2.4 Extracting and exploring event logs}
+	\url{https://eventlogxp.com/}
     \includegraphics[scale=0.27]{images/evtx2.png}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{2.5 Example}
+	\frametitle{2.5 Example \texttt{.evtx}}
     \begin{itemize}
         \item Logon Success
   \begin{lstlisting}[basicstyle=\tiny]
@@ -155,7 +258,7 @@ $ evtxexport Security.evtx | grep 4625
 
 
 \begin{frame}[fragile]
-  \frametitle{2.5 Example}
+	\frametitle{2.5 Example \texttt{.evtx}}
     \includegraphics[scale=0.4]{images/f14_logonType.png}
 \end{frame}
 
@@ -196,23 +299,37 @@ $ evtxexport Security.evtx | grep 4625
 
 
 \begin{frame}[fragile]
-  \frametitle{2.7 Exercise: Event Log}
-    \begin{enumerate}
-        \item Which .evtx files could be interesting for forensics?
-        \item Extract promising .evtx files
-	\item Try tools like \texttt{evtx\_dump.py} to read some logs
-        \item Find general information like:
-        \begin{itemize}
-            \item What time the system boot up
-            \item What user was logged on
-            \item Was there much user activity before infection
-            \item What time the system shut down
-        \end{itemize}
-        \item Search for other incident related artefacts in .evtx files
-        \item Are artefacts within the other log files?
-    \end{enumerate}
-\end{frame}
+	\frametitle{2.7 Exercise: Automated tools}
+  \begin{lstlisting}[basicstyle=\tiny]
 
+     Example: Chainsaw
+     =================
+     
+     wget https://github.com/WithSecureLabs/chainsaw/releases/
+                  download/v2.10.1/chainsaw_all_platforms+rules.zip
+
+     7z x chainsaw_all_platforms+rules.zip
+     cd chainsaw
+     chmod +x ./chainsaw_x86_64-unknown-linux-gnu
+     git clone https://github.com/sbousseaden/EVTX-ATTACK-SAMPLES.git 
+
+     ./chainsaw_x86_64-unknown-linux-gnu hunt EVTX-ATTACK-SAMPLES/ -s sigma/
+          --mapping mappings/sigma-event-logs-all.yml | less
+
+
+     [+] Loading detection rules from: sigma/
+     [!] Loaded 3336 detection rules (490 not loaded)
+     [+] Loading forensic artefacts from: EVTX-ATTACK-SAMPLES/Command 
+         and Control, 2 (extensions: .evt, .evtx)
+
+
+
+     Challenge: Hayabusa
+     ===================
+
+     https://github.com/Yamato-Security/hayabusa
+  \end{lstlisting}
+\end{frame}
 
 
 

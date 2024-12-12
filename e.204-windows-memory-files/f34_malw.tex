@@ -18,7 +18,160 @@
 
 
 \begin{frame}[fragile]
-  \frametitle{4.1 PE - Portable Execution format}
+  \frametitle{4.1 Introduction}
+    \begin{itemize}
+	    \item[] Take care: Self-Infection:
+    	    \begin{itemize}
+	    	\item Keep away from production
+		\item Isolated machines (VMs)
+		\item Network considerations
+		\item[]
+    	    \end{itemize}
+	    \item[] Exchange of malware via email:
+    	    \begin{itemize}
+	    	\item Password protected archive
+		\item Password: \texttt{infected}
+		\item[]
+    	    \end{itemize}
+	    \item[] 5 Phases of analysis
+            \begin{enumerate}
+            	\item OSINT - Open Source Intelligence
+		\item Automatic Analysis (Sandbox)
+            	\item Static Analysis
+		\item Dynamic Analysis (Behavioral Analysis)
+            	\item Reverse Engineering
+		\item[]
+            \end{enumerate}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.2 OSINT - IoCs}
+    \begin{itemize}
+	    \item Is the file \texttt{Form.exe} malicious?
+            \item What it is doing?
+    \end{itemize}
+  \begin{lstlisting}[basicstyle=\tiny]
+    ls -l Form.exe				                    189952 Form.exe
+   md5sum Form.exe		                   a8371cb187d99711691ccbecf8f35657
+  sha1sum Form.exe                         8dec32121d2f9f876c2b157451968796608d3dd5
+sha256sum Form.exe 784560f38065089f1c61869f7ebdc58b0115d500e5113e6c09d1b4d885ccb340
+  \end{lstlisting}
+  \includegraphics[scale=0.17]{images/VT_1.png}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.2 OSINT - Malpedia}
+  \includegraphics[scale=0.24]{images/malpedia.png}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.2 OSINT - VirusTotal Details}
+  \includegraphics[scale=0.24]{images/VT_2.png}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.2 OSINT - abuse.ch - MalwareBazaar}
+  \includegraphics[scale=0.24]{images/mwBazaar.png}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.2 OSINT - MISPPriv}
+  \includegraphics[scale=0.22]{images/misp.png}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.3 Sandbox - Joe}
+  \includegraphics[scale=0.22]{images/joe1.png}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.3 Sandbox - Joe}
+  \includegraphics[scale=0.21]{images/joe2.png}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.3 Sandbox - Joe}
+  \includegraphics[scale=0.21]{images/joe3.png}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.3 Sandbox - Cuckoo3}
+  \includegraphics[scale=0.21]{images/cuckoo.png}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.4 Static Analysis}
+    \begin{itemize}
+        \item Malware delivery: Email
+        \begin{itemize}
+            \item Office documents
+            \item PDF
+            \item .EXE
+        \end{itemize}
+        \item Analyze:
+        \begin{itemize}
+            \item Hash values
+            \item Strings
+            \item Resources
+            \item Imported functions
+            \item Exported functions
+            \item Certificate
+            \item .....
+        \end{itemize}
+        \item[] $\to$ Capabilities of the malware
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.4 Static Analysis - Strings}
+  \begin{lstlisting}[basicstyle=\tiny]
+      pestr -n 7 Form.exe | less
+      --------------------------
+      !This program cannot be run in DOS mode.
+      <Ar5<zw1<Zv
+      EThis program cannot be run in DOS mode.
+      :Yf/yZjP
+      [)sk/Jo
+      X|e^BZ8
+      Rh%';,V
+
+
+      pescan Form.exe
+      ---------------
+      file entropy:                    7.322160 (probably packed)
+      fpu anti-disassembly:            no
+      imagebase:                       normal
+      entrypoint:                      normal
+      DOS stub:                        normal
+      TLS directory:                   not found
+      timestamp:                       normal
+      section count:                   1 (low)
+
+
+      pesec Form.exe
+      --------------
+      ASLR:                            yes
+      DEP/NX:                          yes
+      SEH:                             yes
+      Stack cookies (EXPERIMENTAL):    yes
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.4 Static Analysis - PE - Portable Execution format}
     \begin{itemize}
         \item Describe program files
         \item Contain:
@@ -26,7 +179,7 @@
             \item Meta data
             \item Instructions
             \item Text data
-            \item Pictures and alike
+            \item Resources: Pictures and alike
         \end{itemize}
         \item Tell Windows how to load a program
         \item Provide resources to running program
@@ -48,48 +201,49 @@
 
 
 \begin{frame}[fragile]
-  \frametitle{4.2 PE - Basic Analysis}
+  \frametitle{4.4 Static Analysis - PE - Basic Analysis}
   \begin{lstlisting}[basicstyle=\tiny]
-$ file 1.exe 
-     malware/1.exe: PE32 executable (GUI) Intel 80386, for MS Windows
+file Form.exe
+-------------
+     Form.exe: PE32 executable (GUI) Intel 80386, for MS Windows
 
 
-$ exiftool 1.exe
-
-     File Name                       : 1.exe
-     File Size                       : 300 kB
+exiftool Form.exe
+-----------------
+     File Name                       : Form.exe
+     File Size                       : 186 KiB
      .....
+     File Type                       : Win32 EXE
+     File Type Extension             : exe
+     MIME Type                       : application/octet-stream
      Machine Type                    : Intel 386 or later, and compatibles
-     Time Stamp                      : 2007:08:29 02:37:01+02:00
+     Time Stamp                      : 2000:07:31 02:00:25+02:00
+     Image File Characteristics      : Executable, 32-bit
      PE Type                         : PE32
-     Linker Version                  : 8.0
-     Code Size                       : 57344
-     Initialized Data Size           : 3940352
+     Linker Version                  : 11.0
+     Code Size                       : 185856
+     Initialized Data Size           : 0
      Uninitialized Data Size         : 0
-     Entry Point                     : 0x80c0
-     OS Version                      : 4.0
+     Entry Point                     : 0x12e0
+     OS Version                      : 6.0
+     Image Version                   : 0.0
+     Subsystem Version               : 6.0
      Subsystem                       : Windows GUI
-     File OS                         : Windows NT 32-bit
-     Object File Type                : Executable application
-     .....
-     Company Name                    : iWin Inc.
-     File Description                : Furnishings
-     Internal Name                   : Gem
-     Legal Copyright                 : Dissipates (C) 2014
-     Original File Name              : Glittering.exe
+     Warning                         : Error processing PE data dictionary
   \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{4.2 PE - Basic Analysis}
+  \frametitle{4.4 Static Analysis - PE - Basic Analysis}
   \begin{lstlisting}[basicstyle=\tiny]
-$ file Quotation.exe 
+file Quotation.exe
+------------------
      Quotation.exe: PE32 executable (GUI) Intel 80386, for MS Windows
 
 
-$ exiftool Quotation.exe
-  
+exiftool Quotation.exe
+----------------------  
      ...
      Machine Type                    : Intel 386 or later, and compatibles
      Time Stamp                      : 2005:08:14 14:47:46+02:00
@@ -100,7 +254,6 @@ $ exiftool Quotation.exe
      Uninitialized Data Size         : 0
      Entry Point                     : 0x15f4
      OS Version                      : 4.0
-     ...  
      Character Set                   : Unicode
      Comments                        : Natcher
      Company Name                    : Glucosazone
@@ -116,160 +269,112 @@ $ exiftool Quotation.exe
 
 
 \begin{frame}[fragile]
-  \frametitle{4.2 PE - Basic Analysis}
+  \frametitle{4.4 Static Analysis - PE - Header}
   \begin{lstlisting}[basicstyle=\tiny]
-$ python
+readpe -H Form.exe
+------------------
 
-     >>> import pefile
-     >>> pe = pefile.PE("1.exe")
-     >>> for section in pe.sections:
-     ...      print(section.Name, section.VirtualAddress, 
-                    section.Misc_VirtualSize, section.SizeOfRawData)
-('.text\x00\x00\x00', 4096, 54028, 57344)
-('.rdata\x00\x00', 61440, 4360, 8192)
-('.data\x00\x00\x00', 69632, 3695044, 4096)
-('.rsrc\x00\x00\x00', 3768320, 230456, 233472)
+     DOS Header
+         Magic number:                    0x5a4d (MZ)
+         Bytes in last page:              144
+         Pages in file:                   3
+         .....
 
-
-
-     >>> for entry in pe.DIRECTORY_ENTRY_IMPORT:
-     ...     print(entry.dll)
-     ...     for function in entry.imports:
-     ...         print "\t",function.name
-
-ADVAPI32.dll
-        RegOpenKeyExA
-        MapGenericMask
-        AdjustTokenGroups
-        SetSecurityDescriptorDacl
-        GetSecurityDescriptorLength
-        StartServiceA
-        OpenServiceA
-.....
+     Optional/Image header
+         Magic number:                    0x10b (PE32)
+         Linker major version:            11
+         Linker minor version:            0
+         Size of .text section:           0x2d600
+         Size of .data section:           0
+         Size of .bss section:            0
+         Entrypoint:                      0x12e0
+         Address of .text section:        0x1000
+         Address of .data section:        0x2f000
+         ImageBase:                       0x400000
+         Alignment of sections:           0x1000
+         Alignment factor:                0x200
+         .....
+	 Size of image:                   0x2f000
+         Size of headers:                 0x200
+         Checksum:                        0
+         Subsystem required:              0x2 (IMAGE_SUBSYSTEM_WINDOWS_GUI)
+         DLL characteristics:             0x8140
+         .....
   \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{4.2 PE - Basic Analysis}
+  \frametitle{4.4 Static Analysis - PE - Imported Functions}
   \begin{lstlisting}[basicstyle=\tiny]
-$ strings 1.exe | less
-
-     Microsoft Visual C++ Runtime Library
-     ]]      ))
-     ImageList_DragEnter
-     ImageList_GetDragImage
-     UninitializeFlatSB
-     ImageList_SetOverlayImage
-     ImageList_Merge
-     COMCTL32.dll
-     OLEAUT32.dll
-     RegOpenKeyExA
-     OpenServiceA
-     StartServiceA
-     GetSecurityDescriptorLength
-     SetSecurityDescriptorDacl
-     AdjustTokenGroups
-     MapGenericMask
-     ADVAPI32.dll
-     .....
-
-
-  mkdir images
-$ wrestool -x 1.exe -o images/
-
+readpe -i ../1.exe
+------------------
+    Library
+        Name:                            COMCTL32.dll
+        Functions
+                Name:                            ImageList_GetDragImage
+                Name:                            ImageList_Merge
+                Name:                            ImageList_SetOverlayImage
+                Name:                            UninitializeFlatSB
+                Name:                            ImageList_DragEnter
+    Library
+        Name:                            OLEAUT32.dll
+        Functions
+            Function
+                Ordinal:                         294
+    Library
+        Name:                            ADVAPI32.dll
+        Functions
+                Name:                            RegOpenKeyExA
+                Name:                            MapGenericMask
+                Name:                            AdjustTokenGroups
+                Name:                            SetSecurityDescriptorDacl
+                Name:                            GetSecurityDescriptorLength
+                Name:                            StartServiceA
+                Name:                            OpenServiceA
+    Library
+        Name:                            MSVCRT.dll
+        Functions
+                Name:                            _mbsspnp
+         .....
   \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{4.2 PE - Basic Analysis}
+  \frametitle{4.4 Static Analysis - PE - Resources}
   \begin{lstlisting}[basicstyle=\tiny]
-$ strings Quotation.exe | less
+wrestool -l ../1.exe
+--------------------
 
-     .....
-     Damenization
-     royle6
-     nonexpedience
-     incorporating1
-     PEAS
-     SIMOONS
-     extramarginal
-     ursula
-     floricultural
-     brainstorms
-     NODDIES
-     SCALOPUS9
-     DEADHEADED
-     lushai5
-     elenchi7
-     k40[
-     VB5!6&*
-
-
-  mkdir images
-$ wrestool -x Quotation.exe -o images/
-
+--type=3 --name=23166 --language=2064 [type=icon offset=0x398cd8 size=455]
+--type=3 --name=23167 --language=2064 [type=icon offset=0x398e78 size=648]
+--type=3 --name=23168 --language=2064 [type=icon offset=0x398f78 size=642]
+--type=3 --name=23169 --language=2064 [type=icon offset=0x399118 size=671]
+--type=3 --name=23170 --language=2064 [type=icon offset=0x399358 size=1152]
+--type=3 --name=23171 --language=2064 [type=icon offset=0x3995d8 size=1401]
+--type=3 --name=23172 --language=2064 [type=icon offset=0x399a18 size=739]
+--type=5 --name=34145 --language=2064 [type=dialog offset=0x398740 size=426]
+--type=5 --name=34146 --language=2064 [type=dialog offset=0x3988f0 size=382]
+--type=5 --name=34147 --language=2064 [type=dialog offset=0x398a70 size=562]
+--type=9 --name=44061 --language=2064 [type=accelerator offset=0x3986e8 size=88]
+--type=0 --name=5676 --language=2064 [offset=0x398ca8 size=11]
+--type=0 --name=5677 --language=2064 [offset=0x398cb8 size=30]
+--type=0 --name=5678 --language=2064 [offset=0x399c58 size=219344]
+--type=0 --name=5679 --language=2064 [offset=0x3cf528 size=3852]
+--type=14 --name=63607 --language=2064 [type=group_icon offset=0x398e60 size=20]
+--type=14 --name=63608 --language=2064 [type=group_icon offset=0x398f60 size=20]
+--type=14 --name=63609 --language=2064 [type=group_icon offset=0x399100 size=20]
+--type=14 --name=63610 --language=2064 [type=group_icon offset=0x399340 size=20]
+--type=14 --name=63611 --language=2064 [type=group_icon offset=0x3995c0 size=20]
+--type=14 --name=63612 --language=2064 [type=group_icon offset=0x399a00 size=20]
+--type=14 --name=63613 --language=2064 [type=group_icon offset=0x399c40 size=20] 
   \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{4.3 Enrich Online}
-    \begin{itemize}
-        \item Calculate hash values
-  \begin{lstlisting}[basicstyle=\tiny]
-$ md5sum 1.exe 
-     a3bd288dec191caaed2057590e0dc34f
-
-$ md5sum Quotation.*
-e3f0a2033a78e307a71320217ef738bc  Quotation.exe
-84617d594af613f77deb32927123f779  Quotation.zip
-
-  \end{lstlisting}
-        \item www.virustotal.com
-        \begin{itemize}
-	    \item[] $\to$ Live Demo
-	    \item[] $\to$ Pro. Account
-	    \item[] $\to$ Why not uploading office documents?
-	    \item[]
-        \end{itemize}
-        \item MISP - Open Source Threat Intelligence Platform
-        \begin{itemize}
-		\item[] \url{https://www.misp-project.org/}
-		\item[] \url{https://circl.lu/services/misp-malware-information-sharing-platform/}
-	    \item[]
-	    \item[] $\to$ Live Demo
-	    \item[]
-        \end{itemize}
-    \end{itemize}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{4.3 Enrich Online}
-    \begin{figure}
-        \includegraphics[scale=0.25]{images/misp_1.png}
-        \captionsetup{labelformat=empty,labelsep=none}
-        \transparent{0.7}%
-        \caption[]{\tiny Event Overview: https://misppriv.circl.lu/}
-    \end{figure}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{4.3 Enrich Online}
-    \begin{figure}
-        \includegraphics[scale=0.27]{images/misp_2.png}
-        \captionsetup{labelformat=empty,labelsep=none}
-        \transparent{0.7}%
-        \caption[]{\tiny Correlation Graph: https://misppriv.circl.lu/}
-    \end{figure}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{4.4 Static Analysis}
+  \frametitle{4.4 Static Analysis - Considerations}
     \begin{itemize}
         \item Perfect disassembly $\to$ Unsolved problem
         \item Linear disassembly
@@ -405,64 +510,6 @@ mov eax, 12
 .
   \end{lstlisting}
 \end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{4.6 Dynamic Analysis}
-    \begin{figure}
-        \includegraphics[scale=0.27]{images/dma_1.png}
-        \captionsetup{labelformat=empty,labelsep=none}
-        \transparent{0.7}%
-        \caption[]{\tiny Upload a 1.exe: https://circl.lu/services/dynamic-malware-analysis/}
-    \end{figure}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{4.6 Dynamic Analysis}
-    \begin{figure}
-        \includegraphics[scale=0.4]{images/dma_2a.png}
-        \captionsetup{labelformat=empty,labelsep=none}
-        \transparent{0.7}%
-        \caption[]{\tiny Signatures and Screenshots: https://circl.lu/services/dynamic-malware-analysis/}
-    \end{figure}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{4.6 Dynamic Analysis}
-    \begin{figure}
-        \includegraphics[scale=0.4]{images/dma_2b.png}
-        \captionsetup{labelformat=empty,labelsep=none}
-        \transparent{0.7}%
-        \caption[]{\tiny Signatures and Screenshots: https://circl.lu/services/dynamic-malware-analysis/}
-    \end{figure}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{4.6 Dynamic Analysis}
-    \begin{figure}
-        \includegraphics[scale=0.26]{images/dma_3.png}
-        \captionsetup{labelformat=empty,labelsep=none}
-        \transparent{0.7}%
-        \caption[]{\tiny Upload a Quotation.exe: https://circl.lu/services/dynamic-malware-analysis/}
-    \end{figure}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{4.6 Dynamic Analysis}
-    \begin{figure}
-        \includegraphics[scale=0.25]{images/dma_4.png}
-        \captionsetup{labelformat=empty,labelsep=none}
-        \transparent{0.7}%
-        \caption[]{\tiny Access to Files and Registry: https://circl.lu/services/dynamic-malware-analysis/}
-    \end{figure}
-\end{frame}
-
-
-
 
 
 

@@ -63,5 +63,72 @@
 \end{frame}
 
 
+\begin{frame}[fragile]
+  \frametitle{5.2 Analysing files: Outlook PST}
+    \begin{lstlisting}[basicstyle=\tiny]
+1. Preparation:
+---------------
+
+sudo mount -o ro,offset=$((512*63)) nps-2008-jean.raw /media/sansforensics/casenps/
+mkdir outlook
+mkdir outlook/out
+
+
+2. Copy .pst file
+-----------------
+
+cp /media/sansforensics/casenps/Documents\ and\ Settings/Jean/Local\ Settings/
+        Application\ Data/Microsoft/Outlook/outlook.pst outlook/.
+
+
+3. Extract Emails
+-----------------
+
+file outlook/outlook.pst 
+    outlook/outlook.pst: Microsoft Outlook email folder (<=2002)
+
+
+readpst outlook/outlook.pst -o outlook/out/
+
+
+cd outlook/out/
+ls
+    Inbox.mbox   Outbox.mbox  'Sent Items.mbox'
+    \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{5.2 Analysing files: Outlook PST}
+    \begin{lstlisting}[basicstyle=\tiny]
+4. Analyze Emails
+-----------------
+
+less Sent\ Items.mbox 
+
+    I've attached the information that you have requested to this email message.
+    .....
+    .....
+    -----Original Message-----
+    From: alison@m57.biz [mailto:tuckgorge@gmail.com]
+    Sent: Sunday, July 20, 2008 2:23 AM
+    To: jean@m57.biz
+    Subject: Please send me the information now
+    .....
+    Hi, Jean.
+    I'm sorry to bother you, but I really need that information now ---
+    .....
+    ----boundary-LibPST-iamunique-1836211713_-_-
+        filename="m57biz.xls"
+
+
+less Inbox.mbox
+
+    From "tuckgorge@gmail.com" Sun Jul 20 01:22:45 2008
+    X-Original-To: jean@m57.biz
+    To: jean@m57.biz
+    From: tuckgorge@gmail.com (alison@m57.biz)
+    \end{lstlisting}
+\end{frame}
 
 

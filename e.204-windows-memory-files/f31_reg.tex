@@ -37,10 +37,10 @@
                 \item Replace text based config files
                 \item Contains information for operating
                 \begin{itemize}
-                    \item Hardware in the system
-                    \item All aspects of MS Windows
-                    \item Installed applications
-                    \item Each user
+                    \item Hardware system wide
+                    \item OS all aspects
+                    \item Applications installed
+                    \item User preferences / behavior
                 \end{itemize}
             \end{itemize}
     \item[] $\to$ A gold mine for forensics
@@ -62,21 +62,22 @@
 \begin{frame}[fragile]
   \frametitle{1.1 About: Windows Registry}
     \begin{itemize}
-        \item Do you ever touch the Registry?
-            \begin{itemize}
-		\item \texttt{regedit.exe}
-                \item Black Magic for many admins
-		\item[] $\to$ Every user interacts with the Registry
-		\item[]
-            \end{itemize}
-        \item Location of the hive files
+        \item Hive files: Location
             \begin{itemize}
                 \item[] \begin{verbatim}%SystemRoot%\system32\config\end{verbatim}
                 \item[] $\to$ \texttt{SAM, SECURITY, SYSTEM, SOFTWARE}
                 \item[] \begin{verbatim}%UserProfile%\NTUSER.DAT\end{verbatim}
                 \item[] \begin{verbatim}%UserProfile%\AppData\Local\Microsoft\Windows\UsrClass.dat\end{verbatim}
-		\item[]
             \end{itemize}
+        \item[] $\to$ Created during system boot
+	\item[]
+        \item How often do you manually edit the Registry?
+            \begin{itemize}
+		\item \texttt{regedit.exe}
+                \item Black Magic for many admins
+		\item[] $\to$ Every user interacts with the Registry
+            \end{itemize}
+	\item[]
         \item Timestamps $\to$ Timeline
     \end{itemize}
 \end{frame}
@@ -153,7 +154,7 @@
    \begin{itemize}
       \item SAM
       \begin{itemize}
-          \item Local users
+          \item Security Accounts Manager: Local users
       \end{itemize}
       \item Security
       \begin{itemize}
@@ -162,18 +163,21 @@
       \end{itemize}
       \item System
       \begin{itemize}
-          \item General system configuration
-          \item Networking, Auto run
-          \item Program execution
-          \item USB devices
+          \item Hardware configuration
+          \item System configuration
        \end{itemize}
       \item Software
       \begin{itemize}
-          \item Windows version, Profiles list
-          \item Networking, Auto run
-          \item Shell extensions, Browser helper objects
-          \item Scheduled Tasks
-          \item Program execution
+          \item Windows settings
+          \item Application information
+      \end{itemize}
+      \item NTUser.dat
+      \begin{itemize}
+          \item User behavior and settings
+      \end{itemize}
+      \item UsrClass.dat
+      \begin{itemize}
+          \item Graphical User Interface information
       \end{itemize}
    \end{itemize}
    \end{itemize}
@@ -193,41 +197,250 @@
         \item[] \begin{verbatim}C:\Users\<user>\AppData\Local\Microsoft\Windows\\end{verbatim}
         \item[] \begin{verbatim}   UsrClass.dat\end{verbatim}
         \item[]
-        \item \begin{verbatim}C:\Windows\inf\setupapi.log\end{verbatim}
+	\item \begin{verbatim}C:\Windows\inf\setupapi.log\end{verbatim} (Plug and Play Log)
     \end{itemize}
+\end{frame}
+
+
+
+
+
+
+\begin{frame}[fragile]
+  \frametitle{1.3 Hive files - Exercise: Get hive files}
+    \begin{lstlisting}[basicstyle=\tiny]
+Extract registry hive files from forensic image
+===============================================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_
+      mkdir registry/out
+    \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.3 Hive files - Exercise: Get hive files}
+    \begin{lstlisting}[basicstyle=\tiny]
+Extract registry hive files from forensic image
+===============================================
+
+   1. Investigate Meta-Information
+   -------------------------------
+      ewfinfo image.E01
+      ewfexport image.E01
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_
+      mkdir registry/out
+    \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.3 Hive files - Exercise: Get hive files}
+    \begin{lstlisting}[basicstyle=\tiny]
+Extract registry hive files from forensic image
+===============================================
+
+   1. Investigate Meta-Information
+   -------------------------------
+      ewfinfo image.E01
+      ewfexport image.E01
+
+
+   2. Mount evidences
+   ------------------
+      sudo mkdir /media/case1
+      mmls image.raw
+      sudo mount -o ro,offset=$((512*63)) image.raw /media/case1/
+
+
+
+
+
+
+
+
+
+
+
+
+
+_
+    \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.3 Hive files - Exercise: Get hive files}
+    \begin{lstlisting}[basicstyle=\tiny]
+Extract registry hive files from forensic image
+===============================================
+
+   1. Investigate Meta-Information
+   -------------------------------
+      ewfinfo image.E01
+      ewfexport image.E01
+
+
+   2. Mount evidences
+   ------------------
+      sudo mkdir /media/case1
+      mmls image.raw
+      sudo mount -o ro,offset=$((512*63)) image.raw /media/case1/
+
+
+   3. Copy files
+   -------------
+      mkdir registry
+      cp /media/case1/WINDOWS/system32/config/SAM registry
+      cp /media/case1/WINDOWS/system32/config/software registry
+      cp /media/case1/WINDOWS/system32/config/system registry
+      cp /media/case1/WINDOWS/system32/config/SECURITY registry
+      cp /media/case1/Documents\ and\ Settings/Jean/NTUSER.DAT registry
+      cp /media/case1//Documents\ and\ Settings/Jean/Local\ Settings/
+         Application\ Data/Microsoft/Windows/UsrClass.dat registry/
+      ls registry/
+      mkdir registry/out
+    \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
   \frametitle{1.4 RegRipper}
   \begin{itemize}
-      \item Extract specific key values
-  \begin{lstlisting}[basicstyle=\tiny]
-$ rip.pl -p compname -r SYSTEM
-	ComputerName    = WIN7WS
-	TCP/IP Hostname = Win7WS
-  \end{lstlisting}
-      \item Alternative method
-  \begin{lstlisting}[basicstyle=\tiny]
-$ wine rip.exe -p compname -r SYSTEM
-	ComputerName    = WIN7WS
-	TCP/IP Hostname = Win7WS
-  \end{lstlisting}
-      \item RegRipper plugins
-  \begin{lstlisting}[basicstyle=\tiny]
-$ ls -l /usr/share/regripper/plugins | wc -l
-	397
-  \end{lstlisting}
-      \item Ripping hive files with profiles
-  \begin{lstlisting}[basicstyle=\tiny]
-$ rip.exe -f sam -r SAM > out/sam.txt
-$ rip.exe -f security -r SECURITY > out/security.txt
-$ rip.exe -f system -r SYSTEM > out/system.txt
-$ rip.exe -f software -r SOFTWARE > out/software.txt
-$ rip.exe -f ntuser -r NTUser.dat > out/ntuser.txt
-$ rip.exe -f usrclass -r UsrClass.dat > out/userClass.txt
-  \end{lstlisting}
+	  \item \url{https://github.com/keydet89/RegRipper4.0}
+	  \item Plugins: ~385
   \end{itemize}
+    \begin{lstlisting}[basicstyle=\tiny]
+regripper -h
+	Rip v.3.0 - CLI RegRipper tool	
+	Rip [-r Reg hive file] [-f profile] [-p plugin] [options]
+	Parse Windows Registry files, using either a single module, or a profile.
+
+
+ls /usr/lib/regripper/plugins | grep pl$ | wc -l
+	249
+
+
+ls /usr/lib/regripper/plugins | grep -v pl$
+	all
+	amcache
+	ntuser
+	sam
+	security
+	software
+	syscache
+	system
+	usrclass
+    \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.4 RegRipper - Examples}
+  \begin{lstlisting}[basicstyle=\tiny]
+     regripper -p compname -r software 
+	Select not found.
+
+
+     regripper -p compname -r system 
+	ComputerName    = JEAN-13FBF038A3
+	TCP/IP Hostname = jean-13fbf038a3
+
+
+     regripper -p run -r NTUSER.DAT 
+
+	Software\Microsoft\Windows\CurrentVersion\Run
+	LastWrite Time 2008-07-18 04:36:52Z
+	  MSMSGS - "C:\Program Files\Messenger\msmsgs.exe" /background
+	  Aim6 - "C:\Program Files\AIM6\aim6.exe" /d locale=en-US ee://aol/imApp
+
+
+     regripper -p run -r software 
+
+	Microsoft\Windows\CurrentVersion\Run
+	LastWrite Time 2008-07-06 07:21:46Z
+	  VMware User Process - C:\Program Files\VMware\VMware Tools\VMwareUser.exe
+	  VMware Tools - C:\Program Files\VMware\VMware Tools\VMwareTray.exe
+
+	Microsoft\Windows\CurrentVersion\Run\OptionalComponents
+	LastWrite Time 2008-07-06 07:21:46Z
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.4 RegRipper - Examples}
+  \begin{lstlisting}[basicstyle=\tiny]
+   mkdir registry/out
+
+   regripper -f sam -r SAM > out/sam.txt
+   regripper -a     -r SAM > out/sam2.txt
+   less registry/out/sam.txt
+
+	User Information
+	-------------------------
+	Username        : Administrator [500]
+	Full Name       : 
+	User Comment    : Built-in account for administering the computer/domain
+	Account Type    : Default Admin User
+	Account Created : 2008-05-13 22:20:14Z
+	Name            :  
+	Last Login Date : 2008-07-21 01:22:18Z
+	Pwd Reset Date  : 2008-05-13 22:23:39Z
+	Pwd Fail Date   : Never
+	Login Count     : 24
+	Embedded RID    : 500
+	  --> Password does not expire
+	  --> Normal user account
+
+	Username        : Guest [501]
+	Full Name       : 
+	User Comment    : Built-in account for guest access to the computer/domain
+	Account Type    : Default Guest Acct
+	Account Created : 2008-05-13 22:20:14Z
+  \end{lstlisting}
 \end{frame}
 
 
@@ -240,215 +453,229 @@ $ rip.exe -f usrclass -r UsrClass.dat > out/userClass.txt
       \item Try to find incident related artefacts
       \item Add the information to report
   \end{enumerate}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{1.6 Examples: System Hive}
-   \begin{itemize}
-      \item Computer name
-      \item Services
-      \item Network configuration
-      \item Devices / USB device
-      \begin{itemize}
-	  \item \texttt{\scriptsize{SYSTEM/ControlSet001/Enum/USBStor}}
-	  \item[] $\to$ Device class ID
-	  \item[] $\to$ Unique instance ID (SN)
-	  \item[] $\to$ First connect time stamp
-	  \item[]
-	  \item \texttt{\scriptsize{SYSTEM/ControlSet001/Enum/USB}}
-	  \item[] $\to$ Last connect time stamp
-	  \item[]
-	  \item \texttt{\scriptsize{SYSTEM/MountedDevices}}
-	  \item[] $\to$ Voume GUID
-	  \item[] $\to$ Mount Point
-	  \item[]
-      \end{itemize}
-   \end{itemize}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{1.7 Examples: Software Hive}
-   \begin{itemize}
-      \item OS version \& configuration
-      \item Applications installed \& uninstalled
-      \item Application configuration system wide
-      \item Drivers
-      \item Network lists \& interfaces
-      \item User profiles
-      \item Schedules Tasks
-      \item Auto start
-      \item Example: Get Windows version:
-      \begin{itemize}
-	  \item \texttt{\scriptsize{wine rip.exe -p winver -r SOFTWARE}}
-	  \item[]
-      \end{itemize}
-   \end{itemize}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{1.7 Examples: User Hive}
-   \begin{itemize}
-      \item OS configuration user related
-      \item Applications installed \& uninstalled
-      \item Application configuration user related
-      \item Auto start
-      \begin{itemize}
-          \item Run
-              \begin{itemize}
-                  \item Executed at user login
-                  \item Provide \(malware\) persistence
-                  \item No admin privileges required
-              \end{itemize}
-          \item RunOnce
-          \item Legacy and other AutoStart
-              \begin{itemize}
-		      \item \texttt{\scriptsize{/Software/Microsoft/Windows/CurrentVersion/Policies/Explorer/Run/}}
-		      \item \texttt{\scriptsize{/Software/Microsoft/Windows NT/CurrentVersion/Windows/'load','run'}}
-              \end{itemize}
-          \item Much more auto start loctions... 
-      \end{itemize}
-   \end{itemize}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{1.7 Examples: User Hive}
-   \begin{itemize}
-      \item WordWheelQuery
-        \begin{itemize}
-           \item User search on localhost
-           \item MRU List
-	   \item[] $\to$ Consider VSS for histrorical data
-        \end{itemize}
-      \item Shell Bags
-        \begin{itemize}
-          \item User preferences for diplaying Explorer windows
-          \item Postion, size, view, icon
-	  \item[] $\to$ Folders accessed by the user 
-        \end{itemize}
-      \item UserAssist
-        \begin{itemize}
-	  \item User activities
-            \begin{itemize}
-	      \item Double-click icon
-              \item Launch application from 'START Menu'
-            \end{itemize}
-	  \item Values stored:
-            \begin{itemize}
-              \item Path, Run-Count, FileTime last access
-              \item ROT-13
-            \end{itemize}
-        \end{itemize}
-   \end{itemize}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{1.7 Examples: User Hive}
-   \begin{itemize}
-      \item MUICache
-        \begin{itemize}
-          \item Program execution incl. called from CMD
-        \end{itemize}
-      \item RecentDocs
-        \begin{itemize}
-          \item[] Example: '.png' files
-          \begin{lstlisting}[basicstyle=\tiny]
-Software\Microsoft\Windows\CurrentVersion\Explorer\RecentDocs\.png
-LastWrite Time Fri Jan 12 15:00:52 2018 (UTC)
-MRUListEx = 3,2,0,1
-  3 = photo-123.png
-  2 = paint.png
-  0 = face.png
-  1 = flower.png
-          \end{lstlisting}
-        \end{itemize}
-      \item Common Dialogs
-        \begin{itemize}
-          \item[] Example: 'Open' and 'Save As...'
-          \begin{lstlisting}[basicstyle=\tiny]
-OpenSavePidlMRU\exe
-LastWrite Time: Tue Jul  5 14:40:46 2016
-Note: All value names are listed in MRUListEx order.
-
-  Users\avast_free_antivirus_setup_online.exe
-  Users\Thunderbird Setup 45.1.1.exe
-  Users\Firefox Setup Stub 47.0.1.exe
-          \end{lstlisting}
-        \end{itemize}
-   \end{itemize}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{1.8 Exercises}
   \begin{lstlisting}[basicstyle=\tiny]
-Identify computer name:
 
 
 
-What services start during system boot:
 
 
 
-Gather list of network connected:
 
 
 
-What network cards are configured:
 
 
 
-Get list of user profiles:
 
 
 
-Get Windows version:
-
-
-
-Detect Auto Start applications from the NTUser.dat hive:
-
-.
+_
   \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{1.8 Exercises}
+  \frametitle{1.5 RegRipper: Exercise}
+  \begin{enumerate}
+      \item Extract Hive files from invected PC
+      \item Rip them with RegRipper profiles
+      \item Collect important general information
+      \item Try to find incident related artefacts
+      \item Add the information to report
+  \end{enumerate}
   \begin{lstlisting}[basicstyle=\tiny]
-Identify computer name:
-          $ wine rip.exe -p compname -r SYSTEM
+mkdir registry/out
 
+     regripper -a -r SAM          > out/sam.txt
+     regripper -a -r SECURITY     > out/security.txt
+     regripper -a -r software     > out/software.txt
+     regripper -a -r system       > out/system.txt
+     regripper -a -r NTUSER.DAT   > out/NTUser.txt
+     regripper -a -r UsrClass.dat > out/UsrClass.txt
 
-What services start during system boot:
-          $ wine rip.exe -p services -r SYSTEM
-
-
-Gather list of network connected:
-          $ wine rip.exe -p networklist -r SOFTWARE
-
-
-What network cards are configured:
-          $ wine rip.exe -p networkcards -r SOFTWARE
-
-
-Get list of user profiles:
-          $ wine rip.exe -p profilelist -r SOFTWARE
-
-
-Get Windows version:
-          $ wine rip.exe -p winver -r SOFTWARE
-
-
-Detect Auto Start applications from the NTUser.dat hive:
-          $ wine rip.exe -p user_run -r JohnNTUser.DAT
-.
+     ls -lh out/
+	  24K Nov 11 07:46 NTUser.txt
+         7.1K Nov 11 07:47 sam.txt
+          603 Nov 11 07:46 security.txt
+         658K Nov 11 07:46 software.txt
+         157K Nov 11 07:46 system.txt
+         1.5K Nov 11 07:47 UsrClass.txt
   \end{lstlisting}
 \end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.6 General information: sam, security}
+  \begin{lstlisting}[basicstyle=\tiny]
+    less out/SAM.txt
+
+	Username        : Administrator [500]
+		Last Login Date : 2008-07-21 01:22:18Z
+		Pwd Fail Date   : Never
+		Login Count     : 24
+
+	Username        : Jean [1004]
+		Last Login Date : 2008-07-20 00:00:41Z
+		Pwd Fail Date   : Never
+		Login Count     : 80
+
+	Group Name    : Administrators [7]
+	LastWrite     : 2008-05-14 05:35:35Z
+	  S-1-5-21-484763869-796845957-839522115-1006
+	  S-1-5-21-484763869-796845957-839522115-1008
+	  S-1-5-21-484763869-796845957-839522115-1007
+	  S-1-5-21-484763869-796845957-839522115-1005
+	  S-1-5-21-484763869-796845957-839522115-1003
+	  S-1-5-21-484763869-796845957-839522115-500
+	  S-1-5-21-484763869-796845957-839522115-1004
+
+
+    less out/security.txt
+	
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.6 General information: system, software}
+  \begin{lstlisting}[basicstyle=\tiny]
+    regripper -p winver -r software 
+
+	ProductName               Microsoft Windows XP
+	CSDVersion                Service Pack 3      
+	BuildLab                  2600.xpsp.080413-2111
+	RegisteredOrganization                        
+	RegisteredOwner           Jean User           
+	InstallDate               2008-05-13 21:29:32Z
+
+
+    regripper -p networkcards -r software 
+
+	Description                                Key LastWrite time                                
+	VMware Accelerated AMD PCNet Adapter       2008-05-14 05:31:26Z
+
+
+    regripper -p uninstall -r software
+
+	2008-07-19 23:32:23Z
+	  VMware Tools v.3.2.0.1288
+	.....
+
+
+    regripper -p ips -r system
+
+	IPAddress            Domain
+	192.168.117.129      localdomain   
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.6 General information: system, software}
+  \begin{lstlisting}[basicstyle=\tiny]
+    regripper -p profilelist -r software
+
+	Path      : %SystemDrive%\Documents and Settings\Jean
+	SID       : S-1-5-21-484763869-796845957-839522115-1004
+	LastWrite : 2008-07-21 01:18:00Z
+
+	Path      : %SystemDrive%\Documents and Settings\Devon
+	SID       : S-1-5-21-484763869-796845957-839522115-1007
+	LastWrite : 2008-07-12 06:04:40Z
+
+	Path      : %SystemDrive%\Documents and Settings\Administrator
+	SID       : S-1-5-21-484763869-796845957-839522115-500
+	LastWrite : 2008-07-21 01:31:01Z
+
+
+    regripper -p shutdown -r system 
+
+	ControlSet001\Control\Windows key, ShutdownTime value
+	LastWrite time: 2008-07-21 01:31:32Z
+	ShutdownTime  : 2008-07-21 01:31:32Z
+
+
+    regripper -p timezone -r system
+
+	ControlSet001\Control\TimeZoneInformation
+	LastWrite Time 2008-05-14 06:55:57Z
+	  DaylightName   -> GMT Daylight Time
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.7 Tracing user activity}
+  \begin{enumerate}
+	  \item[] MRU - Most Recently Used
+      \begin{enumerate}
+	      \item[] Open/Save As dialog box
+              \begin{lstlisting}[basicstyle=\tiny]
+  regripper -p comdlg32 -r NTUSER.DAT
+              \end{lstlisting}
+	      \item[] Recent Docs opened via Win. Explorer
+		      \begin{lstlisting}[basicstyle=\tiny]
+  regripper -p recentdocs -r NTUSER.DAT
+              \end{lstlisting}
+      \end{enumerate}
+	  \item[] ShellBags (Win7+)
+      \begin{enumerate}
+	      \item[] Properties of folders
+              \begin{lstlisting}[basicstyle=\tiny]
+  regripper -p shellbags -r UsrClass.dat
+              \end{lstlisting}
+      \end{enumerate}
+	  \item[] Program execution
+      \begin{enumerate}
+	      \item[] UserAssist: GUI based launched
+              \begin{lstlisting}[basicstyle=\tiny]
+  regripper -p userassist -r NTUSER.DAT
+              \end{lstlisting}
+	      \item[] ShimCache: Track compatibility issues
+              \begin{lstlisting}[basicstyle=\tiny]
+  regripper -p shimcache -r system
+              \end{lstlisting}
+      \end{enumerate}
+  \end{enumerate}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.7 Tracing user activity}
+  \begin{enumerate}
+	  \item[] USB attached devices
+      \begin{enumerate}
+	      \item[] USBStor: Attached devices
+              \begin{lstlisting}[basicstyle=\tiny]
+  less /media/case1/WINDOWS/setupapi.log
+  regripper -p usbstor -r system
+              \end{lstlisting}
+              \item[] USBStor: Vendor \& Product ID
+              \begin{lstlisting}[basicstyle=\tiny]
+  regripper -p usb -r system
+              \end{lstlisting}
+              \item[] MountedDevices
+              \begin{lstlisting}[basicstyle=\tiny]
+  regripper -p mountdev -r system
+              \end{lstlisting}
+              \item[] MountPoints
+              \begin{lstlisting}[basicstyle=\tiny]
+  regripper -p mp2 -r NTUSER.DAT
+              \end{lstlisting}
+      \end{enumerate}
+	  \item[] 
+	  \item[] SANS Posters:
+          \begin{enumerate}
+	      \item[] \url{https://www.sans.org/posters/windows-forensic-analysis/}
+	      \item[] \url{https://www.sans.org/posters/hunt-evil/}
+	  \end{enumerate}
+  \end{enumerate}
+\end{frame}
+
+
+
+
+
 
 
 
