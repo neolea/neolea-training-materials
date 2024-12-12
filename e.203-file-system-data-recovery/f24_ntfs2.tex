@@ -18,7 +18,215 @@
 
 
 \begin{frame}[fragile]
-  \frametitle{4.1 Analyzing MFT Record manually}
+  \frametitle{4.1 Investigating a (Non)-Resident file}
+  \begin{lstlisting}[basicstyle=\tiny]
+$ sudo mount -o ro,offset=$((512*2048)) ntfs.raw /mnt/
+$ ls -l /mnt/small_text_file.txt 
+        15000 Dez  9  2019 /mnt/small_text_file.txt
+$ sudo umount /mnt
+
+
+$ fsstat -o 2048 ntfs.raw
+
+     FILE SYSTEM INFORMATION
+     --------------------------------------------
+     File System Type: NTFS
+
+     METADATA INFORMATION
+     --------------------------------------------
+     First Cluster of MFT: 4
+     First Cluster of MFT Mirror: 16255
+     Size of MFT Entries: 1024 bytes
+
+     CONTENT INFORMATION
+     --------------------------------------------
+     Sector Size: 512
+     Cluster Size: 4096
+     Total Cluster Range: 0 - 32510                     Challenge:
+                                                        ----------
+                                                        How many clusters 
+$ fls -o 2048 ntfs.raw                                  needed for that file?
+
+     r/r 73-128-2:      small_text_file.txt
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.1 Investigating a (Non)-Resident file}
+  \begin{lstlisting}[basicstyle=\tiny]
+$ istat -o 2048 ntfs.raw 73
+
+     Attributes:
+        .....
+     Type: $DATA (128-2)   Name: N/A   Non-Resident   size: 15000  init_size: 15000
+     4169 4170 4171 4172
+
+
+Exercise: Analyze data with TSK
+-------------------------------
+
+$ icat -o 2048 ntfs.raw 73 | less
+
+     AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+     AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+     .....
+                                                        Challenge:
+                                                        ----------
+Exercise: Analyze data manually with dd                 What is the difference?
+---------------------------------------
+
+$ dd if=ntfs.raw skip=$((2048 + 4169*8)) count=32| xxd | less
+
+     0000: 4141 4141 4141 4141 4141 4141 4141 4141  AAAAAAAAAAAAAAAA
+     0010: 4141 4141 4141 4141 4141 4141 4141 4141  AAAAAAAAAAAAAAAA
+     .....
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.1 Investigating a (Non)-Resident file}
+  \begin{lstlisting}[basicstyle=\tiny]
+Demo: Analyze MFT record manually               Challenge: Explain this offset!
+---------------------------------               ----------
+
+$ dd if=ntfs.raw skip=$((2048 + 4*8 + 73*2)) count=2 | xxd | less
+
+     0000: 4649 4c45 3000 0300 0000 0000 0000 0000  FILE0...........
+     0010: 0100 0100 3800 0100 b801 0000 0004 0000  ....8...........
+     .....
+     0030: 1300 0000 0000 0000 1000 0000 4800 0000  ............H...
+     .....
+     0080: 3000 0000 8000 0000 0000 0000 0000 0300  0...............
+     .....
+     0160: 0000 0001 0000 0000 8000 0000 4800 0000  ............H...
+     0170: 0100 4000 0000 0200 0000 0000 0000 0000  ..@.............
+     0180: 0300 0000 0000 0000 4000 0000 0000 0000  ........@.......
+     0190: 0040 0000 0000 0000 983a 0000 0000 0000  .@.......:......
+     01a0: 983a 0000 0000 0000 2104 4910 0000 0000  .:......!.I.....
+     01b0: ffff ffff 0000 0000 ffff ffff 0000 0000  ................
+
+
+     Analysis:
+     --------------------------------
+     0000 -- 0037    Attribute Header
+     0038 -- 007F    1. Attribute $10 - $Standard_Information
+     0080 -- 00FF    2. Attribute $30 - $File_Name
+     0100 -- 0167    3. Attribute $50 - $Securiy_Descriptor
+     0168 -- 01AF    4. Attribute $80 - $Data
+     01B0 -- 01BF    End Marker
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.1 Investigating a (Non)-Resident file}
+  \begin{lstlisting}[basicstyle=\tiny]
+Demo: Analyze MFT record manually
+---------------------------------
+
+$ dd if=ntfs.raw skip=$((2048 + 4*8 + 73*2)) count=2 | xxd | less
+
+     0000: 4649 4c45 3000 0300 0000 0000 0000 0000  FILE0...........
+     0010: 0100 0100 3800 0100 b801 0000 0004 0000  ....8...........
+     .....
+     0030: 1300 0000 0000 0000 1000 0000 4800 0000  ............H...
+     .....
+     0080: 3000 0000 8000 0000 0000 0000 0000 0300  0...............
+     .....
+     0160: 0000 0001 0000 0000 8000 0000 4800 0000  ............H...
+     0170: 0100 4000 0000 0200 0000 0000 0000 0000  ..@.............
+     0180: 0300 0000 0000 0000 4000 0000 0000 0000  ........@.......
+     0190: 0040 0000 0000 0000 983a 0000 0000 0000  .@.......:......
+     01a0: 983a 0000 0000 0000 2104 4910 0000 0000  .:......!.I.....
+     01b0: ffff ffff 0000 0000 ffff ffff 0000 0000  ................
+
+
+   Offset  Offset  Size                Value         Description:
+   ---------------------------------------------------------------------------
+     0168     00      4            8000 0000    $80    Attribute Type ID: $80
+     016C     04      4            4800 0000     72    Length of Attribute
+-->  0170     08      1                   01     01    Non-Resident Flag       <--
+     0190     28      8  0040 0000 0000 0000  16384    Allocated size
+     0198     30      8  983a 0000 0000 0000  15000    Actual size
+     01AA     42      2                 4910   4169    Start cluster of data run
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.1 Investigating a (Non)-Resident file}
+  \begin{lstlisting}[basicstyle=\tiny]
+$ sudo mount -o ro,offset=$((512*2048)) ntfs.raw /mnt/
+$ ls -l /mnt/NTFS_Sub_Dir/sub_Dir_File1.txt
+     13 Dez  9  2019 /mnt/NTFS_Sub_Dir/sub_Dir_File1.txt
+$ sudo umount /mnt
+
+
+$ fls -r -o 2048 ntfs.raw | grep File1
+     r/r 74-128-2:      sub_Dir_File1.txt
+
+
+$ istat -o 2048 ntfs.raw 74
+     Attributes:
+     Type: $DATA (128-2)   Name: N/A   Resident   size: 13
+
+
+$ icat -o 2048 ntfs.raw 74
+     Hello World!
+
+
+Exercise:: Investigate Non-Resident Flag
+----------------------------------------
+
+
+
+
+
+
+_
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.1 Investigating a (Non)-Resident file}
+  \begin{lstlisting}[basicstyle=\tiny]
+$ sudo mount -o ro,offset=$((512*2048)) ntfs.raw /mnt/
+$ ls -l /mnt/NTFS_Sub_Dir/sub_Dir_File1.txt
+     13 Dez  9  2019 /mnt/NTFS_Sub_Dir/sub_Dir_File1.txt
+$ sudo umount /mnt
+
+
+$ fls -r -o 2048 ntfs.raw | grep File1
+     r/r 74-128-2:      sub_Dir_File1.txt
+
+
+$ istat -o 2048 ntfs.raw 74
+     Attributes:
+     Type: $DATA (128-2)   Name: N/A   Resident   size: 13
+
+
+$ icat -o 2048 ntfs.raw 74
+     Hello World!
+
+
+Exercise:: Investigate Non-Resident Flag
+----------------------------------------
+
+$ dd if=ntfs.raw skip=$((2048 + 4*8 + 74*2)) count=2| xxd | less
+     .....
+     0160: 0000 0001 0000 0000 8000 0000 2800 0000  ............(...
+     0170: 0000 0000 0000 0200 0d00 0000 1800 0000  ................
+     0180: 4865 6c6c 6f20 576f 726c 6421 0a00 0000  Hello World!....
+     0190: ffff ffff 0000 0000 0000 0000 0000 0000  ................
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{4.2 Analyzing MFT Record manually}
   \begin{lstlisting}[basicstyle=\tiny]
 $ dd if=ntfs.raw skip=$((2048 + 4*8 + 74*2)) count=2| xxd | less
 
@@ -53,7 +261,7 @@ $ dd if=ntfs.raw skip=$((2048 + 4*8 + 74*2)) count=2| xxd | less
 
 
 \begin{frame}[fragile]
-  \frametitle{4.1 Analyzing MFT Record manually}
+  \frametitle{4.2 Analyzing MFT Record manually}
   \begin{lstlisting}[basicstyle=\tiny]
 $ dd if=ntfs.raw skip=$((2048 + 4*8 + 74*2)) count=2| xxd | less
 
@@ -87,7 +295,7 @@ $ dd if=ntfs.raw skip=$((2048 + 4*8 + 74*2)) count=2| xxd | less
 
 
 \begin{frame}[fragile]
-  \frametitle{4.1 Analyzing MFT Record manually}
+  \frametitle{4.2 Analyzing MFT Record manually}
   \begin{lstlisting}[basicstyle=\tiny]
      0100: 5000 0000 6800 0000 0000 0000 0000 0100  P...h...........
      0110: 5000 0000 1800 0000 0100 0480 1400 0000  P...............
@@ -123,7 +331,7 @@ $ dd if=ntfs.raw skip=$((2048 + 4*8 + 74*2)) count=2| xxd | less
 
 
 \begin{frame}[fragile]
-  \frametitle{4.2 Analyzing \$Bitmap file}
+  \frametitle{4.3 Analyzing \$Bitmap file}
   \begin{lstlisting}[basicstyle=\tiny]
 - $Bitmap file is located at MFT record 6
 - It contains the status of each cluster
@@ -158,7 +366,7 @@ Exercise: Calculate size of the $Bitmap file
 
 
 \begin{frame}[fragile]
-  \frametitle{4.2 Analyzing \$Bitmap file}
+  \frametitle{4.3 Analyzing \$Bitmap file}
   \begin{lstlisting}[basicstyle=\tiny]
 Investigate bitmap for cluster 29056-29063
 
@@ -193,7 +401,7 @@ Exercise: Create a 6 cluster test file to investigate $Bitmap file
 
 
 \begin{frame}[fragile]
-  \frametitle{4.2 Analyzing \$Bitmap file}
+  \frametitle{4.3 Analyzing \$Bitmap file}
   \begin{lstlisting}[basicstyle=\tiny]
 Investigate bitmap for cluster 29056-29063
 
@@ -228,7 +436,7 @@ $ fls -o 2048 ntfs.raw
 
 
 \begin{frame}[fragile]
-  \frametitle{4.2 Analyzing \$Bitmap file}
+  \frametitle{4.3 Analyzing \$Bitmap file}
   \begin{lstlisting}[basicstyle=\tiny]
 Investigate bitmap for cluster 29056-29063
 
@@ -263,7 +471,7 @@ $ istat -o 2048 ntfs.raw 66
 
 
 \begin{frame}[fragile]
-  \frametitle{4.2 Analyzing \$Bitmap file}
+  \frametitle{4.3 Analyzing \$Bitmap file}
   \begin{lstlisting}[basicstyle=\tiny]
 Investigate bitmap for cluster 29056-29063
 
@@ -298,7 +506,7 @@ $ icat -o 2048 ntfs.raw 6 | xxd | less
 
 
 \begin{frame}[fragile]
-  \frametitle{4.3 Deleting a file: What will change?}
+  \frametitle{4.4 Deleting a file: What will change?}
   \begin{lstlisting}[basicstyle=\tiny]
 $ ls -l /cdrom/small_text_file.txt 
      15000 Dez  9 16:09 /cdrom/small_text_file.txt
@@ -333,7 +541,7 @@ $ icat -o 2048 ntfs.raw 6  | xxd | less
 
 
 \begin{frame}[fragile]
-  \frametitle{4.3 Deleting a file: What will change?}
+  \frametitle{4.4 Deleting a file: What will change?}
   \begin{lstlisting}[basicstyle=\tiny]
 Before delete:
 ==============
@@ -367,7 +575,7 @@ $Bitmap file:
 
 
 \begin{frame}[fragile]
-  \frametitle{4.3 Deleting a file: What will change?}
+  \frametitle{4.4 Deleting a file: What will change?}
   \begin{lstlisting}[basicstyle=\tiny]
 After delete:
 =============
@@ -401,7 +609,7 @@ $Bitmap file:
 
 
 \begin{frame}[fragile]
-  \frametitle{4.3 Deleting a file: What will change?}
+  \frametitle{4.4 Deleting a file: What will change?}
   \begin{lstlisting}[basicstyle=\tiny]
 Before delete:
 ==============
@@ -434,7 +642,7 @@ MFT record:
 
 
 \begin{frame}[fragile]
-  \frametitle{4.3 Deleting a file: What will change?}
+  \frametitle{4.4 Deleting a file: What will change?}
   \begin{lstlisting}[basicstyle=\tiny]
 After delete:
 =============
@@ -467,7 +675,7 @@ MFT record:
 
 
 \begin{frame}[fragile]
-  \frametitle{4.4 Directories}
+  \frametitle{4.5 Directories}
   \begin{lstlisting}[basicstyle=\tiny]
 $ mkdir NTFS_Sub_Dir
 $ echo "Hello World!" > NTFS_Sub_Dir/sub_Dir_File1.txt
@@ -502,7 +710,7 @@ $ dd if=ntfs.raw skip=$((2048 + 4*8 + 72*2)) count=2 | xxd | less
 
 
 \begin{frame}[fragile]
-  \frametitle{4.4 Directories}
+  \frametitle{4.5 Directories}
   \begin{lstlisting}[basicstyle=\tiny]
 $ dd if=ntfs.raw skip=$((2048 + 4*8 + 72*2)) count=2 | xxd | less
      00000080: 3000 0000 7800 0000 0000 0000 0000 0300  0...x...........

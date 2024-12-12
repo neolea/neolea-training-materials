@@ -12,43 +12,255 @@
     \begin{itemize}
         \item[]
         \item[]
-        \item[] 3. NTFS - New Technology File System
+        \item[] 3. NTFS
     \end{itemize}
 \end{frame}
 
 
 \begin{frame}[fragile]
   \frametitle{3.1 NTFS file system structure}
+    \begin{itemize}
+            \item NTFS - New Technology File System
+            \item Everything is a file
+    \end{itemize}
   \begin{lstlisting}[basicstyle=\tiny]
      --------------------------------
-     |      Volume Boot Record      |     -- Similar to FAT
-     --------------------------------
-     |       Master File Table      |     -- MFT, ~12.5\% of volume
-     --------------------------------
+     | $Boot                        |     $MFT - Master File table
+     | $MFT                         |     Describes all files on the volume
+     |                              |     
+     | $LogFile                     |     $MFTMirr - MFT Backup
+  D  | $Volume                      |     Backup the first 4 MFT entries
+  a  | $AttrDef                     |
+  t  | $Bitmap                      |     $LogFile
+  a  | $BadClus                     |     Transaction Logs
+     | $Secure                      |
+  C  | $UpCase                      |     $Volume
+  l  |                              |     Information about the volume
+  u  |                              |
+  s  |                              |     $Bitmap
+  t  | Other Files                  |     Allocation status of all clustera\s
+  e  | Other Files                  |
+  r  |                              |     $Boot
+  s  |                              |     Volume Boot Record
      |                              |
+     |                              |     $BadClus
+     | $MFTMirr                     |     All clusters marked as having bad sectors
      |                              |
-     |         Data Clusters        |
-     |                              |
-     |                              |
-     --------------------------------
-     |                              |
-     |          MFT Mirror          |     -- First 4 MFT entries
-     |                              |
-     --------------------------------
-     |                              |
-     |                              |
-     |         Data Clusters        |
-     |                              |
-     |                              |
-     --------------------------------
-     |      Backup Boot Record      |
-     --------------------------------
+     --------------------------------		.....
+            Partition (Volume)      		.....
   \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{3.2 NTFS - Volume Boot Record}
+  \frametitle{3.2 Volume Boot Record - As a file - Exercise}
+  \begin{lstlisting}[basicstyle=\tiny]
+     mmls ntfs.raw 
+
+           Slot      Start        End          Length       Description
+     000:  Meta      0000000000   0000000000   0000000001   Primary Table (#0)
+     001:  -------   0000000000   0000002047   0000002048   Unallocated
+     002:  000:000   0000002048   0000262143   0000260096   NTFS / exFAT (0x07)
+
+
+     fsstat -o 2048 /media/michael/NTFS2/NTFS/ntfs.raw 
+
+     FILE SYSTEM INFORMATION
+     --------------------------------------------
+     File System Type: NTFS
+     Volume Serial Number: 6F77CE2F09C42DF9
+     OEM Name: NTFS    
+     Volume Name: circl_dfir
+
+     METADATA INFORMATION
+     --------------------------------------------
+     First Cluster of MFT: 4
+     First Cluster of MFT Mirror: 16255
+     Size of MFT Entries: 1024 bytes
+
+     CONTENT INFORMATION
+     --------------------------------------------
+     Sector Size: 512
+     Cluster Size: 4096
+     Total Cluster Range: 0 - 32510
+_    Total Sector Range: 0 - 260094
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.2 Volume Boot Record - As a file - Exercise}
+  \begin{lstlisting}[basicstyle=\tiny]
+  $ fls -o 2048 ntfs.raw
+
+	r/r 4-128-1:	$AttrDef
+	r/r 8-128-2:	$BadClus
+	r/r 6-128-1:	$Bitmap
+	r/r 7-128-1:	$Boot
+	r/r 2-128-1:	$LogFile
+	r/r 0-128-1:	$MFT
+	r/r 1-128-1:	$MFTMirr
+	r/r 9-128-2:	$Secure:$SDS
+	r/r 10-128-1:	$UpCase
+	r/r 3-128-3:	$Volume
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_ 
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.2 Volume Boot Record - As a file - Exercise}
+  \begin{lstlisting}[basicstyle=\tiny]
+  $ fls -o 2048 ntfs.raw
+
+	r/r 4-128-1:	$AttrDef
+	r/r 8-128-2:	$BadClus
+	r/r 6-128-1:	$Bitmap
+	r/r 7-128-1:	$Boot
+	r/r 2-128-1:	$LogFile
+	r/r 0-128-1:	$MFT
+	r/r 1-128-1:	$MFTMirr
+	r/r 9-128-2:	$Secure:$SDS
+	r/r 10-128-1:	$UpCase
+	r/r 3-128-3:	$Volume
+
+
+$ istat -o 2048 ntfs.raw 7
+
+	MFT Entry Header Values:
+	.....
+
+	$STANDARD_INFORMATION Attribute Values:
+	.....
+
+	$FILE_NAME Attribute Values:
+	.....
+
+	Attributes:
+	.....
+	Type: $DATA (128-1)   Name: N/A   Non-Resident   size: 8192  init_size: 8192
+	0 1 
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.2 Volume Boot Record - As a file - Exercise}
+  \begin{lstlisting}[basicstyle=\tiny]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.2 Volume Boot Record - As a file - Exercise}
+  \begin{lstlisting}[basicstyle=\tiny]
+  $ icat -o 2048 ntfs.raw 7 > 7.raw
+
+  $ ls -l 7.raw 
+	-rw-rw-r-- 1 michael michael 8192 Apr 18 11:39 7.raw
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.2 Volume Boot Record - As a file - Exercise}
+  \begin{lstlisting}[basicstyle=\tiny]
+  $ icat -o 2048 ntfs.raw 7 > 7.raw
+
+  $ ls -l 7.raw 
+	-rw-rw-r-- 1 michael michael 8192 Apr 18 11:39 7.raw
+
+  $ xxd 7.raw | less
+	0000: eb52 904e 5446 5320 2020 2000 0208 0000  .R.NTFS    .....
+	0010: 0000 0000 00f8 0000 0000 0000 0000 0000  ................
+	0020: 0000 0000 8000 8000 fff7 0300 0000 0000  ................
+	0030: 0400 0000 0000 0000 7f3f 0000 0000 0000  .........?......
+	0040: f600 0000 0100 0000 f92d c409 2fce 776f  .........-../.wo
+	0050: 0000 0000 0e1f be71 7cac 22c0 740b 56b4  .......q|.".t.V.
+	0060: 0ebb 0700 cd10 5eeb f032 e4cd 16cd 19eb  ......^..2......
+	0070: fe54 6869 7320 6973 206e 6f74 2061 2062  .This is not a b
+	0080: 6f6f 7461 626c 6520 6469 736b 2e20 506c  ootable disk. Pl
+	0090: 6561 7365 2069 6e73 6572 7420 6120 626f  ease insert a bo
+	00a0: 6f74 6162 6c65 2066 6c6f 7070 7920 616e  otable floppy an
+	00b0: 640d 0a70 7265 7373 2061 6e79 206b 6579  d..press any key
+	00c0: 2074 6f20 7472 7920 6167 6169 6e20 2e2e   to try again ..
+	00d0: 2e20 0d0a 0000 0000 0000 0000 0000 0000  . ..............
+	00e0: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+	.....
+	.....
+
+
+  Extra Exercise: $ dd if=ntfs.raw of=7xyz.raw bs=512 skip=2048 count=16
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.2 Volume Boot Record - Inside}
   \begin{lstlisting}[basicstyle=\tiny]
      00000000: eb52 904e 5446 5320 2020 2000 0208 0000  .R.NTFS    .....
      00000010: 0000 0000 00f8 0000 0000 0000 0000 0000  ................
@@ -66,59 +278,39 @@
      000001f0: 0000 0000 0000 0000 0000 0000 0000 55aa  ..............U.
 
 
-  Offset:    Length:               Description:
-  -----------------------------------------------------------------------
-  00000000        3      JMP 52    Jump to bootcode at 54h
-  0000000B        2       00 02    Bytes per sector
-  0000000D        1          08    Sectors per cluster
-  00000028        8   fff7 0300    262135 sectors in total
-  00000030        8          04    MFT start cluster
-  00000040        1          f6    Size of MFT records: 10 --> 2^10 = 1.024
-  00000054      426                Bootstrap code
-  000001FE        2       55 AA    End of sctor signature
+      Offset: Length:    Content:   Description:
+      -------------------------------------------------------------------
+        0000       3      JMP 52    Jump to bootcode at 54h
+        0003       8        NTFS    OEM ID
+ -----  000B       2       00 02    Bytes per sector
+ BIOS   000D       1          08    Sectors per cluster
+ P.M.   0028       8   fff7 0300    262135 sectors in total
+ Block  0030       8          04    MFT start cluster
+ -----  0040       1          f6    Size of MFT records: 10 --> 2^10 = 1.024
+        0054     426                Bootstrap code
+        01FE       2       55 AA    End of sctor signature
   \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{3.3 NTFS - Meta Files}
+  \frametitle{3.3 Master File Table}
     \begin{itemize}
-	\item NTFS Meta Files
-  \begin{lstlisting}[basicstyle=\tiny]
-Entry      Filename        Description
--------------------------------------------------------
-  0        $MFT            MFT self reference
-  1        $MFTMirr        Backup first 4 MFT entries
-  2        $LogFile        Journal
-  3        $Volume         Volume info lable, version
-  4        $AttrDef        Attribute definitions
-  5                        Root Directory
-  6        $Bitmap         Allocation status for each cluster
-  7        $Boot           Boot Sector and boot code
-  8        $BadClus        Bas Clusters
-  ...
-  23
--------------------------------------------------------
-  \end{lstlisting}
-    \item Master File Table
+    \item Overview:
         \begin{itemize}
 	    \item MFT maintain 1 record per file/directory
 	    \item Size: 1024 Bytes per record
 	    \item In NTFS everything is a file
 	    \item[] $\to$ Incl. meta files like \$MFT
         \end{itemize}
+    \item MFT: Record Structure
     \end{itemize}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{3.4 MFT Record structure}
   \begin{lstlisting}[basicstyle=\tiny]
-      Record Header   Attributes                         End     
-      ----------- ----------     -------------------------------------
-     |FILE           |                                  | FF FF FF FF |
-      ----------- ----------     -------------------------------------
-      0            55 56                                          1023
+      Header        Attributes   End           Empty            Error
+      ----------- ----------  ------------------------  --------------
+      |FILE         |            | FF FF FF FF |                |    |
+      ----------- ----------  ------------------------  --------------
+      0          55 56           ~450                                1023
 
       Record Header:
            Signature: FILE
@@ -126,198 +318,262 @@ Entry      Filename        Description
 	   Is this a file or a directory
 	   Size of the file
 	   Deleted: Is the file already deleted
-
-      Attributes minium:
-           Attribute $10: $SIA - $STANDARD_INFORMATION
-                Header $10
-	        Data Stream $10
-           Attribute $30: $FNA - $FILE_NAME
-                Header $30
-	        Data Stream $30
-	   Attribute $80: $Data
-                Header $80
-	        Data Stream $80
-	   .....
-
+      Attributes: $STANDARD_INFORMATION; $FILE_NAME; $Data
       End of Recort: FF FF FF FF
+      Empty (Resident Data)
       Error Check Sequence
   \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{3.5 Investigating a Non-Resident file}
+  \frametitle{3.3 Master File Table - Investigate - Exercise}
   \begin{lstlisting}[basicstyle=\tiny]
-$ ls -l
-
-     15000 Dez  9 16:09 small_text_file.txt
 
 
-$ fsstat -o 2048 ntfs.raw
 
-     FILE SYSTEM INFORMATION
-     --------------------------------------------
-     File System Type: NTFS
 
-     METADATA INFORMATION
-     --------------------------------------------
-     First Cluster of MFT: 4
-     First Cluster of MFT Mirror: 16255
-     Size of MFT Entries: 1024 bytes
 
-     CONTENT INFORMATION
-     --------------------------------------------
-     Sector Size: 512
-     Cluster Size: 4096
-     Total Cluster Range: 0 - 32510
 
-  
-$ fls -o 2048 ntfs.raw
 
-     r/r 73-128-2:	small_text_file.txt
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_
   \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{3.5 Investigating a Non-Resident file}
+  \frametitle{3.3 Master File Table - Investigate - Exercise}
   \begin{lstlisting}[basicstyle=\tiny]
-$ istat -o 2048 ntfs.raw 73
+  $ fls -o 2048 ntfs.raw
 
-     Attributes: 
-        .....
-     Type: $DATA (128-2)   Name: N/A   Non-Resident   size: 15000  init_size: 15000
-     4169 4170 4171 4172
-
-
-Exercise: Analyze data with TSK
--------------------------------
-
-$ icat -o 2048 ntfs.raw 73 | less
-
-     AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-     AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-     .....
+	r/r 4-128-1:	$AttrDef
+	r/r 8-128-2:	$BadClus
+	r/r 6-128-1:	$Bitmap
+	r/r 7-128-1:	$Boot
+	r/r 2-128-1:	$LogFile
+	r/r 0-128-1:	$MFT
+	r/r 1-128-1:	$MFTMirr
+	r/r 9-128-2:	$Secure:$SDS
+	r/r 10-128-1:	$UpCase
+	r/r 3-128-3:	$Volume
 
 
-Exercise: Analyze data manually with dd
----------------------------------------
 
-$ dd if=ntfs.raw skip=$((2048 + 4169*8)) count=32| xxd | less
 
-     0000: 4141 4141 4141 4141 4141 4141 4141 4141  AAAAAAAAAAAAAAAA
-     0010: 4141 4141 4141 4141 4141 4141 4141 4141  AAAAAAAAAAAAAAAA
-     .....
+
+
+
+
+
+
+
+
+
+
+
+
+_
   \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{3.5 Investigating a Non-Resident file}
+  \frametitle{3.3 Master File Table - Investigate - Exercise}
   \begin{lstlisting}[basicstyle=\tiny]
-Demo: Analyze MFT record manually
----------------------------------
+  $ fls -o 2048 ntfs.raw
 
-$ dd if=ntfs.raw skip=$((2048 + 4*8 + 73*2)) | xxd | less
-
-     0000: 4649 4c45 3000 0300 0000 0000 0000 0000  FILE0...........
-     0010: 0100 0100 3800 0100 b801 0000 0004 0000  ....8...........
-     .....
-     0030: 1300 0000 0000 0000 1000 0000 4800 0000  ............H...
-     .....
-     0080: 3000 0000 8000 0000 0000 0000 0000 0300  0...............
-     .....
-     0160: 0000 0001 0000 0000 8000 0000 4800 0000  ............H...
-     0170: 0100 4000 0000 0200 0000 0000 0000 0000  ..@.............
-     0180: 0300 0000 0000 0000 4000 0000 0000 0000  ........@.......
-     0190: 0040 0000 0000 0000 983a 0000 0000 0000  .@.......:......
-     01a0: 983a 0000 0000 0000 2104 4910 0000 0000  .:......!.I.....
-     01b0: ffff ffff 0000 0000 ffff ffff 0000 0000  ................
+	r/r 4-128-1:	$AttrDef
+	r/r 8-128-2:	$BadClus
+	r/r 6-128-1:	$Bitmap
+	r/r 7-128-1:	$Boot
+	r/r 2-128-1:	$LogFile
+	r/r 0-128-1:	$MFT
+	r/r 1-128-1:	$MFTMirr
+	r/r 9-128-2:	$Secure:$SDS
+	r/r 10-128-1:	$UpCase
+	r/r 3-128-3:	$Volume
 
 
-     Analysis:
-     --------------------------------
-     0000 -- 0037    Attribute Header
-     0038 -- 007F    1. Attribute $10
-     0080 -- 00FF    2. Attribute $30
-     0100 -- 0167    3. Attribute $50
-     0168 -- 01AF    4. Attribute $80
-     01B0 -- 01BF    End Marker 
+  $ istat -o 2048 ntfs.raw 0
+
+	.....
+	Type: $DATA (128-1)   Name: N/A   Non-Resident   size: 76800  init_size: 76800
+        4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22
+
+
+
+
+
+
+
+
+
+_
   \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{3.5 Investigating a Non-Resident file}
+  \frametitle{3.3 Master File Table - Investigate - Exercise}
   \begin{lstlisting}[basicstyle=\tiny]
-Demo: Analyze MFT record manually
----------------------------------
+  $ fls -o 2048 ntfs.raw
 
-$ dd if=ntfs.raw skip=$((2048 + 4*8 + 73*2)) | xxd | less
-
-     0000: 4649 4c45 3000 0300 0000 0000 0000 0000  FILE0...........
-     0010: 0100 0100 3800 0100 b801 0000 0004 0000  ....8...........
-     .....
-     0030: 1300 0000 0000 0000 1000 0000 4800 0000  ............H...
-     .....
-     0080: 3000 0000 8000 0000 0000 0000 0000 0300  0...............
-     .....
-     0160: 0000 0001 0000 0000 8000 0000 4800 0000  ............H...
-     0170: 0100 4000 0000 0200 0000 0000 0000 0000  ..@.............
-     0180: 0300 0000 0000 0000 4000 0000 0000 0000  ........@.......
-     0190: 0040 0000 0000 0000 983a 0000 0000 0000  .@.......:......
-     01a0: 983a 0000 0000 0000 2104 4910 0000 0000  .:......!.I.....
-     01b0: ffff ffff 0000 0000 ffff ffff 0000 0000  ................
+	r/r 4-128-1:	$AttrDef
+	r/r 8-128-2:	$BadClus
+	r/r 6-128-1:	$Bitmap
+	r/r 7-128-1:	$Boot
+	r/r 2-128-1:	$LogFile
+	r/r 0-128-1:	$MFT
+	r/r 1-128-1:	$MFTMirr
+	r/r 9-128-2:	$Secure:$SDS
+	r/r 10-128-1:	$UpCase
+	r/r 3-128-3:	$Volume
 
 
-   Offset  Offset  Size                Value         Description:
-   ---------------------------------------------------------------------------
-     0168     00      4            8000 0000    $80    Attribute Type ID: $80
-     016C     04      4            4800 0000     72    Length of Attribute
-     0170     08      1                   01      1    Non-Resident Flag
-     0190     28      8  0040 0000 0000 0000  16384    Allocated size
-     0198     30      8  983a 0000 0000 0000  15000    Actual size
-     01AA     42      2                 4910   4169    Start cluster of data run
+  $ istat -o 2048 ntfs.raw 0
+
+	.....
+	Type: $DATA (128-1)   Name: N/A   Non-Resident   size: 76800  init_size: 76800
+        4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22
+
+
+  $ icat -o 2048 ntfs.raw 0 | xxd | less
+
+	00000000: 4649 4c45 3000 0300 0000 0000 0000 0000  FILE0...........
+	00000010: 0100 0100 3800 0100 9801 0000 0004 0000  ....8...........
+	.....
+	00000400: 4649 4c45 3000 0300 0000 0000 0000 0000  FILE0...........
+	00000410: 0100 0100 3800 0100 5801 0000 0004 0000  ....8...X.......
+	.....
   \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{3.6 Investigating a Resident file}
+  \frametitle{3.4 MFT - Record Attributes}
   \begin{lstlisting}[basicstyle=\tiny]
-$ ls -l NTFS_Sub_Dir/sub_Dir_File1.txt
-     13 Dez  9 14:38 NTFS_Sub_Dir/sub_Dir_File1.txt
+      Header        Attributes   End           Empty            Error
+      ----------- ----------  ------------------------  --------------
+      |FILE         |            | FF FF FF FF |                |    |
+      ----------- ----------  ------------------------  --------------
+      0          55 56           ~450                                1023
 
+      Minimum attributes per record:
 
-$ fls -r -o 2048 ntfs.raw
-     r/r 74-128-2:	sub_Dir_File1.txt
+	$10 - $STANDARD_INFORMATION ($STA)
+                Flags: Hidden, System, Archive
+	        Owner ID
+		Time Stamps: Created, Modified, Changed, Accessed
 
+	$30 - $FILE_NAME ($FNA)
+                Parent Entry
+	        Size: Allocated/Actual
+		Time Stamps: Created, Modified, Changed, Accessed
 
-$ icat -o 2048 ntfs.raw 74
-     Attributes: 
-     Type: $DATA (128-2)   Name: N/A   Resident   size: 13
+	$80 - $Data
+		(Non)Resident
+	        Data
+		    -- Resident
+		    -- Run List
 
-
-$ icat -o 2048 ntfs.raw 74
-     Hello World!
-
-
-Exercise:: Investigate Non-Resident Flag
-----------------------------------------
-
-$ dd if=ntfs.raw skip=$((2048 + 4*8 + 74*2)) count=2| xxd | less
-
-     .....
-     0160: 0000 0001 0000 0000 8000 0000 2800 0000  ............(...
-     0170: 0000 0000 0000 0200 0d00 0000 1800 0000  ................
-     0180: 4865 6c6c 6f20 576f 726c 6421 0a00 0000  Hello World!....
-     0190: ffff ffff 0000 0000 0000 0000 0000 0000  ................
+	( $80 - $Data		)
+	(	(Non)Resident	)
+	(	Data		)
   \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{3.7 Hiding Data}
+  \frametitle{3.4 MFT - Record Attributes - Exercise}
+  \begin{lstlisting}[basicstyle=\tiny]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.4 MFT - Record Attributes - Exercise}
+  \begin{lstlisting}[basicstyle=\tiny]
+  istat -o 2048 ntfs.raw 73 | less
+
+  $STANDARD_INFORMATION Attribute Values:
+	Flags: Archive
+	Owner ID: 0
+	Security ID: 0  ()
+	Created:        2019-12-02 16:25:22.099440400 (CET)
+	File Modified:  2019-12-09 16:09:46.183651100 (CET)
+	MFT Modified:   2019-12-09 16:09:46.183651100 (CET)
+	Accessed:       2019-12-02 16:25:22.099440400 (CET)
+
+  $FILE_NAME Attribute Values:
+	Flags: Archive
+	Name: small_text_file.txt
+	Parent MFT Entry: 5     Sequence: 5
+	Allocated Size: 16384           Actual Size: 0
+	Created:        2019-12-02 16:25:22.099440400 (CET)
+	File Modified:  2019-12-02 16:25:22.099440400 (CET)
+	MFT Modified:   2019-12-02 16:25:22.099440400 (CET)
+	Accessed:       2019-12-02 16:25:22.099440400 (CET)
+
+  Attributes:
+	Type: $STANDARD_INFORMATION (16-0)   Name: N/A   Resident   size: 48
+	Type: $FILE_NAME (48-3)   Name: N/A   Resident   size: 104
+	Type: $SECURITY_DESCRIPTOR (80-1)   Name: N/A   Resident   size: 80
+	Type: $DATA (128-2)   Name: N/A   Non-Resident   size: 15000  init_size: 15000
+	4169 4170 4171 4172
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.5 Hiding Data - ADS}
     \begin{itemize}
        \item Exercise: Information Exfiltration: Are there hidden data?
             \begin{itemize}
@@ -348,7 +604,7 @@ $ dd if=ntfs.raw skip=$((2048 + 4*8 + 74*2)) count=2| xxd | less
 
 
 \begin{frame}[fragile]
-  \frametitle{3.7 Hiding Data}
+  \frametitle{3.5 Hiding Data - ADS}
     \begin{itemize}
        \item Exercise: Information Exfiltration: Are there hidden data?
             \begin{itemize}
@@ -379,7 +635,7 @@ $ dd if=ntfs.raw skip=$((2048 + 4*8 + 74*2)) count=2| xxd | less
 
 
 \begin{frame}[fragile]
-  \frametitle{3.7 Hiding Data}
+  \frametitle{3.5 Hiding Data - ADS}
     \begin{itemize}
        \item History Alternate Data Stream:
        \begin{itemize}
@@ -402,6 +658,71 @@ $ dd if=ntfs.raw skip=$((2048 + 4*8 + 74*2)) count=2| xxd | less
            \item Dump MFT record of the ADS hosting file
            \item Analyze what has changed
        \end{enumerate}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.5 Hiding Data - Stealth files}
+    \begin{itemize}
+       \item Reserved device names
+\begin{lstlisting}[basicstyle=\tiny]
+CON, PRN, AUX,NUL,
+COM1, COM2, COM3, COM4, COM5, COM6, COM7, COM8, COM9,
+LPT1, LPT2, LPT3, LPT4, LPT5, LPT6, LPT7, LPT8, LPT9
+
+H:\>echo "Sensitive data exfiltration" > COM1.txt
+     The system cannot find the file specified.
+\end{lstlisting}
+       \item Avoid automatic string parsing with \texttt{'\textbackslash\textbackslash?\textbackslash'}
+  \begin{lstlisting}[basicstyle=\tiny]
+H:\>type "Sensitive data exfiltration" > \\?\H:\COM1
+     The system cannot find the file specified.
+
+H:\>echo "Sensitive data exfiltration" > \\?\H:\COM1
+
+H:\>dir
+     02/09/2021  02:49 PM                32 COM1
+
+H:\>more \\?\H:\COM1
+     "Sensitive data exfiltration"
+  \end{lstlisting}
+       \item $\to$ Stealth files
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.5 Hiding Data - ZIP Repair}
+    \begin{itemize}
+       \item ZIP data hiding
+\begin{lstlisting}[basicstyle=\tiny]
+H:\>echo "The fox is sleeping!" > token.txt
+H:\>dir
+     07/14/2009  05:52 AM           845,941 innocent.jpg
+     02/11/2021  02:22 PM                25 token.txt
+
+H:\>"c:\Program Files\WinZip\WZZIP.EXE" -a token.zip token.txt
+H:\>dir
+     07/14/2009  05:52 AM           845,941 innocent.jpg
+     02/11/2021  02:22 PM                25 token.txt
+     02/11/2021  02:27 PM               150 token.zip
+
+H:\>copy /b innocent.jpg + token.zip myPhoto.jpg
+H:\>del innocent.jpg token.txt token.zip
+H:\>dir
+     02/11/2021  02:33 PM           846,091 myPhoto.jpg
+---------------------------------------------------------- 
+
+$ zip -FF myPhoto.jpg --out token.zip
+$ ll
+     846091 Feb 11 14:33 myPhoto.jpg*
+        146 Feb 11 14:46 token.zip
+
+$ 7z x token.zip
+$ cat token.txt
+     "The fox is sleeping!"
+\end{lstlisting}
     \end{itemize}
 \end{frame}
 
