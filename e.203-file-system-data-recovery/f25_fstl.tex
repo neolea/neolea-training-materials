@@ -114,28 +114,28 @@ $ istat -o 2048 ntfs.raw 73
 Reproduce file system activities
 --------------------------------
   
-     Thu Jun 27 2013 12:23:08      113 ...b         35-128-1 c:/time-01.txt
-     Thu Jun 27 2013 12:24:20       75 m.cb         37-128-1 c:/time-02.txt
-     Thu Jun 27 2013 12:25:24       75 m.cb         38-128-1 c:/time-03.txt
-                                    75 m...         41-128-1 c:/time-03 - Copy.txt
-     Thu Jun 27 2013 12:26:05       75 m..b         39-128-1 c:/time-44.txt
-     Thu Jun 27 2013 12:27:00       75 macb         40-128-1 c:/time-05.txt (deleted)
-     Thu Jun 27 2013 12:33:50      113 m.c.         35-128-1 c:/time-01.txt
-     Thu Jun 27 2013 13:07:52       75 .acb         41-128-1 c:/time-03 - Copy.txt
-     Thu Jun 27 2013 13:10:36       75 ..c.         39-128-1 c:/time-44.txt
-     Thu Jun 27 2013 13:14:20       20 m...         42-128-1 c:/time-06.txt
-     Thu Jun 27 2013 13:56:30       20 .acb         42-128-1 c:/time-06.txt
+     Thu Jun 27 2013 12:23:08      113 ...b         35-128-1 c:/01.txt
+     Thu Jun 27 2013 12:24:20       75 m.cb         37-128-1 c:/02.txt
+     Thu Jun 27 2013 12:25:24       75 m.cb         38-128-1 c:/03.txt
+                                    75 m...         41-128-1 c:/03-copy.txt
+     Thu Jun 27 2013 12:26:05       75 m..b         39-128-1 c:/44.txt
+     Thu Jun 27 2013 12:27:00       75 macb         40-128-1 c:/05.txt (deleted)
+     Thu Jun 27 2013 12:33:50      113 m.c.         35-128-1 c:/01.txt
+     Thu Jun 27 2013 13:07:52       75 .acb         41-128-1 c:/03-copy.txt
+     Thu Jun 27 2013 13:10:36       75 ..c.         39-128-1 c:/44.txt
+     Thu Jun 27 2013 13:14:20       20 m...         42-128-1 c:/06.txt
+     Thu Jun 27 2013 13:56:30       20 .acb         42-128-1 c:/06.txt
 
 
-File: time-01.txt
------------------
-     Thu Jun 27 2013 12:23:08      113 ...b         35-128-1 c:/time-01.txt
-     Thu Jun 27 2013 12:33:50      113 m.c.         35-128-1 c:/time-01.txt
+File: 01.txt
+------------
+     Thu Jun 27 2013 12:23:08      113 ...b         35-128-1 c:/01.txt
+     Thu Jun 27 2013 12:33:50      113 m.c.         35-128-1 c:/01.txt
 
 
-File: time-02.txt
------------------
-     Thu Jun 27 2013 12:24:20       75 m.cb         37-128-1 c:/time-02.txt
+File: 02.txt
+------------
+     Thu Jun 27 2013 12:24:20       75 m.cb         37-128-1 c:/02.txt
 
 
 -----
@@ -149,30 +149,30 @@ File: time-02.txt
 Reproduce file system activities
 --------------------------------
   
-     Thu Jun 27 2013 12:23:08      113 ...b         35-128-1 c:/time-01.txt
-     Thu Jun 27 2013 12:24:20       75 m.cb         37-128-1 c:/time-02.txt
-     Thu Jun 27 2013 12:25:24       75 m.cb         38-128-1 c:/time-03.txt
-                                    75 m...         41-128-1 c:/time-03 - Copy.txt
-     Thu Jun 27 2013 12:26:05       75 m..b         39-128-1 c:/time-44.txt
-     Thu Jun 27 2013 12:27:00       75 macb         40-128-1 c:/time-05.txt (deleted)
-     Thu Jun 27 2013 12:33:50      113 m.c.         35-128-1 c:/time-01.txt
-     Thu Jun 27 2013 13:07:52       75 .acb         41-128-1 c:/time-03 - Copy.txt
-     Thu Jun 27 2013 13:10:36       75 ..c.         39-128-1 c:/time-44.txt
-     Thu Jun 27 2013 13:14:20       20 m...         42-128-1 c:/time-06.txt
-     Thu Jun 27 2013 13:56:30       20 .acb         42-128-1 c:/time-06.txt
+     Thu Jun 27 2013 12:23:08      113 ...b         35-128-1 c:/01.txt
+     Thu Jun 27 2013 12:24:20       75 m.cb         37-128-1 c:/02.txt
+     Thu Jun 27 2013 12:25:24       75 m.cb         38-128-1 c:/03.txt
+                                    75 m...         41-128-1 c:/03 - Copy.txt
+     Thu Jun 27 2013 12:26:05       75 m..b         39-128-1 c:/44.txt
+     Thu Jun 27 2013 12:27:00       75 macb         40-128-1 c:/05.txt (deleted)
+     Thu Jun 27 2013 12:33:50      113 m.c.         35-128-1 c:/01.txt
+     Thu Jun 27 2013 13:07:52       75 .acb         41-128-1 c:/03 - Copy.txt
+     Thu Jun 27 2013 13:10:36       75 ..c.         39-128-1 c:/44.txt
+     Thu Jun 27 2013 13:14:20       20 m...         42-128-1 c:/06.txt
+     Thu Jun 27 2013 13:56:30       20 .acb         42-128-1 c:/06.txt
 
 
-File: time-03.txt, time-03 - Copy.txt
--------------------------------------
-     Thu Jun 27 2013 12:25:24       75 m.cb         38-128-1 c:/time-03.txt
-				    75 m...         41-128-1 c:/time-03 - Copy.txt
-     Thu Jun 27 2013 13:07:52       75 .acb         41-128-1 c:/time-03 - Copy.txt
+File: 03.txt, 03-copy.txt
+-------------------------
+     Thu Jun 27 2013 12:25:24       75 m.cb         38-128-1 c:/03.txt
+				    75 m...         41-128-1 c:/03-copy.txt
+     Thu Jun 27 2013 13:07:52       75 .acb         41-128-1 c:/03-copy.txt
 
 
-File: time-02.txt
------------------
-     Thu Jun 27 2013 12:26:05       75 m..b         39-128-1 c:/time-44.txt
-     Thu Jun 27 2013 13:10:36       75 ..c.         39-128-1 c:/time-44.txt
+File: 02.txt
+------------
+     Thu Jun 27 2013 12:26:05       75 m..b         39-128-1 c:/44.txt
+     Thu Jun 27 2013 13:10:36       75 ..c.         39-128-1 c:/44.txt
 -----
   \end{lstlisting}
 \end{frame}
@@ -184,28 +184,28 @@ File: time-02.txt
 Reproduce file system activities
 --------------------------------
   
-     Thu Jun 27 2013 12:23:08      113 ...b         35-128-1 c:/time-01.txt
-     Thu Jun 27 2013 12:24:20       75 m.cb         37-128-1 c:/time-02.txt
-     Thu Jun 27 2013 12:25:24       75 m.cb         38-128-1 c:/time-03.txt
-                                    75 m...         41-128-1 c:/time-03 - Copy.txt
-     Thu Jun 27 2013 12:26:05       75 m..b         39-128-1 c:/time-44.txt
-     Thu Jun 27 2013 12:27:00       75 macb         40-128-1 c:/time-05.txt (deleted)
-     Thu Jun 27 2013 12:33:50      113 m.c.         35-128-1 c:/time-01.txt
-     Thu Jun 27 2013 13:07:52       75 .acb         41-128-1 c:/time-03 - Copy.txt
-     Thu Jun 27 2013 13:10:36       75 ..c.         39-128-1 c:/time-44.txt
-     Thu Jun 27 2013 13:14:20       20 m...         42-128-1 c:/time-06.txt
-     Thu Jun 27 2013 13:56:30       20 .acb         42-128-1 c:/time-06.txt
+     Thu Jun 27 2013 12:23:08      113 ...b         35-128-1 c:/01.txt
+     Thu Jun 27 2013 12:24:20       75 m.cb         37-128-1 c:/02.txt
+     Thu Jun 27 2013 12:25:24       75 m.cb         38-128-1 c:/03.txt
+                                    75 m...         41-128-1 c:/03-copy.txt
+     Thu Jun 27 2013 12:26:05       75 m..b         39-128-1 c:/44.txt
+     Thu Jun 27 2013 12:27:00       75 macb         40-128-1 c:/05.txt (deleted)
+     Thu Jun 27 2013 12:33:50      113 m.c.         35-128-1 c:/01.txt
+     Thu Jun 27 2013 13:07:52       75 .acb         41-128-1 c:/03 - Copy.txt
+     Thu Jun 27 2013 13:10:36       75 ..c.         39-128-1 c:/44.txt
+     Thu Jun 27 2013 13:14:20       20 m...         42-128-1 c:/06.txt
+     Thu Jun 27 2013 13:56:30       20 .acb         42-128-1 c:/06.txt
 
 
-File: time-05.txt
------------------
-     Thu Jun 27 2013 12:27:00       75 macb         40-128-1 c:/time-05.txt (deleted)
+File: 05.txt
+------------
+     Thu Jun 27 2013 12:27:00       75 macb         40-128-1 c:/05.txt (deleted)
 
 
-File: time-06.txt
------------------
-     Thu Jun 27 2013 13:14:20       20 m...         42-128-1 c:/time-06.txt
-     Thu Jun 27 2013 13:56:30       20 .acb         42-128-1 c:/time-06.txt
+File: 06.txt
+------------
+     Thu Jun 27 2013 13:14:20       20 m...         42-128-1 c:/06.txt
+     Thu Jun 27 2013 13:56:30       20 .acb         42-128-1 c:/06.txt
 
 
 -----
@@ -219,31 +219,31 @@ File: time-06.txt
 Summary: What could we reproduce                                       Yes/No
 -----------------------------------------------------------------------------
   
-File: time-01.txt
-      1. 12:23:08 time-01.txt -> new create                            Yes
-      6. 12:29:07 time-01.txt -> modified content                          No
-      7. 12:33:50 time-01.txt -> 2nd modification                      Yes
+01.txt
+      1. 12:23:08 01.txt -> new create                                 Yes
+      6. 12:29:07 01.txt -> modified content                               No
+      7. 12:33:50 01.txt -> 2nd modification                           Yes
 
-time-02.txt
-      2. 12:24:20 time-02.txt -> new create                            Yes
-      8. 12:29:50 time-02.txt -> open/access file                          No
-      9. 12:30:01 time-02.txt -> close                                     No
+02.txt
+      2. 12:24:20 02.txt -> new create                                 Yes
+      8. 12:29:50 02.txt -> open/access file                               No
+      9. 12:30:01 02.txt -> close                                          No
 
-time-03.txt, time-03 - Copy.txt
-      3. 12:25:24 time-03.txt -> new create                            Yes
-     10. 13:07:52 time-03.txt -> copy to time-0003 - Copy.txt          Yes/No
+03.txt, time-03 - Copy.txt
+      3. 12:25:24 03.txt -> new create                                 Yes
+     10. 13:07:52 03.txt -> copy to 03-copy.txt                        Yes/No
 
-time-44.txt
-      4. 12:26:05 time-04.txt -> new create                            Yes
-     11. 13:10:36 time-04.txt -> rename to time-0044.txt               Yes/No
+44.txt
+      4. 12:26:05 04.txt -> new create                                 Yes
+     11. 13:10:36 04.txt -> rename to 44.txt                           Yes/No
 
-time-05.txt
-      5. 12:27:00 time-05.txt -> new create                            Yes
-     14. 13:58:07 time-05.txt -> delete file                               No
+05.txt
+      5. 12:27:00 05.txt -> new create                                 Yes
+     14. 13:58:07 05.txt -> delete file                                    No
 
-time-06.txt
-     12. 13:14:20 time-06.txt -> new created on other drive            Yes/No
-     13. 13:56:30 time-06.txt -> copy to local drive                   Yes
+06.txt
+     12. 13:14:20 06.txt -> new created on other drive                 Yes/No
+     13. 13:56:30 06.txt -> copy to local drive                        Yes
   \end{lstlisting}
 \end{frame}
 
@@ -254,11 +254,11 @@ time-06.txt
 $ mkdir time
 
 
-$ fls -f ntfs -o 2048 -m D:/ -r ntfs.raw > time/d.body
+$ fls -o 2048 -r -m d:/ circl-dfir.dd > time/d.body
 
+          -r    Recursive
           -m    Time machine format
 	  D:/   Add D:/ as mountpoint in report
-          -r    Recursive
 
 
 $ cd time
@@ -266,18 +266,120 @@ $ mactime -b d.body > d.time
 $ less d.time
 
 .....
-Mon Dec 02 2019 16:25:22    15000 .a.b      73-128-2 D:/small_text_file.txt (deleted)
-Wed Dec 04 2019 14:41:27    15051 .a.b      64-128-2 D:/AaaA.txt
-Wed Dec 04 2019 14:42:06    15051 m.c.      64-128-2 D:/AaaA.txt
-Wed Dec 04 2019 14:43:20    15000 macb      65-128-2 D:/Nonresident.txt (deleted)
-Thu Dec 05 2019 12:10:53    24064 m.cb      66-128-2 D:/6-cluster.txt
-Thu Dec 05 2019 12:11:12    24064 .a..      66-128-2 D:/6-cluster.txt
-Mon Dec 09 2019 14:37:09      168 ...b      72-144-2 D:/NTFS_Sub_Dir
-Mon Dec 09 2019 14:38:08      168 m.c.      72-144-2 D:/NTFS_Sub_Dir
-                               13 macb      74-128-2 D:/NTFS_Sub_Dir/sub_Dir_File1.txt
-Mon Dec 09 2019 14:38:24      168 .a..      72-144-2 D:/NTFS_Sub_Dir
-Mon Dec 09 2019 16:09:46    15000 m.c.      73-128-2 D:/small_text_file.txt (deleted)
-Sun Nov 29 2076 09:54:34    76800 macb       0-128-1 D:/$MFT
+Wed May 03 2023 16:39:48 134217728 m.c.    113-128-2 d:/NTFS/Challenge_UnDel/ntfs.back
+                               48 ...b     114-144-2 d:/Paula (deleted)
+                             1246 macb     115-128-2 d:/Paula/Paula.txt (deleted)
+                              240 .a.b     116-144-2 d:/RO
+                         269483520 .a.b    117-128-2 d:/RO/ro.raw
+Wed May 03 2023 16:39:50      240 m.c.     116-144-2 d:/RO
+                         269483520 m.c.    117-128-2 d:/RO/ro.raw
+                         269483520 .a.b    118-128-2 d:/RO/ro.back
+Wed May 03 2023 16:39:51 269483520 m.c.    118-128-2 d:/RO/ro.back
+                              144 macb     119-144-2 d:/timeline
+                             5936 macb     120-128-2 d:/timeline/c.txt
+Wed May 03 2023 16:40:25       48 mac.     114-144-2 d:/Paula (deleted)
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{5.5 Create a Time Line}
+  \begin{lstlisting}[basicstyle=\tiny]
+Limit the timeline to the term Paula
+------------------------------------
+
+1.   grep -i paula d.body | grep -v FILE_NAME > paula.body
+
+2.   mactime -b paula.body > paula.time
+
+3.   less paula.time
+
+
+     Wed May 03 2023 16:39:48       48 ...b     114-144-2 d:/Paula (deleted)
+                                  1246 macb     115-128-2 d:/Paula/Paula.txt (deleted)
+     Wed May 03 2023 16:40:25       48 mac.     114-144-2 d:/Paula (deleted)
+
+
+
+Can you tell the storry?
+------------------------
+
+
+
+
+
+
+
+
+_
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{5.5 Create a Time Line}
+  \begin{lstlisting}[basicstyle=\tiny]
+Limit the timeline to the term Paula
+------------------------------------
+
+1.   grep -i paula d.body | grep -v FILE_NAME > paula.body
+
+2.   mactime -b paula.body > paula.time
+
+3.   less paula.time
+
+
+     Wed May 03 2023 16:39:48       48 ...b     114-144-2 d:/Paula (deleted)
+                                  1246 macb     115-128-2 d:/Paula/Paula.txt (deleted)
+     Wed May 03 2023 16:40:25       48 mac.     114-144-2 d:/Paula (deleted)
+
+
+
+Can you tell the storry?
+------------------------
+
+1. Wed May 03 2023 16:39:48	Directory 'Paula' created in the root directory
+
+2. Wed May 03 2023 16:39:48	File 'Paula.txt' created in directory 'Paula'
+
+3.				Directory 'Paula' and file 'Paula.txt' got deleted
+
+4. Wed May 03 2023 16:40:25	Directory 'Paula' last access, content/meta modified
+				-> Most likely due to file 'Paula.txt deleted
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{5.6 Challenge: Time Line Analysis}
+  \begin{lstlisting}[basicstyle=\tiny]
+2009 M57-Jean
+-------------
+
+https://digitalcorpora.org/corpora/scenarios/m57-jean/
+
+	M57-Jean/
+	|-- original_disk
+	|   |-- nps-2008-jean.E01
+	|   |-- nps-2008-jean.E02
+	|-- slides
+	    |-- M57-Jean.pdf
+	    |-- M57-Jean_Solution.pdf
+
+	2 directories, 4 files
+
+
+$ ewfinfo original_disk/nps-2008-jean.E01
+$ ewfexport original_disk/nps-2008-jean.E01
+
+
+$ mmls ../nps-2008-jean.raw.raw
+$ fls -r -o 63 -m C: ../nps-2008-jean.raw.raw > c.body
+$ mactime -z UTC -b c.body > c.time
+$ less c.time
+
+
+--> Search for the file m57biz.xls
   \end{lstlisting}
 \end{frame}
 

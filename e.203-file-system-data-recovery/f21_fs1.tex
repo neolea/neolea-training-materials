@@ -12,211 +12,347 @@
     \begin{itemize}
         \item[]
         \item[]
-        \item[] 1. File System Analysis - Overview
+        \item[] 1. File System Analysis - Abstract
     \end{itemize}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{1.1 Abstract: Components of a file system}
+  \frametitle{1.1 Organizing data in files}
   \begin{lstlisting}[basicstyle=\tiny\ttfamily]
-             File System: - Organize data on a block device
-			  - Maintain an allocation table
-                          - Utilize meta data
+             - Organizing data on a volume
+             - Maintain file related meta data
+             - Maintain allocation status of clusters
                             
-        ---------------------------------------------
-        |                   |                       |
-        V                   V                       V
 
-    File Name            Metadata                Content     
------------------    -----------------       ---------------------------------- ...
-| file1.txt     |    |Time stamps,   | 13    |................................| 5001
-| -> Inode: 13  |    |Owner, Group,  |       |................................| 5002
-|---------------|    |Rights: MACB,  |       |....                            | 5003
-| file2.txt     |    |5001,5002,5003 |       |................................| 5004
-| -> Inode: 14  |    |Size: 68 Byte  |       |.......................         | 5005
-|---------------|    |---------------|       |                                | 5006
-| file3.txt     |    |Time stamps,   | 14    |                                | ...
-| -> Inode: xyz |    |Owner, Group,  |       |                                | ...
-|---------------|    |Rights: MACB,  |       |                                | ...
-| ............  |    |5004,5005      |       |                                | ...
-| ............  |    |Size: 55 Byte  |       |      ( 32 Byte cluster )       | 5011
------------------    -----------------       ---------------------------------- ...
-                     | ............  |        |       |       |       |      |
-                     | ............  |        0       8      16      24     31
-                     -----------------    
+                Metadata                                   Content     
+    ----------------------------------       ----------------------------------
+  1 |                                |       |                                | 5001
+    |                                |       |                                | 5002
+    |                                |       |                                | 5003
+    |                                |       |                                | 5004
+    |                                |       |                                | 5005
+    |--------------------------------|       |                                | 5006
+  2 |                                |       |                                | ...
+    |                                |       |                                | ...
+    |                                |       |                                | ...
+    |                                |       |                                | ...
+    |                                |       |                                | ...
+    ----------------------------------       |                                | ...
+  3 |                                |       |                                | ...
+    |             .....              |       |                                | 5014
+    ----------------------------------       ----------------------------------
+                                              |       |       |       |      |
+                                              0       8      16      24     31
 
-Allocation table (Meta): 13, 14
-       Allocation table: 5001, 5002, 5003, 5004, 5005
+
+       Allocation table:
   \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{1.2 Delete a file: Allocated $\to$ Unallocated}
+  \frametitle{1.1 Organizing data in files}
   \begin{lstlisting}[basicstyle=\tiny\ttfamily]
-             File System: - Organize data on a block device
-			  - Maintain an allocation table
-                          - Utilize meta data
+             - Organizing data on a volume
+             - Maintain file related meta data
+             - Maintain allocation status of clusters
                             
-        ---------------------------------------------
-        |                   |                       |
-        V                   V                       V
 
-    File Name            Metadata                Content     
------------------    -----------------       ---------------------------------- ...
-| file1.txt     |    |Time stamps,   | 13    |................................| 5001
-| -> Inode: 13  |    |Owner, Group,  |       |................................| 5002
-|---------------|    |Rights: MACB,  |       |....                            | 5003
-| file2.txt XX  |    |5001,5002,5003 |       |................................| 5004
-| -> Inode: 14  |    |Size: 68 Byte  |       |.......................         | 5005
-|---------------|    |---------------|       |                                | 5006
-| file3.txt     |    |Time stamps,   | 14    |                                | ...
-| -> Inode: xyz |    |Owner, Group,  |       |                                | ...
-|---------------|    |Rights: MACB,  |       |                                | ...
-| ............  |    |5004,5005      |       |                                | ...
-| ............  |    |Size: 55 Byte  |       |      ( 32 Byte cluster )       | 5011
------------------    -----------------       ---------------------------------- ...
-                     | ............  |        |       |       |       |       |
-                     | ............  |        0       8      16      24     31
-                     -----------------    
+                Metadata                                   Content     
+    ----------------------------------       ----------------------------------
+  1 |                                |       |11111111111111111111111111111111| 5001
+    |                                |       |11111111111111111111111111111111| 5002
+    |                                |       |1111                            | 5003
+    |                                |       |                                | 5004
+    |                                |       |                                | 5005
+    |--------------------------------|       |                                | 5006
+  2 |                                |       |                                | ...
+    |                                |       |                                | ...
+    |                                |       |                                | ...
+    |                                |       |                                | ...
+    |                                |       |                                | ...
+    ----------------------------------       |                                | ...
+  3 |                                |       |                                | ...
+    |             .....              |       |                                | 5014
+    ----------------------------------       ----------------------------------
+                                              |       |       |       |      |
+                                              0       8      16      24     31
 
-Allocation table (Meta): 13
+
+       Allocation table:
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.1 Organizing data in files}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+             - Organizing data on a volume
+             - Maintain file related meta data
+             - Maintain allocation status of clusters
+                            
+
+                Metadata                                   Content     
+    ----------------------------------       ----------------------------------
+  1 | Filename: file01.txt           |       |11111111111111111111111111111111| 5001
+    | Time stamps: MACB              |       |11111111111111111111111111111111| 5002
+    | Rights: Owner, Group, All      |       |1111                            | 5003
+    | Size: 68 Byte                  |       |                                | 5004
+    | Clusters: 5001,5002,5003       |       |                                | 5005
+    |--------------------------------|       |                                | 5006
+  2 |                                |       |                                | ...
+    |                                |       |                                | ...
+    |                                |       |                                | ...
+    |                                |       |                                | ...
+    |                                |       |                                | ...
+    ----------------------------------       |                                | ...
+  3 |                                |       |                                | ...
+    |             .....              |       |                                | 5014
+    ----------------------------------       ----------------------------------
+                                              |       |       |       |      |
+                                              0       8      16      24     31
+
+
        Allocation table: 5001, 5002, 5003
   \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{1.3 Slack space}
+  \frametitle{1.1 Organizing data in files}
   \begin{lstlisting}[basicstyle=\tiny\ttfamily]
-   ----------------------------------------------------------------------------
-   +    +    +    |    +    +    +    |    +    +    +    |    +    +    +    |
-   ----------------------------------------------------------------------------
+             - Organizing data on a volume
+             - Maintain file related meta data
+             - Maintain allocation status of clusters
+                            
 
-                  |                   |                   |                   |
-                  |                   |                   |                   |
+                Metadata                                   Content     
+    ----------------------------------       ----------------------------------
+  1 | Filename: file01.txt           |       |11111111111111111111111111111111| 5001
+    | Time stamps: MACB              |       |11111111111111111111111111111111| 5002
+    | Rights: Owner, Group, All      |       |1111                            | 5003
+    | Size: 68 Byte                  |       |22222222222222222222222222222222| 5004
+    | Clusters: 5001,5002,5003       |       |22222222222222222222222         | 5005
+    |--------------------------------|       |                                | 5006
+  2 | Filename: file02.txt           |       |                                | ...
+    | Time stamps: MACB              |       |                                | ...
+    | Rights: Owner, Group, All      |       |                                | ...
+    | Size: 55 Byte                  |       |                                | ...
+    | Clusters: 5004, 5005           |       |                                | ...
+    ----------------------------------       |                                | ...
+  3 |                                |       |                                | ...
+    |             .....              |       |                                | 5014
+    ----------------------------------       ----------------------------------
+                                              |       |       |       |      |
+                                              0       8      16      24     31
 
-                  -------------------------------------------------------------
-                  |....+....+....+....|....+..00+????+????|                   |
-                  -------------------------------------------------------------
-                            1                   1                   0 
 
-0 = Unallocated
-1 = Allocated
-
-
-Evolution of slack space:
--------------------------
-	- Complete cluster is allocated to the file
-	- Until end of sector: Filled with zeros (or random memory --> RAM slack)
-	- Until end of cluter: Don't touch at all --> File slack
-	- Maybe there are rests of deleted file content.
+       Allocation table: 5001, 5002, 5003, 5004, 5005
   \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{1.4 Metadata based file recovery: Abstract}
+  \frametitle{1.2 Deleting a file}
   \begin{lstlisting}[basicstyle=\tiny\ttfamily]
-1. Create file: file1.txt
+             - Organizing data on a volume
+             - Maintain file related meta data
+             - Maintain allocation status of clusters
+                            
 
-    File Name              Inode                 Content     
------------------    -----------------       ---------------------------------- ...
-| file1.txt     |    |7123, 7124     | 13    |                                | 7122
-| -> Inode: 13  |    |.....          |       |  H e l l o                     | 7123
-|---------------|    |---------------|       |  W o r l d                     | 7124
-| ............  |    |               | 14    |                                | ...
-| ............  |    |               |       |                                | ...
------------------    -----------------       ---------------------------------- 
-                     | ............  |
-		     | ............  |       Allocation table (Meta): 13
-                     -----------------              Allocation table: 7123, 7124
+                Metadata                                   Content     
+    ----------------------------------       ----------------------------------
+  1 | Filename: file01.txt           |       |11111111111111111111111111111111| 5001
+    | Time stamps: MACB              |       |11111111111111111111111111111111| 5002
+    | Rights: Owner, Group, All      |       |1111                            | 5003
+    | Size: 68 Byte                  |       |22222222222222222222222222222222| 5004
+    | Clusters: 5001,5002,5003       |       |22222222222222222222222         | 5005
+    |--------------------------------|       |                                | 5006
+  2 | Filename: file02.txt (deleted) |       |                                | ...
+    | Time stamps: MACB              |       |                                | ...
+    | Rights: Owner, Group, All      |       |                                | ...
+    | Size: 55 Byte                  |       |                                | ...
+    | Clusters: 5004, 5005           |       |                                | ...
+    ----------------------------------       |                                | ...
+  3 |                                |       |                                | ...
+    |             .....              |       |                                | 5014
+    ----------------------------------       ----------------------------------
+                                              |       |       |       |      |
+                                              0       8      16      24     31
 
 
-2. Delete file: file1.txt
-
-    File Name              Inode                 Content     
------------------    -----------------       ---------------------------------- ...
-| file1.txt XX  |    |7123, 7124     | 13    |                                | 7122
-| -> Inode: 13  |    |.....          |       |  H e l l o                     | 7123
-|---------------|    |---------------|       |  W o r l d                     | 7124
-| ............  |    |               | 14    |                                | ...
-| ............  |    |               |       |                                | ...
------------------    -----------------       ---------------------------------- 
-                     | ............  |
-		     | ............  |       Allocation table (Meta): 14
-                     -----------------              Allocation table: 7122, 7123
+       Allocation table: 5001, 5002, 5003
   \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{1.4 Metadata based file recovery: Abstract}
+  \frametitle{1.3 Slack space - FileSlack}
   \begin{lstlisting}[basicstyle=\tiny\ttfamily]
-2. Delete file: file1.txt
+             - Metadata: Case 1: Re-Use Metadata
+             - Content: End of sector: Filled with zeros (RAM slack)
+	     - Content: End of cluter: Don't touch (File slack)
+                            
 
-    File Name              Inode                 Content     
------------------    -----------------       ---------------------------------- ...
-| file1.txt XX  |    |7123, 7124     | 13    |                                | 7122
-| -> Inode: 13  |    |.....          |       |  H e l l o                     | 7123
-|---------------|    |---------------|       |  W o r l d                     | 7124
-| ............  |    |               | 14    |                                | ...
-| ............  |    |               |       |                                | ...
------------------    -----------------       ---------------------------------- 
-                     | ............  |
-		     | ............  |       Allocation table (Meta): 
-                     -----------------              Allocation table: 
-
-
-3. Create file: file2.txt (Partially overwrite data of file1.txt)
-
-    File Name              Inode                 Content     
------------------    -----------------       ---------------------------------- ...
-| file1.txt XX  |    |7123, 7124     | 13    |  T h i s   i s                 | 7122
-| -> Inode: 13  |    |.....          |       |  P a u l a                     | 7123
-|---------------|    |---------------|       |  W o r l d                     | 7124
-| file2.txt     |    |7122, 7123     | 14    |                                | ...
-| -> Inode: 14  |    |               |       |                                | ...
------------------    -----------------       ---------------------------------- 
-                     | ............  |
-		     | ............  |       Allocation table (Meta): 14
-                     -----------------              Allocation table: 7122, 7123
-  \end{lstlisting}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{1.4 Metadata based file recovery: Abstract}
-  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
-3. Create file: file2.txt (Partially overwrite data of file1.txt)
-
-    File Name              Inode                 Content     
------------------    -----------------       ---------------------------------- ...
-| file1.txt XX  |    |7123, 7124     | 13    |  T h i s   i s                 | 7122
-| -> Inode: 13  |    |.....          |       |  P a u l a                     | 7123
-|---------------|    |---------------|       |  W o r l d                     | 7124
-| file2.txt     |    |7122, 7123     | 14    |                                | ...
-| -> Inode: 14  |    |               |       |                                | ...
------------------    -----------------       ---------------------------------- 
-                     | ............  |
-		     | ............  |       Allocation table (Meta): 14
-                     -----------------              Allocation table: 7122, 7123
-
-
+                Metadata                                   Content     
+    ----------------------------------       ----------------------------------
+  1 | Filename: file01.txt           |       |11111111111111111111111111111111| 5001
+    | Time stamps: MACB              |       |11111111111111111111111111111111| 5002
+    | Rights: Owner, Group, All      |       |1111                            | 5003
+    | Size: 68 Byte                  |       |3333333333      2222222222222222| 5004
+    | Clusters: 5001,5002,5003       |       |22222222222222222222222         | 5005
+    |--------------------------------|       |                                | 5006
+  2 | Filename: file03.txt           |       |                                | ...
+    | Time stamps: MACB              |       |                                | ...
+    | Rights: Owner, Group, All      |       |                                | ...
+    | Size: 10 Byte                  |       |                                | ...
+    | Clusters: 5004                 |       |                                | ...
+    ----------------------------------       |                                | ...
+  3 |                                |       |                                | ...
+    |             .....              |       |                                | 5014
+    ----------------------------------       ----------------------------------
+                                              |       |       |       |      |
+                                              0       8      16      24     31
  
 
-  # Recovery of a (deleted) file
-  $ dd if=deleted.dd of=file2.txt bs=32 skip=7122 count=2
-            --> This is Paula
-
-  
-  # Recovery of a reallocated file
-  $ dd if=deleted.dd of=file1.txt bs=32 skip=7123 count=2
-            --> Paula World
+       Allocation table: 5001, 5002, 5003, 5004
+  \end{lstlisting}
+\end{frame}
 
 
-  Discussion: What did we miss in this abstract example?
+\begin{frame}[fragile]
+  \frametitle{1.3 Slack space - FileSlack}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+             - Metadata: Case 2: New Metadata
+             - Content: End of sector: Filled with zeros (RAM slack)
+	     - Content: End of cluter: Don't touch (File slack)
+                            
+
+                Metadata                                   Content     
+    ----------------------------------       ----------------------------------
+  1 | Filename: file01.txt           |       |11111111111111111111111111111111| 5001
+    | Time stamps: MACB              |       |11111111111111111111111111111111| 5002
+    | Rights: Owner, Group, All      |       |1111                            | 5003
+    | Size: 68 Byte                  |       |3333333333      2222222222222222| 5004
+    | Clusters: 5001,5002,5003       |       |22222222222222222222222         | 5005
+    |--------------------------------|       |                                | 5006
+  2 | Filename: file02.txt (deleted) |       |                                | ...
+    | Time stamps: MACB              |       |                                | ...
+    | Rights: Owner, Group, All      |       |                                | ...
+    | Size: 55 Byte                  |       |                                | ...
+    | Clusters: 5004, 5005           |       |                                | ...
+    ----------------------------------       |                                | ...
+  3 | Filename: file03.txt           |       |                                | ...
+    | Time stamps: MACB              |       |                                | 5014
+    | Rights: Owner, Group, All      |       ----------------------------------
+    | Size: 10 Byte                  |        |       |       |       |      |
+    | Clusters: 5004                 |        0       8      16      24     31
+    ----------------------------------
+
+       Allocation table: 5001, 5002, 5003, 5004
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.4 Data Recovery}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+               # Recover sectors
+               # Read from disk and write into a file
+	       dd if=deleted.raw of=file02.txt bs=32 skip=5003 count=2
+                            
+
+                Metadata                                   Content     
+    ----------------------------------       ----------------------------------
+  1 | Filename: file01.txt           |       |11111111111111111111111111111111| 5001
+    | Time stamps: MACB              |       |11111111111111111111111111111111| 5002
+    | Rights: Owner, Group, All      |       |1111                            | 5003
+    | Size: 68 Byte                  |       |3333333333      2222222222222222| 5004
+    | Clusters: 5001,5002,5003       |       |22222222222222222222222         | 5005
+    |--------------------------------|       |                                | 5006
+  2 | Filename: file02.txt (deleted) |       |                                | ...
+    | Time stamps: MACB              |       |                                | ...
+    | Rights: Owner, Group, All      |       |                                | ...
+    | Size: 55 Byte                  |       |                                | ...
+    | Clusters: 5004, 5005           |       |                                | ...
+    ----------------------------------       |                                | ...
+  3 | Filename: file03.txt           |       |                                | ...
+    | Time stamps: MACB              |       |                                | 5014
+    | Rights: Owner, Group, All      |       ----------------------------------
+    | Size: 10 Byte                  |        |       |       |       |      |
+    | Clusters: 5004                 |        0       8      16      24     31
+    ----------------------------------
+
+       Allocation table: 5001, 5002, 5003, 5004
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.4 Data Recovery}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+	       # Recover exisiting (deleted) file
+               # Based on metadata
+	       icat deleted.raw 3 > file03.txt
+                            
+
+                Metadata                                   Content     
+    ----------------------------------       ----------------------------------
+  1 | Filename: file01.txt           |       |11111111111111111111111111111111| 5001
+    | Time stamps: MACB              |       |11111111111111111111111111111111| 5002
+    | Rights: Owner, Group, All      |       |1111                            | 5003
+    | Size: 68 Byte                  |       |3333333333      2222222222222222| 5004
+    | Clusters: 5001,5002,5003       |       |22222222222222222222222         | 5005
+    |--------------------------------|       |                                | 5006
+  2 | Filename: file02.txt (deleted) |       |                                | ...
+    | Time stamps: MACB              |       |                                | ...
+    | Rights: Owner, Group, All      |       |                                | ...
+    | Size: 55 Byte                  |       |                                | ...
+    | Clusters: 5004, 5005           |       |                                | ...
+    ----------------------------------       |                                | ...
+  3 | Filename: file03.txt (deleted) |       |                                | ...
+    | Time stamps: MACB              |       |                                | 5014
+    | Rights: Owner, Group, All      |       ----------------------------------
+    | Size: 10 Byte                  |        |       |       |       |      |
+    | Clusters: 5004                 |        0       8      16      24     31
+    ----------------------------------
+
+       Allocation table: 5001, 5002, 5003
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.4 Data Recovery}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+	       # Recover overwritten file
+               # Based on metadata
+	       icat deleted.raw 2 > file02.txt
+                            
+
+                Metadata                                   Content     
+    ----------------------------------       ----------------------------------
+  1 | Filename: file01.txt           |       |11111111111111111111111111111111| 5001
+    | Time stamps: MACB              |       |11111111111111111111111111111111| 5002
+    | Rights: Owner, Group, All      |       |1111                            | 5003
+    | Size: 68 Byte                  |       |3333333333      2222222222222222| 5004
+    | Clusters: 5001,5002,5003       |       |22222222222222222222222         | 5005
+    |--------------------------------|       |                                | 5006
+  2 | Filename: file02.txt (deleted) |       |                                | ...
+    | Time stamps: MACB              |       |                                | ...
+    | Rights: Owner, Group, All      |       |                                | ...
+    | Size: 55 Byte                  |       |                                | ...
+    | Clusters: 5004, 5005           |       |                                | ...
+    ----------------------------------       |                                | ...
+  3 | Filename: file03.txt (deleted) |       |                                | ...
+    | Time stamps: MACB              |       |                                | 5014
+    | Rights: Owner, Group, All      |       ----------------------------------
+    | Size: 10 Byte                  |        |       |       |       |      |
+    | Clusters: 5004                 |        0       8      16      24     31
+    ----------------------------------
+
+       Allocation table: 5001, 5002, 5003
   \end{lstlisting}
 \end{frame}
 
@@ -255,64 +391,176 @@ Evolution of slack space:
 
 
 \begin{frame}[fragile]
-  \frametitle{1.6 Metadata based file recovery: The Sleuth Kit}
-  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
-3. Create file: file2.txt (Partially overwrite data of file1.txt)
-
-    File Name              Inode                 Content     
------------------    -----------------       ---------------------------------- ...
-| file1.txt XX  |    |7123, 7124     | 13    |  T h i s   i s                 | 7122
-| -> Inode: 13  |    |.....          |       |  P a u l a                     | 7123
-|---------------|    |---------------|       |  W o r l d                     | 7124
-| file2.txt     |    |7122, 7123     | 14    |                                | ...
-| -> Inode: 14  |    |               |       |                                | ...
------------------    -----------------       ---------------------------------- 
-                     | ............  |
-		     | ............  |       Allocation table (Meta): 14
-                     -----------------              Allocation table: 7122, 7123
-
-
-
-  # Recovery of a (deleted) file
-  $ icat deleted 14 > file2.txt
-            --> This is Paula
- 
-
-  # Recovery of a reallocated file
-  $ icat deleted 13 > file1.txt
-            --> Paula World
-  \end{lstlisting}
+  \frametitle{1.5 The Sleuth Kit: Exercise}
     \begin{itemize}
-        \item[] Exercise: Recover deleted files from \texttt{/carving/deleted.dd}
+        \item[] Recover deleted files from \texttt{/carving/deleted.dd}
     \end{itemize}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+  # File system information
+  $ 
+
+
+
+
+
+
+
+
+
+
+
+
+  # List files
+  $ 
+
+
+
+
+
+
+  # Recover files based on inode numbers
+  $ 
+  $ 
+  $ 
+  \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{1.7 File slack and unallocted clusters}
+  \frametitle{1.5 The Sleuth Kit: Exercise}
+    \begin{itemize}
+        \item[] Recover deleted files from \texttt{/carving/deleted.dd}
+    \end{itemize}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+  # File system information
+  $ fsstat deleted.dd
+	FILE SYSTEM INFORMATION
+	--------------------------------------------
+	File System Type: NTFS
+	Volume Serial Number: 4978FE7D06B65661
+	OEM Name: NTFS
+	Version: Windows XP
+
+	CONTENT INFORMATION
+	--------------------------------------------
+	Sector Size: 512
+	Cluster Size: 4096
+
+  # List files
+  $ 
+
+
+
+
+
+
+  # Recover files based on inode numbers
+  $ 
+  $ 
+  $ 
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.5 The Sleuth Kit: Exercise}
+    \begin{itemize}
+        \item[] Recover deleted files from \texttt{/carving/deleted.dd}
+    \end{itemize}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+  # File system information
+  $ fsstat deleted.dd
+	FILE SYSTEM INFORMATION
+	--------------------------------------------
+	File System Type: NTFS
+	Volume Serial Number: 4978FE7D06B65661
+	OEM Name: NTFS
+	Version: Windows XP
+
+	CONTENT INFORMATION
+	--------------------------------------------
+	Sector Size: 512
+	Cluster Size: 4096
+
+  # List files
+  $ fls -r deleted.dd
+	....
+	+ -/r * 70-128-2:	aware.jpg
+	+ -/r * 71-128-2:	cases.jpg
+	+ -/r * 72-128-2:	circl.png
+	.....
+
+  # Recover files based on inode numbers
+  $
+  $ 
+  $ 
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.5 The Sleuth Kit: Exercise}
+    \begin{itemize}
+        \item[] Recover deleted files from \texttt{/carving/deleted.dd}
+    \end{itemize}
+  \begin{lstlisting}[basicstyle=\tiny\ttfamily]
+  # File system information
+  $ fsstat deleted.dd
+	FILE SYSTEM INFORMATION
+	--------------------------------------------
+	File System Type: NTFS
+	Volume Serial Number: 4978FE7D06B65661
+	OEM Name: NTFS
+	Version: Windows XP
+
+	CONTENT INFORMATION
+	--------------------------------------------
+	Sector Size: 512
+	Cluster Size: 4096
+
+  # List files
+  $ fls -r deleted.dd
+	....
+	+ -/r * 70-128-2:	aware.jpg
+	+ -/r * 71-128-2:	cases.jpg
+	+ -/r * 72-128-2:	circl.png
+	.....
+
+  # Recover files based on inode numbers
+  $ icat deleted.dd 70 > aware.jpg
+  $ icat deleted.dd 71 > cases.jpg
+  $ icat deleted.dd 72 > circl.png
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{1.6 File slack and unallocted cluster}
     \begin{itemize}
 	    \item Slack: Manual approach with \texttt{dd}
   \begin{lstlisting}[basicstyle=\tiny]
-fsstat deleted.dd
-    Cluster Size: 4096
+$ fsstat deleted.dd             Sector Size: 512
+                                Cluster Size: 4096
 
-fls -r deleted.dd
 
-istat deleted.dd 72
-    size: 12071
-    1131 1132 1133
+$ fls -r deleted.dd             + -/r * 72-128-2: circl.png
 
-$ echo $(( (3*4096) - 12071 ))
-  217
 
-dd if=deleted.dd bs=4096 skip=1133 count=1 | xxd | less 
+$ istat deleted.dd 72           size: 12071 (0x2F27)
+                                1131 1132 1133
+
+
+$ echo $(( (3*4096) - 12071 ))  217
+
+
+$ dd if=deleted.dd bs=4096 skip=1131 count=3 | xxd | less 
   \end{lstlisting}
 	    \item Slack: Automated approach with The Sleuthkit
   \begin{lstlisting}[basicstyle=\tiny]
-blkls -s -b 4096 usb.dd
+$ blkls -s -b 4096 deleted.dd | strings | less
+$ blkls -s -b 4096 usb.dd | strings | less
   \end{lstlisting}
-	    \item Exercise: Does file recovery incl. slack?
-	    \item Blocks: With The Sleuthkit
+	    \item Cluster: (Un)allocated
   \begin{lstlisting}[basicstyle=\tiny]
 blkls -a -b 4096 deleted.dd | xxd | less              # Allocated blocks
 blkls -A -b 4096 deleted.dd | xxd | less              # Unallocated blocks

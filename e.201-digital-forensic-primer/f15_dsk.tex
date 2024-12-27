@@ -85,7 +85,7 @@
 \begin{frame}
   \frametitle{5.2 CHS - Cylinder Head Sector}
     \begin{itemize}
-        \item[] Track, Head, Cylinder, Sector, Block, Cluster
+        \item[] Sector, Track, Head, Cylinder, LBA, (Cluster/Block)
     \end{itemize}
     \begin{figure}
         \includegraphics[scale=0.2]{images/chs.png}
@@ -116,7 +116,7 @@ Interleave factor 1:1 --> 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17
 Interleave factor 2:1 --> 01 10 02 11 03 12 04 13 05 14 06 15 07 16 08 17 09 
 Interleave factor 3:1 --> 01 07 13 02 08 14 03 09 15 04 10 16 05 11 17 06 12
 \end{lstlisting}
-        \item[] Zoned Bit Recording:
+        \item[] Zone Bit Recording:
 \begin{lstlisting}[basicstyle=\tiny]
    Zone:  12  11  10  09  08  07  06  05  04  03  02  01  00
 ------------------------------------------------------------
@@ -143,7 +143,7 @@ Cylinder 1: Head 0:  13 14 15 16 17|01 02 03 04 05 06 07 08 09 10 11 12
 
 
 \begin{frame}[fragile]
-  \frametitle{5.5 LBA - Logical Block Addressing}
+  \frametitle{5.5 LBA - Logical Block Addressing - Abstract}
   \begin{lstlisting}[basicstyle=\tiny\ttfamily]
 Logical volume addresses
 ----------------------------------------------------------------------------
@@ -249,15 +249,15 @@ Partitiontable:
   Offset:12     Size: 4 Value:          --> LBA size in sectors
   
 Addressable space:
-  CHS: echo $((2**8 * 2**6 * 2**10 * 512 / 1024**2))  ==  8192 MByte
-  LBA: echo $((2**32 * 512 / 1024**3))                ==  2048 GByte
+  CHS: echo $((2^8 x 2^6 x 2^10 * 512 / 1024^2))  ==  8192 MByte
+  LBA: echo $((2^32 * 512 / 1024^3))              ==     2 TByte
   \end{lstlisting}
     \begin{itemize}
-        \item Exercise: Calculate the size of the partitions
+	    \item[] Exercise: Calculate the size of the partitions
         \begin{enumerate}
-            \item Take LBA size
-	    \item Apply Little Endian
-	    \item Apply sector size
+            \item Take 4 byte from "LBA size"
+	    \item Switch Little Endian value into Big Endian
+	    \item Don't forget: Now you have the sector value, not the byte value
         \end{enumerate}
     \end{itemize}
 \end{frame}
@@ -274,10 +274,10 @@ Addressable space:
 
   \end{lstlisting}
     \begin{itemize}
-        \item Exercise: Calculate the size if the partitions
+	    \item[] Exercise: Calculate the size if the partitions
     \end{itemize}
   \begin{lstlisting}[basicstyle=\tiny]
-        LBA size       Little Endian              Sector size
+        Little Endian  Big Endian     Decimal     Sector size
 -----------------------------------------------------------------------------
 Part1:  0x00802500     0x00258000     2457600     * 512     1258291200   1.2 GB
 Part2:  0x00c05d00     0x005dc000     6144000     * 512     3145728000   3.0 GB

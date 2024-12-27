@@ -31,10 +31,10 @@
     \item Analyse the system on his own:
     \begin{itemize}
       \item Do some investigations
-      \item Run AV
-      \item Apply updates
-      \item[] $\to$ Overwrite evidences
+      \item Install and run (several) AV
+      \item Apply updates for OS and Apps
       \item[] $\to$ Create big noise
+      \item[] $\to$ Overwrite evidences
       \item[]
     \end{itemize}
     \item[] $\to$ Negative impact on forensics
@@ -47,16 +47,17 @@
   \begin{itemize}
       \item Finding answers:
       \begin{itemize}
+          \item[] $\to$ Is there an incident
+          \item[] $\to$ System involved at all
+          \item[] $\to$ If yes, how and when
           \item[] $\to$ System compromised
-          \item[] $\to$ How, when, why
           \item[] $\to$ Malware/RAT involved
           \item[] $\to$ Persistence mechanisms
+          \item[] $\to$ Root cause of the compromise
           \item[] $\to$ Lateral movement inside LAN
-          \item[] $\to$ Detect the root cause of the incident
           \item[] $\to$ Access sensitive data
           \item[] $\to$ Data exfiltration
           \item[] $\to$ Illegal content
-          \item[] $\to$ System involved at all
           \item[]
       \end{itemize}
       \item Legal case:
@@ -71,7 +72,7 @@
 \begin{frame}
   \frametitle{1.2 Preservation of evidences}
   \begin{itemize}
-      \item CRC not sufficient:
+      \item A cyclic redundancy check (CRC) is not sufficient:
       \begin{itemize}
           \item Example: Checksum
           \begin{itemize}
@@ -85,7 +86,7 @@
       \end{itemize}
       \item Cryptographic hash function:
       \begin{itemize}
-          \item Output always same size
+          \item Output always same fixed size
 	  \item Deterministic: if $m = m \to h(m) = h(m)$
 	  \item 1 Bit change in m $\to$ max. change in $h(m)$
 	  \item One way function: For $h(m)$ impossible to find m
@@ -103,14 +104,15 @@
     \item Classical forensic
     \begin{itemize}
       \item[] Locard's exchange principle
-      \item[] {\scriptsize \url{https://en.wikipedia.org/wiki/Locard\%27s\_exchange\_principle}}
+      \item[] {\scriptsize \url{https://en.wikipedia.org/wiki/Locard's\_exchange\_principle}}
     \end{itemize}
     \item[]
     \item Write down everything you see, hear, smell and do
     \item[]
     \item Chain of custody
     \begin{itemize}
-        \item[] $\to$ {\scriptsize \url{https://www.nist.gov/sites/default/files/documents/2017/04/28/Sample-Chain-of-Custody-Form.docx}}
+        \item[] $\to$ {\scriptsize \url{https://csrc.nist.gov/glossary/term/chain\_of\_custody}}
+        \item[] $\to$ {\scriptsize \url{https://www.nist.gov/document/sample-chain-custody-formdocx}}
     \end{itemize}
     \item[]
     \item Scope of the analysis
@@ -119,29 +121,7 @@
 
 
 \begin{frame}
-  \frametitle{1.4 Forensic disciplines}
-  \begin{itemize}
-      \item Reverse Engineering
-      \item Code-Deobfuscation
-      \item Memory Forensics
-        \begin{itemize}
-            \item[] $\to$ \url{https://www.circl.lu/pub/tr-22/}
-            \item[] $\to$ \url{https://www.circl.lu/pub/tr-30/}
-        \end{itemize}
-      \item Network Forensics
-      \item Mobile Forensics
-      \item Cloud Forensics
-      \item Post-mortem Analysis
-        \begin{itemize}
-            \item[] $\to$ \url{https://www.circl.lu/pub/tr-22/}
-            \item[] $\to$ \url{https://www.circl.lu/pub/tr-30/}
-        \end{itemize}
-  \end{itemize}
-\end{frame}
-
-
-\begin{frame}
-  \frametitle{1.5 First Responder: Order of volatility}
+  \frametitle{1.3 Forensics Science}
   \begin{itemize}
       \item[] CPU registers $\to$ nanoseconds
       \item[] CPU cache $\to$ nanoseconds
@@ -158,28 +138,47 @@
 
 
 \begin{frame}
+  \frametitle{1.4 Forensic disciplines}
+  \begin{itemize}
+      \item Post-mortem Analysis
+        \begin{itemize}
+            \item[] $\to$ \url{https://www.circl.lu/pub/tr-22/}
+            \item[] $\to$ \url{https://www.circl.lu/pub/tr-30/}
+        \end{itemize}
+      \item Memory Forensics
+        \begin{itemize}
+            \item[] $\to$ \url{https://www.circl.lu/pub/tr-22/}
+            \item[] $\to$ \url{https://www.circl.lu/pub/tr-30/}
+        \end{itemize}
+      \item Reverse Engineering
+      \item Code-Deobfuscation
+      \item Network Forensics
+      \item Mobile Forensics
+      \item Cloud Forensics
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
   \frametitle{1.5 First Responder: Be prepared}
   \begin{itemize}
       \item Prepare your toolbox
       \begin{itemize}
+          \item Write Blocker
           \item Photo camera
           \item Flash light, magnifying glasses
           \item Labelling device, labels, tags, stickers
           \item Toolkit, screwdriver kits
           \item Packing boxes, bags, faraday bag
-          \item Cable kits, write blocker, storage devices
+          \item Cable kits, storage devices
           \item Anti-static band, network cables
           \item Pens, markers, notepads
           \item[] $\to$ Chain of custody
+          \item Mouse jiggler
+	  \item[]
       \end{itemize}
-      \item USB stick
-      \begin{itemize}
-          \item 256 GB USB3
-          \item File system: exFAT
-          \item Memory dump: Dumpit
-          \item FTK Imager Lite
-          \item Encrypted Disk Detector - Edd
-      \end{itemize}
+      \item Talk with people; Take notes
+      \item Identify potential evidences (Computer, devices, paper, ...)
   \end{itemize}
 \end{frame}
 
@@ -187,26 +186,23 @@
 \begin{frame}
   \frametitle{1.5 First Responder: First steps}
   \begin{itemize}
-      \item Did an incident occure
-      \begin{itemize}
-          \item Talk with people
-          \item Take notes
-      \end{itemize}
-      \item Mouse jiggler
-      \item Identify potential evidences
-      \begin{itemize}
-          \item Tower, desktop, laptop, tablets
-          \item Screen, printer, storage media
-          \item Router, switches, access point
-          \item Paper, notes, .....
-      \end{itemize}
       \item Powered-on versus powered-off
       \begin{itemize}
-          \item Shutdown: Lost of live data
-          \item Shutdown: Data on disk modified
+	  \item Shutdown: Lost of live (memory) data
           \item Pull power: Corrupt file system
           \item Live analysis: Modify memory and disk
-          \item Live analysis: Known good binaries?
+          \item Live analysis: Working with compromised binaries?
+	  \item[]
+      \end{itemize}
+      \item USB stick $\to$ \url{https://www.circl.lu/pub/tr-30/}
+      \begin{itemize}
+          \item 256 GB USB3
+          \item File system: exFAT
+          \item Memory dump: Comae-Toolkit
+          \item Memory and Live Acquisition: FTK Imager Lite
+          \item Encrypted Disk Detector - Edd
+          \item Security Scanner: Nmap command line
+          \item Sysinternals Suite
       \end{itemize}
   \end{itemize}
 \end{frame}
@@ -214,9 +210,10 @@
 
 \begin{frame}
   \frametitle{1.5 First Responder: Live response}
-  \begin{itemize}
-      \item Memory dump
-      \item Live analysis:
+  \begin{enumerate}
+	  \item Isolate system from (WiFi) network
+      \item Perform memory dump
+      \item In case of a live analysis:
       \begin{itemize}
           \item[] $\to$ System time
           \item[] $\to$ Logged-on users
@@ -230,9 +227,9 @@
           \item[] $\to$ Mapped drives / shares
           \item[] $\to$ !!! Do not store information on the subject system !!!
       \end{itemize}
-      \item Image of live system $($Possible issues$)$
-      \item Shutdown and image if possible
-  \end{itemize}
+      \item Shutdown and do disk image (If possible)
+      \item Logical image of live system $($Possible issues$)$
+  \end{enumerate}
 \end{frame}
 
 
@@ -243,8 +240,15 @@
         \begin{itemize}
             \item[] Best copy (in the safe)
             \item[] Working copy (on a NAS)
+            \item[] Working copy attached with Write Blocker
             \item[] Disk volumes and partitions
-            \item[] Simple tools: dd, dmesg, mount
+            \item[] Simple tools: dmesg, dd, mount
+            \item[]
+        \end{itemize}
+      \item Sector layer
+        \begin{itemize}
+            \item[] Carving: foremost, scalpel, testdisk/photorec
+            \item[] String search
             \item[]
         \end{itemize}
       \item File system layer
@@ -252,12 +256,6 @@
             \item[] FAT, NTFS
             \item[] File system timeline
             \item[] Restore deleted files
-            \item[]
-        \end{itemize}
-      \item Data layer
-        \begin{itemize}
-            \item[] Carving: foremost, scalpel, testdisk/photorec
-            \item[] String search
             \item[]
         \end{itemize}
   \end{itemize}
@@ -283,7 +281,7 @@
             \item[] Office files \& PDFs
             \item[]
         \end{itemize}
-      \item Identify malware
+      \item Searching for malware
         \begin{itemize}
             \item[] TEMP folders
             \item[] Startup folders
@@ -310,12 +308,11 @@
       \item Open source tools
         \begin{itemize}
             \item[] \href{https://www.kali.org/}{Kali Linux}
-            \item[] \href{https://digital-forensics.sans.org/community/downloads}{SANS SIFT}
-            \item[] \href{http://www.deftlinux.net/}{Digital Evidence and Forensics Toolkit - DEFT}
-            \item[] \href{http://www.plainsight.info/}{PlainSight}
-            \item[] \href{https://www.caine-live.net/}{Computer Aided INvestigative Environment - CAINE}
+            \item[] \href{https://www.sans.org/tools/sift-workstation/}{SANS SIFT}
             \item[]
         \end{itemize}
+      \item Consider using your favorite Linux and add tools
+      \item Sometimes a Windows based VM could be helpful
   \end{itemize}
 \end{frame}
 

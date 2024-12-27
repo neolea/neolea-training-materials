@@ -12,7 +12,7 @@
     \begin{itemize}
         \item[]
         \item[]
-        \item[] 3. Other Sources of Information
+        \item[] 3. Other Windows Artifacts
     \end{itemize}
 \end{frame}
 
@@ -74,15 +74,17 @@
 	544 Apr 30 17:35 '$IOMHI9A.txt'
 	320 Apr 30 17:34 '$ROMHI9A.txt'
 
+
+strings -el \$IOMHI9A.txt 
+	C:\Users\John\Documents\recycleTest\TestFile.txt
+
+
 strings \$ROMHI9A.txt 
 		Test File
 		=========
 	This is a test file. It is just created to test Forensic
 	Artifacts for the 'Recycle Bin'.
 	.....
-
-strings -el \$IOMHI9A.txt 
-	C:\Users\John\Documents\recycleTest\TestFile.txt
   \end{lstlisting}
     \end{itemize}
 \end{frame}
@@ -98,18 +100,15 @@ strings -el \$IOMHI9A.txt
 		\item 2019-04-30 17:35:32 UTC+2:  Deleted
 		\item[]
             \end{itemize}
-        \item Analyze \texttt{Recycle.Bin} directory:
+        \item File system timeline \texttt{Recycle.Bin} directory:
   \begin{lstlisting}[basicstyle=\tiny]
-Fri Apr 05 2019 11:46:49
-     328 m.c.      57-144-1 /$Recycle.Bin
-     376 ...b    9632-144-1 /$Recycle.Bin/S-1-5-21- ..... -1000
-     129 m.cb    9634-128-1 /$Recycle.Bin/S-1-5-21- ..... -1000/desktop.ini
-
 Tue Apr 30 2019 17:31:57
      320 ...b   47164-128-1 /$Recycle.Bin/S-1-5-21- ..... -1000/$ROMHI9A.txt
 
+
 Tue Apr 30 2019 17:34:44
      320 ma..   47164-128-1 /$Recycle.Bin/S-1-5-21- ..... -1000/$ROMHI9A.txt
+
 
 Tue Apr 30 2019 17:35:32
      544 macb   44155-128-1 /$Recycle.Bin/S-1-5-21- ..... -1000/$IOMHI9A.txt
@@ -122,35 +121,39 @@ Tue Apr 30 2019 17:35:32
 
 
 \begin{frame}[fragile]
-  \frametitle{3.1 Recycle Bin - Exercise}
-    \begin{itemize}
-	    \item[] Invetigate extension of an index file \texttt{\$I.....} for binary file:
-    \end{itemize}
-    \includegraphics[scale=.27]{images/recycleEx.png}
+	\frametitle{3.1 Recycle Bin - Filename \& Extension}
+    \includegraphics[scale=.31]{images/recycleEx.png}
 \end{frame}
 
 
 \begin{frame}[fragile]
   \frametitle{3.2 LNK Files}
     \begin{itemize}
-        \item Provide information about files accessed
+        \item Link or shortcut to files, applications, resources
+        \item User activity: Files access
         \begin{itemize}
             \item Local
             \item Network shares
             \item Appached devices
         \end{itemize}
+        \item LNK file remain after target file is deleted
+        \item[]
     \end{itemize}
   \begin{lstlisting}[basicstyle=\tiny]
 Thu May 02 2019 14:54:02
-     280 ...b       43701-144-1 /Users/John/Documents/prefetchTest
-  
+     280 ...b       43701-144-1 /Users/John/Documents/LNK
+ 
+
 Thu May 02 2019 14:54:28
-      66 macb       43702-128-1 /Users/John/Documents/prefetchTest/
-      				PreFetchTest.txt
-    2779 macb       43716-128-4 /Users/John/AppData/Roaming/Microsoft/
-    				Windows/Recent/PreFetchTest.txt.lnk
+      66 macb       43702-128-1 /Users/John/Documents/LNK/Test.txt
+
+
     1573 macb       43922-128-4 /Users/John/AppData/Roaming/Microsoft/
-    				Windows/Recent/prefetchTest.lnk
+    				    Windows/Recent/LNK.lnk
+
+
+    2779 macb       43716-128-4 /Users/John/AppData/Roaming/Microsoft/
+    				    Windows/Recent/Test.txt.lnk
   \end{lstlisting}
 \end{frame}
 
@@ -158,16 +161,17 @@ Thu May 02 2019 14:54:28
 \begin{frame}[fragile]
   \frametitle{3.2 LNK Files}
     \begin{itemize}
-        \item Provide information about files accessed
+        \item Information inside LNK files
         \begin{itemize}
-            \item Local
-            \item Network shares
-            \item Appached devices
+            \item Target file MAC times
+            \item Target file size
+            \item Target file path
+            \item Volume information
         \end{itemize}
+        \item[]
     \end{itemize}
   \begin{lstlisting}[basicstyle=\tiny]
-exiftool PreFetchTest.txt.lnk
-
+exiftool Test.txt.lnk
 	...
 	Create Date         : 2019:05:02 14:54:28+02:00
 	Access Date         : 2019:05:02 14:54:28+02:00
@@ -178,15 +182,424 @@ exiftool PreFetchTest.txt.lnk
 	Hot Key             : (none)
 	Drive Type          : Fixed Disk
 	Volume Label        :
-	Local Base Path     : C:\Users\John\Documents\prefetchTest\
-				PreFetchTest.txt
-	...
+	Local Base Path     : C:\Users\
+	Net Name            : 8
+	Net Provider Type   : Unknown (0x20000)
+	Relative Path       : ..\..\..\..\..\Documents\Test\Test.txt
+	Working Directory   : C:\Users\John\Documents\Test
+	Machine ID          : john-pc
   \end{lstlisting}
 \end{frame}
 
 
 \begin{frame}[fragile]
-  \frametitle{3.3 XP Restore Points}
+  \frametitle{3.2 LNK Files: Exercise}
+    \begin{itemize}
+	    \item[] Extract and investigate LNK file for document: 'm57biz.xls'
+    \end{itemize}
+  \begin{lstlisting}[basicstyle=\tiny]
+Prepration work:
+----------------
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_ 
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.2 LNK Files: Exercise}
+    \begin{itemize}
+	    \item[] Extract and investigate LNK file for document: 'm57biz.xls'
+    \end{itemize}
+  \begin{lstlisting}[basicstyle=\tiny]
+Prepration work:
+----------------
+
+  sudo mount -o ro,offset=$((512*63)) image.raw /media/case1
+  mkdir lnk
+
+
+ Copy LNK file:
+ --------------
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+_ 
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.2 LNK Files: Exercise}
+    \begin{itemize}
+	    \item[] Extract and investigate LNK file for document: 'm57biz.xls'
+    \end{itemize}
+  \begin{lstlisting}[basicstyle=\tiny]
+Prepration work:
+----------------
+
+  sudo mount -o ro,offset=$((512*63)) image.raw /media/case1
+  mkdir lnk
+
+
+ Copy LNK file:
+ --------------
+  
+  cp /media/case1/Documents\ and\ Settings/Jean/Recent/m57biz.lnk lnk/
+
+
+Investigate with exiftool:
+--------------------------
+
+
+
+
+
+
+
+
+
+
+_ 
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.2 LNK Files: Exercise}
+    \begin{itemize}
+	    \item[] Extract and investigate LNK file for document: 'm57biz.xls'
+    \end{itemize}
+  \begin{lstlisting}[basicstyle=\tiny]
+Prepration work:
+----------------
+
+  sudo mount -o ro,offset=$((512*63)) image.raw /media/case1
+  mkdir lnk
+
+
+ Copy LNK file:
+ --------------
+  
+  cp /media/case1/Documents\ and\ Settings/Jean/Recent/m57biz.lnk lnk/
+
+
+Investigate with exiftool:
+--------------------------
+
+  exiftool lnk/m57biz.lnk
+     .....
+     File Attributes                 : Archive
+     Create Date                     : 2008:07:20 01:28:03+00:00
+     Access Date                     : 2008:07:20 01:28:03+00:00
+     Modify Date                     : 2008:07:20 01:28:03+00:00
+     Target File Size                : 291840
+     Drive Type                      : Fixed Disk
+     Local Base Path                 : C:\Documents and Settings\Jean\Desktop\m57biz.xls
+_    Machine ID                      : jean-13fbf038a3
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.3 Jump Lists}
+    \begin{itemize}
+        \item Introduced with Windows 7
+	\item Similar \texttt{Recent} folder
+        \item Recently opened documents / application
+	\item Makes them accessible at Windows main menu
+	\item[]
+        \includegraphics[scale=.3]{images/jl.png}
+	\item[] \scriptsize{\texttt{AppData/Roaming/Microsoft/Windows/Recent/AutomaticDestinations}}
+	\item[] \scriptsize{\texttt{AppData/Roaming/Microsoft/Windows/Recent/CustomDestinations}}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.3 Jump Lists}
+    \begin{itemize}
+        \item File names start with 16 hex characters $\to$ JumpList ID
+	\item File names end with \texttt{.xxxDestinations-ms}
+	\item[]
+  \begin{lstlisting}[basicstyle=\tiny]
+C:> dir \Users\John\AppData\Roaming\Microsoft\Windows\Recent\AutomaticDestinations
+
+04/05/2020  12:50            33 792 1b4dd67f29cb1962.automaticDestinations-ms
+14/06/2019  16:43             4 608 28c8b86deab549a1.automaticDestinations-ms
+10/04/2019  14:32            29 696 6824f4a902c78fbd.automaticDestinations-ms
+10/04/2020  14:12             9 216 7e4dca80246863e3.automaticDestinations-ms
+04/05/2020  12:50             8 704 918e0ecb43d17e23.automaticDestinations-ms
+10/04/2019  14:30             3 072 b74736c2bd8cc8a5.automaticDestinations-ms
+09/04/2019  14:43             6 144 de48a32edcbe79e4.automaticDestinations-ms
+  \end{lstlisting}
+	\item Each Hex value correspond to an fixed application
+	\item \texttt{918e0ecb43d17e23 = Notepad.exe}
+	\item[]
+	\item[] \tiny{$\to$ \url{https://github.com/EricZimmerman/JumpList/blob/master/JumpList/Resources/AppIDs.txt}}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.3 Jump Lists}
+    \begin{itemize}
+        \item Exercise: Identify applications
+  \begin{lstlisting}[basicstyle=\tiny]
+cd JumpLists/AutomaticDestinations/
+ls -l
+
+    1b4dd67f29cb1962.automaticDestinations-ms --> 
+    28c8b86deab549a1.automaticDestinations-ms --> 
+    6824f4a902c78fbd.automaticDestinations-ms --> 
+    7e4dca80246863e3.automaticDestinations-ms --> 
+    918e0ecb43d17e23.automaticDestinations-ms --> 
+    b74736c2bd8cc8a5.automaticDestinations-ms --> 
+    de48a32edcbe79e4.automaticDestinations-ms --> 
+  \end{lstlisting}
+	\item Exercise: Analyze the Notepad Jump List file
+  \begin{lstlisting}[basicstyle=\tiny]
+
+
+
+
+
+
+
+
+
+
+
+-
+  \end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.3 Jump Lists}
+    \begin{itemize}
+        \item Exercise: Identify applications
+  \begin{lstlisting}[basicstyle=\tiny]
+cd JumpLists/AutomaticDestinations/
+ll
+
+    1b4dd67f29cb1962.automaticDestinations-ms --> Windows Explorer
+    28c8b86deab549a1.automaticDestinations-ms --> Internet Explorer 8
+    6824f4a902c78fbd.automaticDestinations-ms --> Firefox 64.x
+    7e4dca80246863e3.automaticDestinations-ms --> Control Panel
+    918e0ecb43d17e23.automaticDestinations-ms --> Notepad (32-bit)
+    b74736c2bd8cc8a5.automaticDestinations-ms --> WinZip
+    de48a32edcbe79e4.automaticDestinations-ms --> Acrobat Reader 15.x
+  \end{lstlisting}
+	\item Exercise: Analyze the Notepad Jump List file
+  \begin{lstlisting}[basicstyle=\tiny]
+
+
+
+
+
+
+
+
+
+
+
+-
+  \end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.3 Jump Lists}
+    \begin{itemize}
+        \item Exercise: Identify applications
+  \begin{lstlisting}[basicstyle=\tiny]
+cd JumpLists/AutomaticDestinations/
+ll
+
+    1b4dd67f29cb1962.automaticDestinations-ms --> Windows Explorer
+    28c8b86deab549a1.automaticDestinations-ms --> Internet Explorer 8
+    6824f4a902c78fbd.automaticDestinations-ms --> Firefox 64.x
+    7e4dca80246863e3.automaticDestinations-ms --> Control Panel
+    918e0ecb43d17e23.automaticDestinations-ms --> Notepad (32-bit)
+    b74736c2bd8cc8a5.automaticDestinations-ms --> WinZip
+    de48a32edcbe79e4.automaticDestinations-ms --> Acrobat Reader 15.x
+  \end{lstlisting}
+	\item Exercise: Analyze the Notepad Jump List file
+  \begin{lstlisting}[basicstyle=\tiny]
+7z l 918e0ecb43d17e23.automaticDestinations-ms
+        Date      Time    Attr         Size   Compressed  Name
+     ------------------- ----- ------------ ------------  -------
+                         .....         1398         1408  2
+                         .....         1368         1408  1
+                         .....          436          448  4
+                         .....          392          448  3
+
+--> file
+--> exiftool
+--> strings 
+7z x 918e0ecb43d17e23.automaticDestinations-ms
+strings -el DestList
+  \end{lstlisting}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.4 Prefetch Files}
+    \begin{itemize}
+	\item Application prefetching since XP
+        \begin{itemize}
+            \item Monitor an application when it starts
+            \item Collect information about resources needed
+            \item Wait 10sec after application started
+	    \item[] $\to$ Know where to find the resources
+            \item[] $\to$ Better performance: App launch faster
+            \item[] $\to$ Better user experience
+	    \item[]
+        \end{itemize}
+	\item Forensics value:
+        \begin{itemize}
+            \item Proof an application was started
+            \begin{itemize}
+                \item Secondary artifact
+                \item Created by the OS
+                \item Not deleted by the attacker
+            \end{itemize}
+            \item Even if the application don't exists anymore
+            \item And more .....
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.4 Prefetch Files}
+    \begin{itemize}
+        \item Example: From file system time line
+  \begin{lstlisting}[basicstyle=\tiny]
+Thu May 02 2019 14:52:40
+    179712 .a..      10940-128-3 /Windows/notepad.exe
+
+Thu May 02 2019 14:52:50
+        56 mac.      42729-144-6 /Windows/Prefetch
+     16280 macb      43700-128-4 /Windows/Prefetch/NOTEPAD.EXE-D8414F97.pf
+  \end{lstlisting}
+        \item Elements of the file name at \texttt{/Windows/Prefetch}
+        \begin{itemize}
+            \item Application name
+            \item One way hash of path to the application
+	    \item File extension: \texttt{.pf}
+        \end{itemize}
+        \item Information found inside a Prefetch file:
+        \begin{itemize}
+            \item Run count: How often application run
+            \item Last time executed
+            \item Application name incl. parameter
+            \item Path to application and resources
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.4 Prefetch Files}
+    \begin{itemize}
+        \item Parsing a Prefetch file
+  \begin{lstlisting}[basicstyle=\tiny]
+prefetch.py -f NOTEPAD.EXE-D8414F97.pf
+
+	Executable Name: NOTEPAD.EXE
+	Run count: 1
+	Last Executed: 2019-05-02 12:52:40.339584
+
+	Resources loaded:
+	1:    \DEVICE\HARDDISKVOLUME2\WINDOWS\SYSTEM32\NTDLL.DLL
+	2:    \DEVICE\HARDDISKVOLUME2\WINDOWS\SYSTEM32\KERNEL32.DLL
+	3:    \DEVICE\HARDDISKVOLUME2\WINDOWS\SYSTEM32\APISETSCHEMA.DLL
+	4:    \DEVICE\HARDDISKVOLUME2\WINDOWS\SYSTEM32\KERNELBASE.DLL
+	.....
+	.....
+  \end{lstlisting}
+        \item Additional benefits like:
+        \begin{itemize}
+            \item User folder where the malware got executed
+            \item Compare Run count of different VSS could
+	    \item[] $\to$ Behavior of user
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.4 Prefetch Files: Exercise}
+    \begin{itemize}
+	    \item[] Extract and investigate the Excel prefetch file
+	    \item[] 
+    \end{itemize}
+  \begin{lstlisting}[basicstyle=\tiny]
+Copy prefetch file:
+-------------------
+  
+    mkdir prefetch
+    cp /media/sansforensics/casenps/WINDOWS/Prefetch/EXCEL.EXE-1C75F8D6.pf prefetch/
+
+
+Investigate LNK file:
+---------------------
+
+    strings -el prefetch/EXCEL.EXE-1C75F8D6.pf | less
+
+
+    pref.pl -f prefetch/EXCEL.EXE-1C75F8D6.pf
+
+	File     : prefetch/EXCEL.EXE-1C75F8D6.pf
+	Exe Path : \DEVICE\HARDDISKVOLUME1\PROGRAM FILES\MICROSOFT OFFICE\OFFICE\EXCEL.EXE
+	Last Run : Sun Jul 20 01:27:40 2008
+	Run Count: 2
+  \end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{3.5 XP Restore Points}
     \begin{itemize}
         \item Backup of:
         \begin{itemize}
@@ -215,7 +628,7 @@ exiftool PreFetchTest.txt.lnk
 
 
 \begin{frame}[fragile]
-  \frametitle{3.4 VSS - Volume Shadow Copy Service}
+  \frametitle{3.6 VSS - Volume Shadow Copy Service}
     \begin{itemize}
 	    \item Backup Service
             \begin{itemize}
@@ -249,7 +662,7 @@ Contents of shadow copy set ID: {33eb3a7b-6d03-4045-aa70-37b714d49c72}
 
 
 \begin{frame}[fragile]
-  \frametitle{3.4 VSS - Configuration}
+  \frametitle{3.6 VSS - Configuration}
 	    \begin{itemize}
 		    \item[] \scriptsize{\texttt{HKEY\_LOCAL\_MACHINE/SYSTEM/CurrentControlSet/services/VSS}}
 		    \includegraphics[scale=.3]{images/VSSConfig2.png}
@@ -261,7 +674,7 @@ Contents of shadow copy set ID: {33eb3a7b-6d03-4045-aa70-37b714d49c72}
 
 
 \begin{frame}[fragile]
-  \frametitle{3.4 VSS - Analysis}
+  \frametitle{3.5 VSS - Analysis}
     \begin{itemize}
 	    \item[] Analyze disk image
   \begin{lstlisting}[basicstyle=\tiny]
@@ -292,235 +705,5 @@ sudo mount -o ro /mount/vss/vss1 /mnt/
   \end{lstlisting}
   \end{itemize}
 \end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{3.5 Prefetch Files \& SuperFetch}
-    \begin{itemize}
-        \item Boot prefetching for all Windows
-	\item Application prefetching since XP
-        \begin{itemize}
-            \item Monitor an application when it starts
-            \item Collect information about all resources needed
-            \item Wait 10sec after application started
-	    \item[] $\to$ Know where to find the resources
-            \item[] $\to$ Better performance: App launch faster
-            \item[] $\to$ Better user experience
-        \end{itemize}
-	\item Forensics value:
-        \begin{itemize}
-            \item Proof an application was started
-            \begin{itemize}
-                \item Secondary artifact
-                \item Created by the OS
-                \item Not deleted by the attacker
-            \end{itemize}
-            \item Even if the application don't exists anymore
-            \item And more .....
-        \end{itemize}
-    \end{itemize}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{3.5 Prefetch Files \& SuperFetch}
-    \begin{itemize}
-        \item Elements of the file name at \texttt{/Windows/Prefetch}
-        \begin{itemize}
-            \item Application name
-            \item One way hash of path to the application
-	    \item File extension: \texttt{.pf}
-        \end{itemize}
-        \item Example: File system time line
-  \begin{lstlisting}[basicstyle=\tiny]
-Thu May 02 2019 14:52:40
-    179712 .a..      10940-128-3 /Windows/notepad.exe
-
-Thu May 02 2019 14:52:50
-        56 mac.      42729-144-6 /Windows/Prefetch
-     16280 macb      43700-128-4 /Windows/Prefetch/NOTEPAD.EXE-D8414F97.pf
-  \end{lstlisting}
-        \item Information found inside a Prefetch file:
-        \begin{itemize}
-            \item Run count: How often launched
-            \item Last time executed
-            \item Application name incl. parameter
-            \item Path to application and resources
-        \end{itemize}
-    \end{itemize}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{3.5 Prefetch Files \& SuperFetch}
-    \begin{itemize}
-        \item Parsing a Prefetch file
-  \begin{lstlisting}[basicstyle=\tiny]
-prefetch.py -f NOTEPAD.EXE-D8414F97.pf
-
-	Executable Name: NOTEPAD.EXE
-	Run count: 1
-	Last Executed: 2019-05-02 12:52:40.339584
-
-	Resources loaded:
-	1:    \DEVICE\HARDDISKVOLUME2\WINDOWS\SYSTEM32\NTDLL.DLL
-	2:    \DEVICE\HARDDISKVOLUME2\WINDOWS\SYSTEM32\KERNEL32.DLL
-	3:    \DEVICE\HARDDISKVOLUME2\WINDOWS\SYSTEM32\APISETSCHEMA.DLL
-	4:    \DEVICE\HARDDISKVOLUME2\WINDOWS\SYSTEM32\KERNELBASE.DLL
-	.....
-	.....
-  \end{lstlisting}
-        \item Additional benefits like:
-        \begin{itemize}
-            \item User folder where the malware got executed
-            \item Compare Run count of different VSS could
-	    \item[] $\to$ Behavior of user
-        \end{itemize}
-    \end{itemize}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{3.6 Jump Lists}
-    \begin{itemize}
-        \item Since Windows 7
-        \item Recently opened documents of an application
-	\item Similar \texttt{RecentDocs} Registry Key
-	\item[]
-        \includegraphics[scale=.3]{images/jl.png}
-        \item Rotate or Pin
-	\item \scriptsize{\texttt{AppData/Roaming/Microsoft/Windows/Recent/AutomaticDestinations}}
-        \item[]
-    \end{itemize}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{3.6 Jump Lists}
-    \begin{itemize}
-        \item Jump List file names start with 16 hex characters
-	\item File names end with \texttt{.automaticDextinations-ms}
-	\item[]
-  \begin{lstlisting}[basicstyle=\tiny]
-C:> dir \Users\John\AppData\Roaming\Microsoft\Windows\Recent\AutomaticDestinations
-
-04/05/2020  12:50            33 792 1b4dd67f29cb1962.automaticDextinations-ms
-14/06/2019  16:43             4 608 28c8b86deab549a1.automaticDextinations-ms
-10/04/2019  14:32            29 696 6824f4a902c78fbd.automaticDextinations-ms
-10/04/2020  14:12             9 216 7e4dca80246863e3.automaticDextinations-ms
-04/05/2020  12:50             8 704 918e0ecb43d17e23.automaticDextinations-ms
-10/04/2019  14:30             3 072 b74736c2bd8cc8a5.automaticDextinations-ms
-09/04/2019  14:43             6 144 de48a32edcbe79e4.automaticDextinations-ms
-  \end{lstlisting}
-	\item Each Hex value correspond to an application
-	\item \texttt{918e0ecb43d17e23 = Notepad.exe}
-	\item Hex values are fixed world wide
-        \item Search for Jump List IDs
-    \end{itemize}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{3.6 Jump Lists}
-    \begin{itemize}
-        \item Exercise: Identify applications
-  \begin{lstlisting}[basicstyle=\tiny]
-$ cd JumpLists/AutomaticDestinations/
-$ ll
-
-    1b4dd67f29cb1962.automaticDestinations-ms --> 
-    28c8b86deab549a1.automaticDestinations-ms --> 
-    6824f4a902c78fbd.automaticDestinations-ms --> 
-    7e4dca80246863e3.automaticDestinations-ms --> 
-    918e0ecb43d17e23.automaticDestinations-ms --> 
-    b74736c2bd8cc8a5.automaticDestinations-ms --> 
-    de48a32edcbe79e4.automaticDestinations-ms --> 
-  \end{lstlisting}
-	\item Exercise: Analyze the Notepad Jump List file
-  \begin{lstlisting}[basicstyle=\tiny]
-
-
-
-
-
-
-
-
-
-
--
-  \end{lstlisting}
-    \end{itemize}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{3.6 Jump Lists}
-    \begin{itemize}
-        \item Exercise: Identify applications
-  \begin{lstlisting}[basicstyle=\tiny]
-$ cd JumpLists/AutomaticDestinations/
-$ ll
-
-    1b4dd67f29cb1962.automaticDestinations-ms --> Windows Explorer
-    28c8b86deab549a1.automaticDestinations-ms --> Internet Explorer 8
-    6824f4a902c78fbd.automaticDestinations-ms --> Firefox 64.x
-    7e4dca80246863e3.automaticDestinations-ms --> Control Panel
-    918e0ecb43d17e23.automaticDestinations-ms --> Notepad (32-bit)
-    b74736c2bd8cc8a5.automaticDestinations-ms --> WinZip
-    de48a32edcbe79e4.automaticDestinations-ms --> Acrobat Reader 15.x
-  \end{lstlisting}
-	\item Exercise: Analyze the Notepad Jump List file
-  \begin{lstlisting}[basicstyle=\tiny]
-
-
-
-
-
-
-
-
-
-
--
-  \end{lstlisting}
-    \end{itemize}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{3.6 Jump Lists}
-    \begin{itemize}
-        \item Exercise: Identify applications
-  \begin{lstlisting}[basicstyle=\tiny]
-$ cd JumpLists/AutomaticDestinations/
-$ ll
-
-    1b4dd67f29cb1962.automaticDestinations-ms --> Windows Explorer
-    28c8b86deab549a1.automaticDestinations-ms --> Internet Explorer 8
-    6824f4a902c78fbd.automaticDestinations-ms --> Firefox 64.x
-    7e4dca80246863e3.automaticDestinations-ms --> Control Panel
-    918e0ecb43d17e23.automaticDestinations-ms --> Notepad (32-bit)
-    b74736c2bd8cc8a5.automaticDestinations-ms --> WinZip
-    de48a32edcbe79e4.automaticDestinations-ms --> Acrobat Reader 15.x
-  \end{lstlisting}
-	\item Exercise: Analyze the Notepad Jump List file
-  \begin{lstlisting}[basicstyle=\tiny]
-$ 7z l 918e0ecb43d17e23.automaticDestinations-ms
-        Date      Time    Attr         Size   Compressed  Name
-     ------------------- ----- ------------ ------------  -------
-                         .....         1398         1408  2
-                         .....         1368         1408  1
-                         .....          436          448  4
-                         .....          392          448  3
-
---> file
---> exiftool
---> strings              --> $ strings -el DestList
-  \end{lstlisting}
-    \end{itemize}
-\end{frame}
-
-
 
 

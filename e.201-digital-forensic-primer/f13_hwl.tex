@@ -105,18 +105,18 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
   \frametitle{3.2 Physical- / Logical layers}
   \begin{lstlisting}[basicstyle=\tiny]
 	       Mass storage device
- ---------    ---------    ---------    ---------     Considerations: Disk duplication
+ ---------    ---------    ---------    ---------    Considerations: Disk duplication
 | 8 TByte |  | 8 TByte |  | 8 TByte |  | 8 TByte |
- ---------    ---------    ---------    ---------         Speed USB2: 480 Mbit/s
-     |            |            |            |               Capacity: 8 * 1024^4 * 8
-     V            V            V            V               Duration: ~40 hours per disk
+ ---------    ---------    ---------    ---------      Speed USB2: 480 Mbit/s
+     |            |            |            |            Capacity: 8 * 1024^4 * 8
+     V            V            V            V            Duration: ~39 hours per disk
      RAID
    --------------------------------------------
-  |  System  Data                              |        Speed USB3.1: 10 Gbit/s
-  |  ----------------------------------------  |            Capacity: 24 * 1024^4 * 8
-  | |  P1  |    P2 (24 TByte)                | |            Duration: ~5 hours per volume
+  |  System  Data                              |       Speed USB3.1: 10 Gbit/s
+  |  ----------------------------------------  |         Capacity: 24 * 1024^4 * 8
+  | |  P1  |    P2 (24 TByte)                | |         Duration: ~5.5 hours per volume
   |  ----------------------------------------  |
-   --------------------------------------------             (Theoretically)
+   --------------------------------------------        (Theoretically)
 
 
 A solution:
@@ -133,22 +133,27 @@ A solution:
   \frametitle{3.3 ATA Disks }
     \begin{itemize}
         \item ATA-3: Hard disk password
+	\item[]
         \item ATA-4: HPA - Host Protected Area
         \begin{itemize}
-            \item Vendor area - benefit system vendors
-            \item Recovery data. persistent data
-            \item Controlled by firmware not OS
+            \item Not accessible by OS / user
+            \item Persistent data - Survive format and re-installation
+            \item Vendor area - Created by manufactur
+            \item Diagnostics and recovery tools
             \item \texttt{READ\_NATIVE\_MAX\_ADDRESS}
         \end{itemize}
+	\item[]
         \item ATA-6: DCO - Device Configuration Overlay
+	\item[]
         \begin{itemize}
-            \item Benefit system vendors
-            \item Control reported capacity and disk features
-            \item Use disk from different manufacturers
-            \item Use disk with different number of sectors
-            \item[] $\to$ Makes disks looking uniq
-            \item \texttt{DEVICE\_CONFIGURATION\_IDENTIFY}
+            \item Supports manufacturs with a layer of abstraction
+              \begin{itemize}
+                \item Use standard parts
+		\item[] $\to$ To build different products
+		\item[] $\to$ Example: Disks reports uniq amount of sectors
+              \end{itemize}
         \end{itemize}
+	\item[]
         \item ATA-7: Serial ATA
     \end{itemize}
 \end{frame}

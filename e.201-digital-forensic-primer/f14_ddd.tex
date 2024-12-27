@@ -65,7 +65,7 @@ udevadm monitor
 /dev/sda2              # Partition 2 on disk 1
 ...
 \end{lstlisting}
-        \item Block Devices
+        \item Block devices: Different level of access
         \begin{itemize}
             \item Attaching
             \item Mounting
@@ -98,8 +98,8 @@ circl-dfir.dd1            2048     3000000     1498976+   7  HPFS/NTFS/exFAT
         \item Exercise: Analyze output. Why \texttt{1498976}? $\to$ Conclusions?
     \end{itemize}
 \begin{lstlisting}[basicstyle=\tiny]
-End:     echo $(( 3000000 * 512 ))                  --> 1536 MB, 1536000000 bytes 
-         echo $(( 3000000 * 512 / 1024 / 1024 ))    --> 1464
+End:     echo $(( 3000000 * 512 / 1024 ))           --> 1500000 KB
+         echo $(( (3000000-2048) * 512 / 1024 ))    --> 1498976 KB
 
 1498976: echo $(( 1498976 * 2 ))                    --> 2997952
 \end{lstlisting}
@@ -239,11 +239,10 @@ $ dd if=img_3.txt of=out_3.txt bs=512 conv=noerror,sync
             \item Meta data
             \item Splitting output files \& support of forensic formats
             \item Cryptographic hashing \& verification checking
-        \end{itemize}
-        \item Example: hashing
-        \begin{itemize}
-            \item[] \texttt{md5sum circl-dfir.dd} $\to$ \texttt{bd80672b9d1bef2f35b6e902f389e83}
-            \item[] \texttt{sha1sum circl-dfir.dd} $\to$ \texttt{e5ffc7233a..........7e53b9f783}
+            \begin{itemize}
+                \item[] \texttt{md5sum circl-dfir.dd} $\to$ \texttt{bd80672b9d1bef2f35b6e902f389e83}
+                \item[] \texttt{sha1sum circl-dfir.dd} $\to$ \texttt{e5ffc7233a..........7e53b9f783}
+            \end{itemize}
         \end{itemize}
         \item Tools
         \begin{itemize}

@@ -35,41 +35,12 @@
       \item Recover the binary
       \item[]
     \end{itemize}
+    \item Hiding Data outside the file system
+    \begin{itemize}
+	    \item[] \url{https://cyberday.lu/wp-content/uploads/2024/10/05\_CIRCL\_CyberDayLu2024.pdf} 
+      \item[]
+    \end{itemize}
   \end{itemize}
-\end{frame}
-
-
-\begin{frame}[fragile]
-  \frametitle{6.1 Hide and recover data}
-  \begin{lstlisting}[basicstyle=\tiny]
-1. Hide message in the last (unallocated) sector
-------------------------------------------------
-    echo -n "My secret message" | dd of=mbr_ex.raw seek=262143 status=none conv=notrunc
-
-
-2. Read message from the last (unallocated) sector
---------------------------------------------------
-    dd if=mbr_ex.raw skip=262143 status=none | xxd | less
-    dd if=mbr_ex.raw skip=262143 status=none | strings
-
-
-3. Hide a binary file between MBR and 1th partition
----------------------------------------------------
-    dd if=/bin/dd of=mbr_ex.raw seek=3 conv=notrunc
-        76000 bytes (76 kB, 74 KiB) copied, 0,00173009 s, 43,9 MB/s
-
-
-4. Recover the hidden binary file
----------------------------------
-    dd if=mbr_ex.raw skip=0 count=4 | xxd | less
-
-    dd if=mbr_ex.raw bs=1 skip=$((3*512)) count=76000 of=ddddd.exe
-        76000 bytes (76 kB, 74 KiB) copied, 0,12853 s, 591 kB/s
-
-    md5sum ddddd.exe /bin/dd 
-        36a70f825b8b71a3d9ba3ac9c5800683  ddddd.exe
-        36a70f825b8b71a3d9ba3ac9c5800683  /bin/dd
-  \end{lstlisting}
 \end{frame}
 
 
