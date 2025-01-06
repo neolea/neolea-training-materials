@@ -1,0 +1,31 @@
+% DO NOT COMPILE THIS FILE DIRECTLY!
+% This is included by the other .tex files.
+
+\begin{frame}{What is ELF?}
+    \begin{itemize}
+        \item ELF stands for Executable and Linkable Format.
+        \item It is a common standard file format for executables, object code, shared libraries, and core dumps.
+        \item Originally developed by Unix System Laboratories and now widely used in Unix-like operating systems.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Structure of an ELF File}
+    \begin{itemize}
+        \item An ELF file consists of three main parts:
+        \begin{itemize}
+            \item \textbf{Header:} Contains metadata about the file type, architecture, and entry point.
+            \item \textbf{Program Header Table:} Describes how the file should be loaded into memory.
+            \item \textbf{Section Header Table:} Provides information about the sections in the file.
+        \end{itemize}
+        \item ELF files are designed to be flexible and extensible.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Benefits of ELF}
+    \begin{itemize}
+        \item Platform-independent format, enabling portability.
+        \item Simplifies the linking and loading process.
+        \item Supports dynamic linking, reducing redundancy.
+        \item Extensively used in modern development environments.
+    \end{itemize}
+\end{frame}
