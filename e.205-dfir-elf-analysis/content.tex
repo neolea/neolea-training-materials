@@ -3,7 +3,7 @@
 
 \begin{frame}{What is ELF?}
     \begin{itemize}
-        \item ELF stands for Executable and Linkable Format.
+        \item ELF stands for Executable and Linkable Format\footnote{\url{https://refspecs.linuxfoundation.org/elf/elf.pdf}}.
         \item It is a common standard file format for executables, object code, shared libraries, and core dumps.
         \item Originally developed by Unix System Laboratories and now widely used in Unix-like operating systems.
     \end{itemize}
@@ -28,4 +28,46 @@
         \item Supports dynamic linking, reducing redundancy.
         \item Extensively used in modern development environments.
     \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{ELF Symbols from Binary Analysis}
+
+Extract symbols from binary excluding GBLIBC references
+
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily, frame=single]
+nm sample | grep -v GBLIBC
+\end{lstlisting}
+
+
+\begin{lstlisting}[basicstyle=\ttfamily, frame=single]
+08048bfd t p4tch_sel1nux_codztegfaddczda
+08048e9c t parse_cred
+8050bb3 T prepare_fops_lsm_shellcode
+08049215 t put_your_hands_up_hooker
+0804b220 D r1ngrrrrrrr
+0804988e t rey0y0code
+0804b2c0 d ruujhdbgatrfe345
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}
+\frametitle{ELF Symbols from Binary Analysis}
+
+\begin{itemize}
+    \item Interpretation of the output of tool \tt{nm}
+    \item man page is your friend
+\end{itemize}
+
+\begin{tabular}{|c|p{0.7\textwidth}|}
+\hline
+\textbf{Symbol Type} & \textbf{Explanation} \\ \hline
+a & The symbol's value is absolute and will not be changed by further linking. \\ \hline
+b & The symbol is in the BSS data section. \\ \hline
+d & The symbol is in the initialized data section. \\ \hline
+r & The symbol is in the read-only data section. \\ \hline
+t & The symbol is in the text (code) section. \\ \hline
+w & The symbol is a weak symbol that has not been specifically tagged as a weak object symbol. \\ \hline
+\end{tabular}
+
 \end{frame}
