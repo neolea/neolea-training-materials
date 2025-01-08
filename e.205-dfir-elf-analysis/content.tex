@@ -31,6 +31,26 @@
 \end{frame}
 
 \begin{frame}[fragile]
+\frametitle{Binwalk Output}
+
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily, breaklines=true]
+binwalk sample 
+\end{lstlisting}
+
+\begin{tabular}{ccp{0.6\textwidth}}
+\textbf{Decimal} & \textbf{Hexadecimal} & \textbf{Description}\\
+0                & 0x0                  & ELF, 32-bit LSB executable, Intel 80386, version 1 (SYSV) \\
+13111            & 0x3337               & Boot section Start 0x58028941 End 0x5A41 \\
+13115            & 0x333B               & Boot section Start 0x5A41 End 0x0 \\
+\end{tabular}
+
+\vspace{1cm}
+
+$\to$ matched signatures
+\end{frame}
+
+
+\begin{frame}[fragile]
 \frametitle{ELF Symbols from Binary Analysis}
 
 Extract symbols from binary excluding GBLIBC references
