@@ -49,6 +49,54 @@ binwalk sample
 $\to$ matched signatures
 \end{frame}
 
+\begin{frame}[fragile]
+\frametitle{Using Binwalk}
+\framesubtitle{Sample: 9e70725640c4284e2049e4b25c9cc46cca496053cebf69855ec25acc9bd63e05}
+\begin{tabular}{|c|c|p{0.6\textwidth}|}
+\hline
+\textbf{Decimal} & \textbf{Hexadecimal} & \textbf{Description} \\ \hline
+0                & 0x0                  & ELF, 64-bit LSB executable, AMD x86-64, version 1 (GNU/Linux) \\ \hline
+600864           & 0x92B20              & Unix path: /usr/share/locale \\ \hline
+612774           & 0x959A6              & Unix path: /usr/lib/getconf \\ \hline
+620336           & 0x97730              & Unix path: /usr/lib/locale \\ \hline
+622368           & 0x97F20              & Unix path: /usr/lib/locale/locale-archive \\ \hline
+674903           & 0xA4C57              & Unix path: /usr/lib/x86\_64-linux-gnu/ \\ \hline
+
+\textbf{778039}           & \textbf{0xBDF37}              & \textbf{mcrypt 2.2 encrypted data, algorithm: blowfish-448, mode: CBC, keymode: 8bit} \\ \hline
+\end{tabular}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Using Binwalk}
+
+\begin{itemize}
+    \item \textbf{Encrypted Data:}
+    \begin{itemize}
+        \item The file contains data encrypted using \textbf{mcrypt 2.2}.
+    \end{itemize}
+    \item \textbf{Encryption Algorithm:}
+    \begin{itemize}
+        \item Algorithm: \textbf{Blowfish-448}, a symmetric block cipher with a 448-bit key size.
+    \end{itemize}
+    \item \textbf{Cipher Mode:}
+    \begin{itemize}
+        \item Mode: \textbf{CBC (Cipher Block Chaining)} for enhanced security via block interdependency.
+    \end{itemize}
+    \item \textbf{Key Mode:}
+    \begin{itemize}
+        \item Key processed in \textbf{8-bit mode}, possibly a default for mcrypt configurations.
+    \end{itemize}
+    \item \textbf{Implications:}
+    \begin{itemize}
+        \item Decryption requires the encryption key and potentially an initialization vector (IV).
+        \item Indicates sensitive or protected data within the file.
+        \item Poses a reverse engineering challenge without the key.
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
 
 \begin{frame}[fragile]
 \frametitle{ELF Symbols from Binary Analysis}
