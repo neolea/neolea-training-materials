@@ -97,6 +97,21 @@ $\to$ matched signatures
 
 \end{frame}
 
+\begin{frame}[fragile]
+\frametitle{Extracting the content}
+Sample: 9e70725640c4284e2049e4b25c9cc46cca496053cebf69855ec25acc9bd63e05
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily, frame=single, breaklines=true]
+dd if=sample of=extracted_data bs=1 skip=778039
+\end{lstlisting}
+
+\begin{itemize}
+    \item Binwalk uses signatures to identify and extract data from files.
+    \item Determine the size of the detected block for further analysis.
+    \item Evaluate whether the detection is a false positive by inspecting the data manually or using additional tools.
+\end{itemize}
+
+\end{frame}
+
 
 \begin{frame}[fragile]
 \frametitle{ELF Symbols from Binary Analysis}
