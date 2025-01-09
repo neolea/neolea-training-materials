@@ -34,7 +34,9 @@
 \frametitle{Binwalk Output}
 
 \begin{lstlisting}[language=bash, basicstyle=\ttfamily, breaklines=true]
-binwalk sample 
+Sample: 6420f5d7d48b75d687b8356e93c82721bb536c633d773f8985f74c8977425f04
+
+binwalk sample
 \end{lstlisting}
 
 \begin{tabular}{ccp{0.6\textwidth}}
@@ -118,6 +120,7 @@ dd if=sample of=extracted_data bs=1 skip=778039
 
 Extract symbols from binary excluding GBLIBC references
 
+Sample: 6420f5d7d48b75d687b8356e93c82721bb536c633d773f8985f74c8977425f04
 \begin{lstlisting}[language=bash, basicstyle=\ttfamily, frame=single]
 nm sample | grep -v GBLIBC
 \end{lstlisting}
