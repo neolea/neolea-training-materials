@@ -434,3 +434,32 @@ Exploring connected MISP instances within MISP-LEA
 \includegraphics[width=0.6\textwidth]{img/gfctg.png}
 \end{frame}
 
+\begin{frame}
+\frametitle{Core Dumps on Ubuntu}
+
+\begin{itemize}
+    \item \textbf{What is a Core Dump?}
+    \begin{itemize}
+        \item A core dump is a snapshot of a program's memory at the moment it crashes.
+        \item Used for debugging to analyze the cause of the crash.
+    \end{itemize}
+
+    \item \textbf{Where to Find Core Dumps in Ubuntu?}
+    \begin{itemize}
+        \item Default location: \texttt{/var/lib/apport/coredump}.
+        \item When using \texttt{systemd}, they may be in \texttt{/var/lib/systemd/coredump}.
+        \item Core dumps may also be written to the program's working directory or as specified by \texttt{/proc/sys/kernel/core\_pattern}.
+    \end{itemize}
+
+    \item \textbf{Configuring Core Dumps:}
+    \begin{itemize}
+        \item Set unlimited size: \texttt{ulimit -c unlimited}.
+        \item Check core pattern: \texttt{cat /proc/sys/kernel/core\_pattern}.
+        \item Enable or configure core dumps in \texttt{/etc/security/limits.conf}.
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\end{document}
+
