@@ -354,3 +354,18 @@ Exploring connected MISP instances within MISP-LEA
 \centering
 \includegraphics[width=0.6\textwidth]{img/gxref.png}
 \end{frame}
+
+
+\begin{frame}
+\frametitle{String Analysis and Function Call Trees in Ghidra}
+
+\begin{itemize}
+    \item Certain functions are known to generate forensic artifacts, such as `fopen` and `mmap`.
+    \item Locate these functions in the function call tree to identify which functions use them.
+    \item Determine the artifacts that can be leveraged for detection and analysis.
+\end{itemize}
+
+\centering
+\includegraphics[width=0.6\textwidth]{img/goutcall.png}
+\end{frame}
+
