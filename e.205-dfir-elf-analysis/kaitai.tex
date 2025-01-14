@@ -7,9 +7,9 @@
     \item To build Kaitai Struct from sources:
           \begin{itemize}
               \item Ensure you have \textbf{Scala SBT (sbt)} installed.
-              \item Clone the repository and run the build commands (details below).
+              \item Clone the repository and run the build commands.
           \end{itemize}
-    \item Below is the required command sequence for building Kaitai Struct.
+    \item Command sequence for building Kaitai Struct.
 \end{itemize}
 
 
@@ -42,6 +42,10 @@ git clone --recursive https://github.com/kaitai-io/kaitai_struct.git
 sbt compile
 
 sbt compilerJVM/universal:packageBin
+
+unzip unpack the zip file in kaitai_struct/compiler/jvm/target/universal/kaitai-struct-compiler-0.11-SNAPSHOT.zip
+
+compiler/jvm/target/universal/kaitai-struct-compiler-0.11-SNAPSHOT/bin/kaitai-struct-compiler -h
 
 \end{lstlisting}
 
