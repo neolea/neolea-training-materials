@@ -19,7 +19,7 @@
 \definecolor{headercolor}{rgb}{0.7, 0.85, 1.0} % Light blue
 \definecolor{bodycolor}{rgb}{1.0, 0.85, 0.4}   % Light gold
 
-\begin{frame}[fragile]{Example YAML Schema for Kaitai Struct}
+\begin{frame}[fragile]{Custom Format used in Kaitai Struct Example}
 The following is an example of a `.ksy` file for Kaitai Struct:
 
 \begin{table}
@@ -29,7 +29,7 @@ The following is an example of a `.ksy` file for Kaitai Struct:
 \hline
 \textbf{Offset (Bytes)} & \textbf{Field Name} & \textbf{Description} \\ \hline
 0x00--0x03             & \cellcolor{headercolor} Header              & 4-byte unsigned integer (u4) \\ \hline
-0x04--0x0A             & Body                & 8 bytes of data              \\ \hline
+0x04--0x0A             & \cellcolor{bodycolor} Body                & 8 bytes of data              \\ \hline
 \end{tabular}
 \caption{Structure of the Example Data Format}
 \end{table}
@@ -42,7 +42,7 @@ The following is an example of a `.ksy` file for Kaitai Struct:
 \hline
 Offset & 00 & 01 & 02 & 03 & 04 & 04 & 05 & 06 & 07 & 08 & 09 & A\\
 \hline
-Content & \cellcolor{headercolor} 02 & \cellcolor{headercolor} d2 & \cellcolor{headercolor} 49 & \cellcolor{headercolor}96 & 62 & 61 & 64 & 63 & 66 & 65 & 68 & 67\\
+Content & \cellcolor{headercolor} 02 & \cellcolor{headercolor} d2 & \cellcolor{headercolor} 49 & \cellcolor{headercolor}96 & \cellcolor{bodycolor} 62 & \cellcolor{bodycolor} 61 & \cellcolor{bodycolor}64 & \cellcolor{bodycolor}63 & \cellcolor{bodycolor}66 & \cellcolor{bodycolor}65 & \cellcolor{bodycolor}68 & \cellcolor{bodycolor}67\\
 \hline
 \end{tabular}
 }
