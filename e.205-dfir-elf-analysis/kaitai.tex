@@ -22,25 +22,32 @@
 \begin{frame}[fragile]{Example YAML Schema for Kaitai Struct}
 The following is an example of a `.ksy` file for Kaitai Struct:
 
+\begin{table}
 \centering
 \renewcommand{\arraystretch}{1.5} % Increase row height
-\begin{tabular}{|>{\columncolor{offsetcolor}}c|>{\columncolor{headercolor}}c|>{\columncolor{bodycolor}}c|}
+\begin{tabular}{|c|c|c|}
 \hline
 \textbf{Offset (Bytes)} & \textbf{Field Name} & \textbf{Description} \\ \hline
-0x00--0x03             & Header              & 4-byte unsigned integer (u4) \\ \hline
-0x04--0x0B             & Body                & 8 bytes of data              \\ \hline
+0x00--0x03             & \cellcolor{headercolor} Header              & 4-byte unsigned integer (u4) \\ \hline
+0x04--0x0A             & Body                & 8 bytes of data              \\ \hline
 \end{tabular}
+\caption{Structure of the Example Data Format}
+\end{table}
 
 %02d2 4996 6261 6463 6665 6867
+\begin{table}
+\scalebox{0.95}{
+\centering
 \begin{tabular}{|l|l|l|l|l|l|l|l|l|l|l|l|l|}
 \hline
-\rowcolor{headercolor}
 Offset & 00 & 01 & 02 & 03 & 04 & 04 & 05 & 06 & 07 & 08 & 09 & A\\
 \hline
-\rowcolor{bodycolor}
-Content & 02 & d2 & 49 & 96 & 62 & 61 & 64 & 63 & 66 & 65 & 68 & 67\\
+Content & \cellcolor{headercolor} 02 & \cellcolor{headercolor} d2 & \cellcolor{headercolor} 49 & \cellcolor{headercolor}96 & 62 & 61 & 64 & 63 & 66 & 65 & 68 & 67\\
 \hline
 \end{tabular}
+}
+\caption{Visualization of the Example File}
+\end{table}
 
 %\begin{lstlisting}[language=yaml]
 %meta:
