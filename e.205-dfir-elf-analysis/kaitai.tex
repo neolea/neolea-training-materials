@@ -1,3 +1,46 @@
+\begin{frame}[fragile]
+\frametitle{Setting up KaitaiStruct}
+\begin{itemize}
+    \item Latest release from \url{https://github.com/kaitai-io/kaitai_struct} is from 2022
+    \item Build it from sources
+    \item Need scalasbt installed (sbt)
+\end{itemize}
+
+
+\lstdefinelanguage{bash}{
+    keywords={git, sbt, clone, push, pull, add, commit, checkout, branch},
+    keywordstyle=\color{blue}\bfseries,
+    ndkeywords={https, recursive, universal, packageBin, compile},
+    ndkeywordstyle=\color{teal}\bfseries,
+    identifierstyle=\color{black},
+    sensitive=false,
+    comment=[l]{\#},
+    commentstyle=\color{gray}\itshape,
+    stringstyle=\color{orange},
+    showstringspaces=false,
+    basicstyle=\ttfamily\small,
+    morestring=[b]"
+}
+
+\lstset{
+    language=bash,
+    breaklines=true,        % Enable line breaking
+    breakatwhitespace=true, % Break lines at spaces
+    prebreak=\textbackslash, % Add '\' at line breaks
+    postbreak=\space        % Add a space after line breaks
+}
+
+\begin{lstlisting}[language=bash]
+git clone --recursive https://github.com/kaitai-io/kaitai_struct.git
+
+sbt compile
+
+sbt compilerJVM/universal:packageBin
+
+\end{lstlisting}
+
+
+\end{frame}
 
 % Define YAML language style with proper coloring for keywords
 \lstdefinelanguage{yaml}{
