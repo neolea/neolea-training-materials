@@ -48,6 +48,39 @@ sbt compilerJVM/universal:packageBin
 
 \end{frame}
 
+\lstdefinelanguage{bash}{
+    keywords={python3,source,pip3},
+    keywordstyle=\color{blue}\bfseries,
+    ndkeywords={https, recursive, universal, packageBin, compile},
+    ndkeywordstyle=\color{teal}\bfseries,
+    identifierstyle=\color{black},
+    sensitive=false,
+    comment=[l]{\#},
+    commentstyle=\color{gray}\itshape,
+    stringstyle=\color{orange},
+    showstringspaces=false,
+    basicstyle=\ttfamily\small,
+    morestring=[b]"
+}
+
+
+\begin{frame}[fragile]
+    \frametitle{Setting up Kaitai Struct Python Environment}
+
+    To set up the Python environment for Kaitai Struct, follow these steps:
+
+
+
+    \begin{lstlisting}[language=bash,frame=single]
+python3 -m venv venv
+source venv/bin/activate
+pip3 install kaitaistruct
+python3 parse.py
+    \end{lstlisting}
+
+    \textbf{Important:} Ensure you stay within the virtual environment. Exiting the virtual environment may prevent your script from running as expected.
+\end{frame}
+
 % Define YAML language style with proper coloring for keywords
 \lstdefinelanguage{yaml}{
     keywords={true, false, null, yes, no},
