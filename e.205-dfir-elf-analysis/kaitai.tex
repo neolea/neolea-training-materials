@@ -1,4 +1,63 @@
 
+% Define YAML language style with proper coloring for keywords
+\lstdefinelanguage{yaml}{
+    keywords={true, false, null, yes, no},
+    keywordstyle=\color{blue}\bfseries,
+    basicstyle=\ttfamily\footnotesize,
+    comment=[l]{\#},
+    commentstyle=\color{green!50!black},
+    stringstyle=\color{orange},
+    morekeywords={meta, id, title, endian, seq, type, size}, % Add YAML keys for highlighting
+    moredelim=**[il][\color{black}]{---},   % Highlight YAML start
+    moredelim=**[il][\color{black}]{...},   % Highlight YAML end
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+}
+
+\definecolor{offsetcolor}{rgb}{1.0, 0.6, 0.6}  % Light red
+\definecolor{headercolor}{rgb}{0.7, 0.85, 1.0} % Light blue
+\definecolor{bodycolor}{rgb}{1.0, 0.85, 0.4}   % Light gold
+
+\begin{frame}[fragile]{Example YAML Schema for Kaitai Struct}
+The following is an example of a `.ksy` file for Kaitai Struct:
+
+\centering
+\renewcommand{\arraystretch}{1.5} % Increase row height
+\begin{tabular}{|>{\columncolor{offsetcolor}}c|>{\columncolor{headercolor}}c|>{\columncolor{bodycolor}}c|}
+\hline
+\textbf{Offset (Bytes)} & \textbf{Field Name} & \textbf{Description} \\ \hline
+0x00--0x03             & Header              & 4-byte unsigned integer (u4) \\ \hline
+0x04--0x0B             & Body                & 8 bytes of data              \\ \hline
+\end{tabular}
+
+%02d2 4996 6261 6463 6665 6867
+\begin{tabular}{|l|l|l|l|l|l|l|l|l|l|l|l|l|}
+\hline
+\rowcolor{headercolor}
+Offset & 00 & 01 & 02 & 03 & 04 & 04 & 05 & 06 & 07 & 08 & 09 & A\\
+\hline
+\rowcolor{bodycolor}
+Content & 02 & d2 & 49 & 96 & 62 & 61 & 64 & 63 & 66 & 65 & 68 & 67\\
+\hline
+\end{tabular}
+
+%\begin{lstlisting}[language=yaml]
+%meta:
+%  id: example
+%  title: Example Binary Format
+%  endian: le
+%seq:
+%  - id: header
+%    type: u4
+%  - id: body
+%    size: 8
+%\end{lstlisting}
+
+\end{frame}
+
+
+
 \begin{frame}[fragile]
 \frametitle{Using your generated python class}
 
