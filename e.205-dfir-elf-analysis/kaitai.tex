@@ -49,18 +49,30 @@ Content & \cellcolor{headercolor} 02 & \cellcolor{headercolor} d2 & \cellcolor{h
 \caption{Visualization of the Example File}
 \end{table}
 
-%\begin{lstlisting}[language=yaml]
-%meta:
-%  id: example
-%  title: Example Binary Format
-%  endian: le
-%seq:
-%  - id: header
-%    type: u4
-%  - id: body
-%    size: 8
-%\end{lstlisting}
+\end{frame}
 
+\begin{frame}[fragile]
+\frametitle{Description of custom binary format in YAML}
+
+Create an example.ksy file
+
+\begin{lstlisting}[language=yaml]
+meta:
+  id: example
+  title: Example Binary Format
+  endian: le
+seq:
+  - id: header
+    type: u4
+  - id: body
+    size: 8
+\end{lstlisting}
+
+Transform it into python code
+
+\begin{lstlisting}[language=bash,frame=single]
+kaitai-struct-compiler -t python example.ksy
+\end{lstlisting}
 \end{frame}
 
 
