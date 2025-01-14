@@ -75,6 +75,39 @@ kaitai-struct-compiler -t python example.ksy
 \end{lstlisting}
 \end{frame}
 
+\begin{frame}[fragile]
+\frametitle{Generated Python File}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{green!50!black},
+    stringstyle=\color{orange},
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+}
+
+\begin{lstlisting}
+# This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
+
+import kaitaistruct
+from kaitaistruct import KaitaiStruct, KaitaiStream, BytesIO
+
+class Example(KaitaiStruct):
+    def __init__(self, _io, _parent=None, _root=None):
+        self._io = _io
+        self._parent = _parent
+        self._root = _root if _root else self
+        self._read()
+
+    def _read(self):
+        self.header = self._io.read_u4le()
+        self.body = self._io.read_bytes(8)
+
+\end{lstlisting}
+\end{frame}
 
 
 \begin{frame}[fragile]
