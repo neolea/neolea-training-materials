@@ -1,0 +1,26 @@
+
+\begin{frame}[fragile]
+\frametitle{Using your generated python class}
+
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\footnotesize,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{green!50!black},
+    stringstyle=\color{orange},
+    showstringspaces=false,
+    breaklines=true,
+    frame=single,
+}
+\begin{lstlisting}
+from example import Example
+
+# Open the binary file
+with open("data.bin", "rb") as f:
+    data = Example.from_io(f)
+
+# Access parsed fields
+print(f"Header: {data.header}")
+print(f"Body: {data.body}")
+\end{lstlisting}
+\end{frame}
