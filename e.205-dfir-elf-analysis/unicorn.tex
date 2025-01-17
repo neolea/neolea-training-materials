@@ -178,3 +178,91 @@ In Ghidra, click on \textbf{Window} and then select \textbf{Memory Map}.
     \includegraphics[scale=0.5]{img/end.png}
 \end{frame}
 
+
+\begin{frame}[fragile]
+\frametitle{Python Code Example: Hooking in Unicorn Engine}
+\begin{lstlisting}[language=Python, caption={Hooking Example with Unicorn Engine}]
+from unicorn import *
+from unicorn.x86_const import *
+
+import struct
+
+def hook_mem_access(uc, access, address, size, value, user_data):
+    print(f"[*] Memory access: {access:x} at 0x{address:x}, data size = {size}, data value = 0x{value:x}")
+
+def hook_code(uc, address, size, user_data):
+    print(f"[*] Current RIP: {address:x}, instruction size = {size}")
+\end{lstlisting}
+
+\begin{itemize}
+    \item Create a virtual environment and install the Python bindings.
+    \item Import the necessary methods.
+    \item Set up the hooking functions.
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Python Code Example: Configuring the Engine}
+\begin{lstlisting}[language=Python, caption={Unicorn Engine Example with Hooks}]
+with open("sample", "rb") as f:
+    binary = f.read()
+
+ADDRESS = 0x1000000
+
+uc = Uc(UC_ARCH_X86, UC_MODE_64)
+uc.hook_add(UC_HOOK_MEM_WRITE, hook_mem_access)
+uc.hook_add(UC_HOOK_MEM_READ, hook_mem_access)
+uc.hook_add(UC_HOOK_CODE, hook_code, None, ADDRESS + 0x1189, ADDRESS + 0x12AC)
+uc.mem_map(ADDRESS, 2 * 1024 * 1024)  # 2 MB
+uc.mem_write(ADDRESS, binary)
+\end{lstlisting}
+
+\begin{itemize}
+	\item Define the CPU architecture (line 6)
+	\item Install the hooks (line 7 to 9)
+	\item Configure memory layout (line 10)
+	\item Load the ELF file (line 11)
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Python Code Example: Emulating with Unicorn}
+\begin{lstlisting}[language=Python, caption={Unicorn Engine Emulation Example}]
+try:
+    # Start emulation from the specified range
+    uc.emu_start(ADDRESS + 0x1189, ADDRESS + 0x11EC)  # Start and end addresses recovered from Ghidra
+
+    # Read the result from memory and decode it
+    result = uc.mem_read(ADDRESS + 0x4000, len(input_str)).decode("utf-8")
+    print(f"Encoded string: {result}")
+
+except UcError as e:
+    # Handle errors during emulation
+    print(f"Unicorn error: {e}")
+\end{lstlisting}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Unicorn Engine Trouble Shooting}
+\begin{minipage}{0.5\textwidth}
+\begin{lstlisting}[basicstyle=\ttfamily\scriptsize,numbers=left, numberstyle=\tiny]
+[*] Current RIP: 1001189, instruction size = 4
+[*] Current RIP: 100118d, instruction size = 1
+[*] Memory access: 11 at 0x1005ff8, data size = 8, data value = 0x0
+[*] Current RIP: 100118e, instruction size = 3
+[*] Current RIP: 1001191, instruction size = 1
+[*] Memory access: 11 at 0x1005ff0, data size = 8, data value = 0x0
+[*] Current RIP: 1001192, instruction size = 4
+[*] Current RIP: 1001196, instruction size = 4
+[*] Memory access: 11 at 0x1005fd0, data size = 8, data value = 0x1004000
+\end{lstlisting}
+\end{minipage}%
+\hfill
+\begin{minipage}{0.4\textwidth}
+\centering
+\includegraphics[scale=0.4]{img/block.png}
+\end{minipage}
+\end{frame}
