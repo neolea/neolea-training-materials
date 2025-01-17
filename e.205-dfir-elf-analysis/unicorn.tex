@@ -89,3 +89,92 @@ make & make install
     \end{enumerate}
 \end{block}
 \end{frame}
+
+
+% Define code style
+\lstset{
+    basicstyle=\ttfamily\scriptsize, % Font style and size
+    keywordstyle=\color{blue},       % Color for keywords
+    commentstyle=\color{green!60!black}, % Color for comments
+    stringstyle=\color{red},         % Color for strings
+    numbers=left,                    % Line numbers on the left
+    numberstyle=\tiny,               % Line number font size
+    frame=single,                    % Frame around the code
+    breaklines=true,                 % Line breaking
+    showstringspaces=false           % Hide spaces in strings
+}
+
+
+\begin{frame}[fragile]
+\frametitle{XOR Cipher Example in C 1/2}
+\begin{lstlisting}[language=C]
+#include <stdio.h>
+#include <string.h>
+// Function to encrypt/decrypt a string using XOR cipher
+void xor_cipher(char *data, char key) {
+    for (int i = 0; i < strlen(data); i++) {
+        data[i] ^= key; // XOR each character with the key
+    }
+}
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{XOR Cipher Example in C 2/2}
+\begin{lstlisting}[language=C]
+int main() {
+    char data[] = "Hello, World!";  // Message to encrypt
+    char key = 'K';                // Encryption key
+
+    printf("Original: %s\n", data);
+
+    // Encrypt the data
+    xor_cipher(data, key);
+    printf("Encrypted: %s\n", data);
+
+    // Decrypt the data
+    xor_cipher(data, key);  // Apply XOR again with the same key to decrypt
+    printf("Decrypted: %s\n", data);
+
+    return 0;
+}
+\end{lstlisting}
+
+\begin{lstlisting}{language=bash}
+    gcc -o sample sample.c
+\end{lstlisting}
+\end{frame}
+
+\begin{frame}
+\frametitle{Determining Base Address}
+In Ghidra, click on \textbf{Window} and then select \textbf{Memory Map}.
+\vspace{1cm}
+\centering
+\includegraphics[scale=0.3]{img/base.png}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Determining the Start Address of the Function}
+    \begin{itemize}
+        \item \textbf{Challenge:} Identify the function or code block responsible for encryption.
+        \item \textbf{Approach:} Look for functions containing numerous arithmetic and bitwise operations:
+        \begin{itemize}
+            \item Arithmetic operations: \texttt{ADD}, \texttt{SUB}, \texttt{MUL}, \texttt{DIV}.
+            \item Bitwise operations: \texttt{XOR}, \texttt{SHR}, \texttt{SHL}.
+        \end{itemize}
+        \item Check for these operations grouped in blocks or loops.
+    \end{itemize}
+    \centering
+    \includegraphics[scale=0.5]{img/start.png}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Determining the End of a Function}
+    \begin{itemize}
+        \item Functions often end with the \textbf{RET} instruction.
+    \end{itemize}
+    \vspace{1cm}
+    \centering
+    \includegraphics[scale=0.5]{img/end.png}
+\end{frame}
+
