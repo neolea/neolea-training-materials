@@ -1,3 +1,17 @@
+\begin{frame}
+    \frametitle{Analyzing Unknown Formats}
+
+    \begin{itemize}
+        \item Threat actors often use customized binary formats for encoding.
+        \item Malware configuration parsing\footnote{\url{https://github.com/TeamT5/MalCfgParser}}.
+        \item Beacons of remote access tools, such as Cobalt Strike.
+    \end{itemize}
+    \centering
+    \includegraphics[scale=0.5]{img/cobalt.png}
+    Image source:\footnote{\url{https://sixdub.medium.com/using-kaitai-to-parse-cobalt-strike-beacon-configs-f5f0552d5a6e}}.
+\end{frame}
+
+
 \begin{frame}[fragile]
 \frametitle{Setting up Kaitai Struct}
 
@@ -285,19 +299,16 @@ print(f"Body: {data.body}")
     \item \textbf{Security}:
           \begin{itemize}
               \item EFI variable signature
-              \item OpenPGP
               \item SSH public key
           \end{itemize}
     \item \textbf{Networking}:
           \begin{itemize}
               \item Bitcoin transaction key
               \item WebSocket
-              \item IPv4 packet
           \end{itemize}
     \item \textbf{Media}:
           \begin{itemize}
               \item Android OpenGL shaders cache
-              \item AVI
               \item WAV
           \end{itemize}
     \item \textbf{MacOS}:
@@ -307,10 +318,8 @@ print(f"Body: {data.body}")
           \end{itemize}
     \item \textbf{Filesystems}:
           \begin{itemize}
-              \item Amlogic EMMC partitions
               \item LUKS
               \item VDI
-              \item VMware VMDK
           \end{itemize}
 \end{itemize}
 
