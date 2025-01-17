@@ -1,0 +1,90 @@
+\begin{frame}
+\frametitle{Decrypting files without access to a tool}
+\begin{block}{Problem Statement}
+    \begin{itemize}
+        \item Faced with a large number of encrypted files.
+        \item Encryption uses a custom implementation.
+        \item No available command-line tool for decryption.
+        \item The key and/or IV has been recovered.
+        \item Debugging and manual decryption of each file is time-consuming and inefficient.
+    \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Decrypting Files Without Access to a Tool}
+\begin{block}{Traditional Approach}
+\begin{itemize}
+    \item Write a loader program to execute the code.
+    \item Read the code into a buffer.
+    \item Cast the buffer to a function pointer.
+    \item Execute the function pointer.
+    \item \textbf{Challenges:}
+    \begin{itemize}
+        \item Buffers are often protected against code execution.
+        \item Requires fiddling with \texttt{mmap} and \texttt{mprotect}.
+        \item The code might include malicious instructions that went unidentified.
+        \item The decryptor may be designed for another CPU architecture (e.g., MIPS, RISC-V).
+    \end{itemize}
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Decrypting Files Without Access to a Tool}
+    \begin{itemize}
+        \item The Unicorn Engine\footnote{\url{https://www.unicorn-engine.org/}} is a CPU emulator based on QEMU.
+        \item Supports multiple architectures:
+        \begin{itemize}
+            \item ARM, ARM64 (ARMv8), m68k, MIPS, PowerPC, RISC-V, S390x (SystemZ), SPARC, TriCore, and x86 (including x86\_64).
+        \end{itemize}
+        \item Provides bindings for various programming languages:
+        \begin{itemize}
+            \item Pharo, Crystal, Clojure, Visual Basic, Perl, Rust, Haskell, Ruby, Python, Java, Go, D, Lua, JavaScript, .NET, Delphi/Pascal, and MSVC.
+        \end{itemize}
+        \item Offers hooking capabilities for:
+        \begin{itemize}
+            \item \textbf{Memory access}, \textbf{executed instructions}, and \textbf{interrupts}.
+        \end{itemize}
+        \item Thread-safe\footnote{Multithreading is often used as an anti-debugging technique.}
+        \item Works without modifying code (e.g., no need to insert instructions such as \texttt{INT3} or \texttt{0xCC}).
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Building Unicorn Engine}
+\begin{block}{Prerequisites}
+    Install the required tools:
+    \begin{itemize}
+        \item \texttt{cmake}
+        \item \texttt{pkg-config}
+    \end{itemize}
+    \textbf{Command:}
+    \begin{verbatim}
+sudo apt install cmake pkg-config
+    \end{verbatim}
+\end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Building Unicorn Engine}
+
+\begin{block}{Build Steps}
+    Follow these steps to build Unicorn:
+    \begin{enumerate}
+        \item Create and navigate to the build directory:
+        \begin{verbatim}
+mkdir build; cd build
+        \end{verbatim}
+        \item Run \texttt{cmake} with the release build type:
+        \begin{verbatim}
+cmake .. -DCMAKE_BUILD\_TYPE=Release
+        \end{verbatim}
+        \item Compile the project:
+        \begin{verbatim}
+make
+        \end{verbatim}
+    \end{enumerate}
+\end{block}
+\end{frame}
