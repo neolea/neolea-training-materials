@@ -228,6 +228,26 @@ uc.mem_write(ADDRESS, binary)
 \end{frame}
 
 \begin{frame}[fragile]
+\frametitle{Function Parameter Passing}
+\begin{lstlisting}[language=Python, caption={Unicorn Engine Example: Setting Arguments}]
+input_str = b".''$gk$9'/j"
+input_key = 75 # 'K'  
+
+# Write the input string to memory
+uc.mem_write(ADDRESS + 0x4000, input_str)  # Address where input_str is stored (binary 16K, string at 17K)
+
+# Set up registers
+uc.reg_write(UC_X86_REG_RDI, ADDRESS + 0x4000)  # Set the first argument (address of the string)
+uc.reg_write(UC_X86_REG_RSI, input_key)        # Set the second argument (offset)
+uc.reg_write(UC_X86_REG_RSP, ADDRESS + 0x6000) # Set the stack (RSP)
+\end{lstlisting}
+
+Pay attention to the operating system's calling convention.
+\end{frame}
+
+
+
+\begin{frame}[fragile]
 \frametitle{Python Code Example: Emulating with Unicorn}
 \begin{lstlisting}[language=Python, caption={Unicorn Engine Emulation Example}]
 try:
