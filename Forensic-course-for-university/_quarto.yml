@@ -1,0 +1,6 @@
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    lightbox: true
