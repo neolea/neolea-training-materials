@@ -5,7 +5,7 @@ course_1: course_1.md
 
 qcourse_1: course_1.md
 	@echo "Compiling course_1 html file"
-	quarto render course_1.md
+	quarto render course_1.md --to html
 
 course_2: course_2.md 
 	@echo "Compiling course_2 presentation"
@@ -13,7 +13,7 @@ course_2: course_2.md
 
 qcourse_2: course_2.md
 	@echo "Compiling course_2 html file"
-	quarto render course_2.md
+	quarto render course_2.md --to html
 
 course_3: course_3.md 
 	@echo "Compiling course_3 presentation"
@@ -21,7 +21,7 @@ course_3: course_3.md
 
 qcourse_3: course_3.md
 	@echo "Compiling course_3 html file"
-	quarto render course_3.md
+	quarto render course_3.md --to html
 
 clean:
 	@echo "Cleaning up..."
