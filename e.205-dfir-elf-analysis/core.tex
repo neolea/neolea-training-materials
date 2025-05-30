@@ -1,0 +1,97 @@
+\begin{frame}
+\frametitle{Core Dumps on Ubuntu}
+
+\begin{itemize}
+    \item \textbf{What is a Core Dump?}
+    \begin{itemize}
+        \item A core dump is a snapshot of a program's memory at the moment it crashes.
+        \item Used for debugging to analyze the cause of the crash.
+    \end{itemize}
+
+    \item \textbf{Where to Find Core Dumps in Ubuntu?}
+    \begin{itemize}
+        \item Default location: \texttt{/var/lib/apport/coredump}.
+        \item When using \texttt{systemd}, they may be in \texttt{/var/lib/systemd/coredump}.
+        \item Core dumps may also be written to the program's working directory or as specified by \texttt{/proc/sys/kernel/core\_pattern}.
+    \end{itemize}
+
+    \item \textbf{Configuring Core Dumps:}
+    \begin{itemize}
+        \item Set unlimited size: \texttt{ulimit -c unlimited}.
+        \item Check core pattern: \texttt{cat /proc/sys/kernel/core\_pattern}.
+        \item Enable or configure core dumps in \texttt{/etc/security/limits.conf}.
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Analyzing Crash Reports}
+
+\textbf{Problem Type:} Crash \\
+\textbf{Architecture:} amd64 \\
+\textbf{Crash Counter:} 1 \\
+\textbf{Date:} Thu Jan 9 15:51:49 2025 \\
+
+\textbf{Dependencies:}
+\begin{itemize}
+    \item adduser 3.137ubuntu1
+    \item adwaita-icon-theme 46.0-1
+    \item apt 2.7.14build2
+    \item apt-utils 2.7.14build2
+    \item at-spi2-common 2.52.0-1build1
+    \item at-spi2-core 2.52.0-1build1
+    \item base-passwd 3.6.3build1
+    \item ca-certificates 20240203
+    \item dbus 1.14.10-4ubuntu4.1
+    \item ...
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Analyzing a Base64-Encoded Core Dump}
+
+\textbf{Crash Report Details:}
+\begin{itemize}
+    \item \textbf{Source Package:} zoom
+    \item \textbf{System Info:} Linux 6.8.0-51-generic x86\_64
+    \item \textbf{User Groups:} adm, cdrom, dip, kvm, libvirt, lpadmin, plugdev, sudo, users
+    \item \textbf{Core Dump Format:} Base64 Encoded
+\end{itemize}
+
+\textbf{Base64 Blob (Partial):}
+\begin{verbatim}
+H4sICAAAAAAC/0NvcmVEdW1wAA==
+7J0HgBPV2v5nYUGaGhuiog5WLECogqJEEQVBjCiKlSy7C6y0sLsgYIsFxZ5r78Te
+74169drQ2LnW2LvGjj2Wq
+\end{verbatim}
+
+\textbf{Note:} Decode the Base64 blob to retrieve the original core dump using the following command:
+\begin{verbatim}
+echo "H4sICAAAAAAC/0NvcmVEdW1wAA==" | base64 -d > coredump.gz
+gunzip coredump.gz
+\end{verbatim}
+
+\end{frame}
+
+\begin{frame}
+\frametitle{Extracting Core Dumps from Crash Files}
+
+\begin{itemize}
+    \item Unzipping the core dump creates a file such as \texttt{\_opt\_zoom\_ZoomWebviewHost.1000.crash}.
+    \item Decoding and decompressing the binary blob will produce a core dump.
+\end{itemize}
+
+
+\begin{block}{Extracted Core Dump Details}
+\textbf{Format:} ELF 64-bit LSB core file, x86-64 \\
+\textbf{Details:} SVR4-style, from \texttt{/opt/zoom/ZoomWebviewHost --type=utility --utility-sub-type=screen\_ai.mojom.Scr} \\
+\textbf{User Info:} real uid: 1000, effective uid: 1000, real gid: 1000, effective gid: 1000 \\
+\textbf{Exec Path:} \texttt{/opt/zoom/ZoomWebviewHost} \\
+\textbf{Platform:} x86\_64
+\end{block}
+
+\textbf{Note:} Use tools like \texttt{gdb}, \texttt{readelf}, or \texttt{objdump} to analyze the extracted core dump.
+
+\end{frame}

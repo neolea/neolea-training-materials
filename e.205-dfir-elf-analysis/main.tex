@@ -12,12 +12,16 @@
           ]{Torino}
 
 \usepackage[utf8]{inputenc}
+\usepackage{xcolor}
 \usepackage{tikz}
 \usepackage{listings}
+\usepackage{array}
+\usepackage{colortbl}
 \usetikzlibrary{positioning}
 \usetikzlibrary{shapes,arrows,snakes,automata,positioning,matrix,fit}
 %\usetikzlibrary{shapes,arrows}
 \usepackage{appendixnumberbeamer}
+\usepackage{adjustbox}
 %\usepackage[T1]{fontenc}
 %\usepackage[scaled]{beramono}
 
@@ -28,5 +32,39 @@
 \institute{\href{https://www.circl.lu}{https://www.circl.lu} \\}
 \date{20 January, 2025}
 \begin{document}
-\include{content}
+
+\begin{frame}
+    \maketitle
+\end{frame}
+\include{misp-lea}
+\include{elf}
+\include{misp}
+\include{kunai}
+\include{dynan}
+\include{core}
+\include{kaitai}
+\include{unicorn}
+%\include{dummy}
+
+\begin{frame}
+    \frametitle{References and Outlook}
+    \begin{itemize}
+        \item \textbf{Malware Samples Used:}
+        \url{https://helga.circl.lu/NGSOTI/malware-dataset}
+        \item \textbf{AIL Training:}
+        4th February at 122 Rue Adolphe Fischer, 1521 Luxembourg
+        \item \textbf{Registration Link:}
+        \url{https://pretix.eu/circl/fkq78/}
+        \item \textbf{Note:} Subject to a vetting process.
+        \item \textbf{Join the MISP-LEA Initiative:}
+        \item Training material for LEA
+        \begin{itemize}
+            \item \url{https://github.com/neolea}
+            \item \url{https://github.com/MISP/misp-training-lea}
+        \end{itemize}
+        Contact us at \texttt{info@misp-lea.org}.
+    \end{itemize}
+\end{frame}
+
+
 \end{document}
