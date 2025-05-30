@@ -38,3 +38,6 @@ for t in ${slidedecks[@]}; do
         echo "| [${t}](https://github.com/neolea/neolea-training-materials/blob/master/output/${namefile}.pdf) | [source](https://github.com/neolea/neolea-training-materials/tree/master/${t}) |" >>table.md
 done
 
+cd e.102-digital-forensic-introduction
+make
+
