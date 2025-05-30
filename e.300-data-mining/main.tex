@@ -1,4 +1,4 @@
-\documentclass{beamer}
+\documentclass[aspectratio=169]{beamer}
 \usetheme[pageofpages=of,% String used between the current page and the
                          % total page count.
           bullet=circle,% Use circles instead of squares for bullets.
@@ -138,11 +138,12 @@
   \end{frame}
 }
 
-\author{\Large{Alexandre Dulaunoy}\\ \scriptsize{alexandre.dulaunoy@circl.lu}\\ \large{Aurélien Thirion}\\ \scriptsize{aurelien.thirion@circl.lu}\\}
+\author{\Large{Alexandre Dulaunoy}\\ \scriptsize{alexandre.dulaunoy@circl.lu}\\ \large{Aurelien Thirion}\\ \scriptsize{aurelien.thirion@circl.lu}\\ %\large{Jean-Louis Huynen}\\ \scriptsize{jean-louis.huynen@circl.lu}\\ \Large{Sami Mokaddem}\\ \scriptsize{sami.mokaddem@circl.lu}
+}
 \title{AIL Framework for Analysis of Information Leaks}
-\subtitle{data mining - website and darkweb correlation}
+\subtitle{Practical and Efficient Data-Mining of Suspicious Websites, Forums, Chats and Tor Hidden-Services}
 \institute{info@circl.lu}
-\date{2019/11/28}
+\date{\today}
 
 \begin{document}
 
@@ -151,15 +152,150 @@
 \titlepage
 \end{frame}
 
-\section{Objectives}
+
+% LINKS
 \begin{frame}
-\frametitle{Our objectives}
+\frametitle{Links}
     \begin{itemize}
-        \item Show how to use and extend an open source tool to monitor web pages, pastes, forums and hidden services
+        \item AIL project website \url{https://ail-project.org}
+        \item AIL project open source framework \url{https://github.com/ail-project}
+        \item AIL framework \url{https://github.com/ail-project/ail-framework}
+        \item Training materials \url{https://github.com/ail-project/ail-training}
+	\item Mastodon \url{https://infosec.exchange/@ail_project}
+        \item Online chat \url{https://gitter.im/ail-project/community}
+    \end{itemize}
+    \begin{figure}
+        \includegraphics[scale=0.1, angle=0]{images/ail-project.png}
+    \end{figure}
+\end{frame}
+
+
+\section{Legal and Ethics}
+\begin{frame}
+        \frametitle{Privacy, AIL and GDPR (PII)}
+        \begin{itemize}
+                \item Many modules in AIL can process personal data and even special categories of data as defined in GDPR (Art. 9).
+                \item The data controller is often the operator of the AIL framework (limited to the organisation) and has to define {\bf legal grounds for processing personal data}.
+                \item To help users of AIL framework, a document is available which describe points of AIL in regards to the regulation\footnote{\url{https://www.circl.lu/assets/files/information-leaks-analysis-and-gdpr.pdf}}.
+        \end{itemize}
+\end{frame}
+
+\begin{frame}
+        \frametitle{Potential legal grounds}
+        \begin{itemize}
+                \item {\bf Consent of the data subject} is in many cases not feasible in practice and often impossible or illogical to obtain (Art. 6(1)(a)).
+                \item Legal obligation (Art. 6(1)(c)) - This legal ground applies mostly to CSIRTs, in accordance with the powers and responsibilities set out in CSIRTs mandate and with their constituency, as they may have the legal obligation to collect, analyse and share information leaks without having a prior consent of the data subject.
+				\item Art. 6(1)(f) - Legitimate interest - Recital 49 explicitly refers to CSIRTs’ right to process personal data provided that they have a legitimate interest but not colliding with fundamental rights and freedoms of data subject.
+        \end{itemize}
+\end{frame}
+
+\begin{frame}
+        \frametitle{Ethics in Information Security and Cybersecurity}
+        \begin{itemize}
+        \item The materials and tools presented can open a significant numbers of questions regarding ethics;
+        \item Our researches and tools are there for education, supporting the public good and improve incident response;
+        \item We ask all users and participants to {\bf follow ethical principles and act professionaly}\footnote{\url{https://www.acm.org/code-of-ethics} \url{https://www.first.org/global/sigs/ethics/ethics-first}}.
+        \end{itemize}
+\end{frame}
+
+\section{Introduction}
+\begin{frame}
+        \frametitle{Concepts - Deep Web}
+        \begin{itemize}
+                \item {\bf Deep Web} is the part of World Wide Web not indexed or directly accessible by standard web search-engines;
+                \item This can be content hidden from {\bf crawlers} by requiring a specific access and this can includes private social media, password-protected forums or content protected
+                        by different measures such as paywalls or specific security interface to access the information;
+                \item A large portion of content accessible via Internet is part of the deep web\footnote{also called invisible web, hidden web or non-indexed web}.
+        \end{itemize}
+\end{frame}
+
+\begin{frame}
+        \frametitle{Concepts - darknet}
+        \begin{itemize}
+                \item {\bf Darknet} is an overlay network running on top of Internet requiring specific software to access the network and its services;
+                \item Tor, I2P and Freenet are the most commonly used ones. Many are used for hidden services access and some for proxy access to the Internet;
+		\item There are {\bf legitimate use-cases} for such network but also many {\bf illegal or criminal usage}.
+        \end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Lifecycle of collection and analysis}
+	\center
+\tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=0.8cm,text centered, draw=black, fill=red!30]
+\tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+	\begin{tikzpicture}[node distance=1.4cm]
+
+\node (start) [startstop] {Planning};
+\node (collect) [startstop, below of =start] {Collect};
+\node (processing) [startstop, below of =collect] {Processing};
+\node (analysing) [startstop, below of=processing] {Analysing};
+\node (dissemination) [startstop, below of=analysing] {Dissemination};
+\draw [arrow] (start) -- (collect);
+\draw [arrow] (collect) -- (processing);
+\draw [arrow] (processing) -- (analysing);
+\draw [arrow] (analysing) -- (dissemination);
+%\draw [arrow] (analysing) |- (collect);
+\end{tikzpicture}
+
+\end{frame}
+
+\begin{frame}
+        \frametitle{Collecting, processing and analysing content - web pages}
+        \begin{itemize}
+		\item Building a search engine on the web is a challenging task because:
+        	\begin{itemize}
+			\item it has to crawl webpages,
+			\item it has to to make sense of {\bf unstructured data},
+			\item it has to {\bf index} these data,
+			\item it has to provide a way to retrieve data and structure data (e.g. correlation).
+        	\end{itemize}
+		\item Doing so on Tor is even more challenging because:
+
+        	\begin{itemize}
+			\item services don't always want to be found,
+			\item parts of the dataset have to be discarded.
+        	\end{itemize}
+	\item in each case, it requires a lot of bandwidth, storage and computing power.
+        \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+        \frametitle{Collecting, processing and analysing content - structured data}
+        \begin{itemize}
+		\item Some data are structured and are easy to process:
+        	\begin{itemize}
+			\item metadata!
+			\item API responses.
+        	\end{itemize}
+		\item Some even provide cryptographic evidences:
+			        \begin{itemize}
+
+         \item authentication mechanisms between peers,
+         \item OpenGPG can leak a lot of metadata
+        \begin{itemize}
+          \item key ids,
+          \item subject of email in thunderbird,
+        \end{itemize}
+          \item Bitcoin's Blockchain is public,
+          \item pivoting on these data with external sources yields interesting results.
+        \end{itemize}
+
+
+        \end{itemize}
+\end{frame}
+
+\section{AIL design Objectives}
+\begin{frame}
+\frametitle{Objectives of the session}
+    \begin{itemize}
+        \item Show how to use and extend an open source tool to monitor web pages, pastes, chats, forums and hidden services
         \item Explain challenges and the design of the AIL open source framework
+        \item Review different {\bf collection mechanisms} and {\bf sources}
         \item Learn how to create new modules
         \item Learn how to use, install and start AIL
-        \item {\bf Supporting investigation using the AIL framework}
+        \item {\bf Supporting investigation using the AIL framework} and including it in cyber threat intelligence life cycle
     \end{itemize}
 \end{frame}
 
@@ -168,47 +304,11 @@
     \frametitle{From a requirement to a solution: AIL Framework}
     \large{History:}
     \begin{itemize}
-            \item AIL\footnote{\url{https://www.github.com/CIRCL/AIL-Framework}} initially started as an \textbf{internship project} (2014) to evaluate the feasibility to automate the analysis of (un)structured information to find leaks.
+        \item AIL initially started as an \textbf{internship project} (2014) to evaluate the feasibility to automate the analysis of (un)structured information to find leaks.
         \item In 2019, AIL framework is an \textbf{open source software} in Python. The software is actively used (and maintained) by CIRCL and many organisations.
+        \item In 2020, AIL framework is now a complete project called \textbf{ail project}\footnote{\url{https://github.com/ail-project/}}.
+        \item In 2023, AIL framework version 5.0 released with new datastorage back-end.
     \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{AIL Framework: A framework for Analysis of Information Leaks}
-    \begin{quote}
-"AIL is a modular framework to analyse potential information leaks from unstructured data sources."
-    \end{quote}
-    \vskip0.5cm
-
-    \begin{tikzpicture}[scale=1.0]
-        \tikzstyle{flux}=[->,>=latex, thick]
-
-        \tikzstyle{node}=[circle,draw, align=center]
-        \tikzstyle{rect}=[rectangle,draw, align=center]
-        \tikzstyle{simplenode}=[align=center]
-
-        \node[simplenode] (pastebin) at (0, 0) {\includegraphics[scale=0.20]{images/pastebin.png}};
-        \node[simplenode] (leaks) at (4, -2) {Other leaks};
-        \node[simplenode] (ail) at (4, 0) {\includegraphics[scale=0.3]{images/circl-small.png}};
-        \node[simplenode] (res) at (8, 0) {\includegraphics[scale=0.1]{images/alert.png}};
-
-        \begin{scope}
-            \draw[flux] (pastebin.east) to (ail.west);
-        \foreach \i in {-2,...,-1}{% 
-            \pgfmathsetlengthmacro{\radius}{(sin(atan(\i*0.1))+0.1)*1cm}
-            %\draw[->] ([yshift=\i * 0.2 cm]pastebin.east) to [out=-50,in=-130] ([yshift=\i * 0.2 cm]ail.west) ;}
-            %\draw[->] ([xshift=\radius,yshift=\i * 0.2 cm]pastebin.east) to [out=-10+\i*10,in=-130] ([yshift=\i * 0.2 cm]ail.west) ;}
-            \draw[flux] ([xshift=\radius,yshift=\i * 0.2 cm]pastebin.east) to [out=-10+\i*10,in=-130] ([xshift=-\i*0.05cm,yshift=\i * 0.2 cm]ail.west) ;}
-
-        \foreach \i in {1,...,3}{% 
-            \pgfmathsetlengthmacro{\radius}{(sin(atan(\i*0.1))-0.1)*1cm}
-            \draw[flux] ([xshift=-\radius,yshift=\i * 0.2 cm]pastebin.east) to [out=10+\i*10,in=130] ([xshift=\i*0.05cm,yshift=\i * 0.2 cm]ail.west) ;}
-        \draw[->,>=latex, very thick] (ail) to (res);
-        \draw[->,>=latex, very thick] (leaks) to (ail);
-        \end{scope}
-
-
-    \end{tikzpicture}
 \end{frame}
 
 \section{Capabilities Overview}
@@ -219,7 +319,7 @@
                 \item {\bf Check} if mail/password/other sensitive information (terms tracked) leaked
                 \item {\bf Detect} reconnaissance of your infrastructure
                 \item {\bf Search} for leaks inside an archive
-                \item {\bf Monitor} and crawl websites
+                \item {\bf Monitor} and crawl chats/websites
         \end{itemize}
 \end{frame}
 
@@ -245,17 +345,21 @@
     	\begin{itemize}
 		    \item Website monitoring
 		    	\begin{itemize}
-				    \item monitor DDoS "booters"
+				    \item monitor booters
 				    \item Detect encoded exploits (WebShell, malware encoded in Base64, ...)
-				    \item SQL injections against new targets
+				    \item SQL injections
 		    	\end{itemize}
-		    \item Automatic and manual submission to threat sharing and incident
-response platforms
-			\begin{itemize}
-				\item MISP
-				\item TheHive
-			\end{itemize}
-		    \item Term/Regex monitoring for local companies/government
+		    \item Chat/Channel monitoring
+		        \begin{itemize}
+				    \item Monitor Threat Actor Chat and Community Activities
+		        \end{itemize}
+		    \item Automatic and manual submission to threat sharing and incident response platforms
+			    \begin{itemize}
+				    \item MISP
+				    \item \textit{flowIntel (Coming soon)}
+			    \end{itemize}
+		    \item Term/Regex/YARA monitoring for local companies/government
+		    \item YARA Retro Hunt
         \end{itemize}
 \end{frame}
 
@@ -269,93 +373,420 @@ response platforms
 \end{frame}
 
 \begin{frame}
-    \frametitle{Sources of leaks: Paste monitoring}
+    \frametitle{Sources of Leaks: Paste Monitoring}
     \begin{itemize}
-        \item Example: \url{http://pastebin.com/}
-            \begin{itemize}
-                \item Easily storing and sharing text online
-                \item Used by programmers and legitimate users
-                \item[] $\to$ Source code \& information about configurations
-            \end{itemize}
-        \pause
-        \item Abused by attackers to store:
-            \begin{itemize}
-                \item List of vulnerable/compromised sites
-                \item Software vulnerabilities (e.g. exploits)
-                \item Database dumps
-                \item[] $\to$ User data
-                \item[] $\to$ Credentials
-                \item[] $\to$ Credit card details
-                \item More and more ...
-            \end{itemize}
+        \item \textbf{Example:} \url{https://gist.github.com/}
+        \begin{itemize}
+            \item Easily stores and shares text online
+            \item Used by programmers and legitimate users
+            \item[] $\rightarrow$ Source code \& configuration information
+        \end{itemize}
+        \vspace{0.3cm}
+        \item \textbf{Abused by attackers to store:}
+        \begin{itemize}
+            \item Lists of vulnerable/compromised sites
+            \item Software vulnerabilities (e.g., exploits)
+            \item Database dumps
+            \item[] $\rightarrow$ User data
+            \item[] $\rightarrow$ Credentials
+            \item[] $\rightarrow$ Credit card details
+            \item Increasingly more sensitive information
+        \end{itemize}
     \end{itemize}
 \end{frame}
 
 \begin{frame}[t,plain]
-    \frametitle{Examples of pastes}
+        \frametitle{Examples of pastes (items)}
     \begin{figure}
         \includegraphics[scale=0.32, angle=0]{images/pastes-ex.png}
     \end{figure}
 \end{frame}
 
 \begin{frame}
-        \frametitle{Why so many leaks?}
+    \frametitle{Why So Many Leaks?}
+    \begin{itemize}
+        \item \textbf{Economic Interests:} 
         \begin{itemize}
-                \item Economical interests (e.g. Adversaries promoting services)
-                \item Political motives (e.g. Adversaries showing off)
-                \item Collaboration (e.g. Criminals need to collaborate)
-                \item Operational infrastructure (e.g. malware exfiltrating information on a pastie website)
-                \item Mistakes and Errors
+            \item Adversaries promoting services
+        \end{itemize}
+        \item \textbf{Ransom Model:} 
+        \begin{itemize}
+            \item To publicly pressure the victims
+        \end{itemize}
+        \item \textbf{Political Motives:} 
+        \begin{itemize}
+            \item Adversaries showing off
+        \end{itemize}
+        \item \textbf{Collaboration:} 
+        \begin{itemize}
+            \item Criminals need to collaborate
+        \end{itemize}
+        \item \textbf{Operational Infrastructure:} 
+        \begin{itemize}
+            \item Malware exfiltrating information on a paste website
+        \end{itemize}
+        \item \textbf{Mistakes and Errors from Users}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{What's your role while discovering such leak?}
+    \begin{center}
+        \large{As a CSIRT, we must address this issue.}
+    \end{center}
+    \vspace{0.5cm}
+
+    \begin{itemize}
+        \item \textbf{Contacting companies or organizations} responsible for accidental leaks
+        \item \textbf{Engaging with the media} about specific leak cases to ensure practical and factual reporting
+        \item \textbf{Evaluating the economic landscape} for cyber criminals (e.g., DDoS booters\footnote{\url{https://github.com/D4-project/}} or the resale of personal information - comparing reality versus media coverage)
+        \item \textbf{Analyzing collateral effects} of malware, software vulnerabilities, or data exfiltration
+    \end{itemize}
+
+\end{frame}
+%\begin{frame}
+%    \frametitle{Paste monitoring at CIRCL: Statistics}
+%    \begin{itemize}
+%        \item Monitored paste sites: 27
+%            \begin{itemize}
+%               \item \textit{gist.github.com}
+%               \item \textit{ideone.com}
+%                \item \textit{...}
+%            \end{itemize}
+%   \end{itemize}
+%    \begin{table}[h]
+%		\centering
+%		\begin{tabular}{|lrrr|}
+%		    \hline
+%		    \rowcolor{lightgray} & 2016 & 2017 & 08.2018\\
+%		    Collected pastes & 18,565,124 & 19,145,300 & 11,591,987 \\
+%		    Incidents & 244 & 266 & 208\\
+%		    \hline
+%		\end{tabular}
+%		\caption{Pastes collected and incident\footnote{\url{http://www.circl.lu/pub/tr-46}} raised by CIRCL}
+%		\label{circlStats}
+%	\end{table}
+%\end{frame}
+
+
+
+
+
+\section{Current capabilities}
+
+\begin{frame}
+    \frametitle{High Level Overview}
+    \begin{center}
+        \includegraphics[scale=0.22]{images/ail-overview.png}
+    \end{center}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{AIL Framework: Extensible capabilities}
+    \begin{itemize}
+        \item Extending AIL to add a new {\bf analysis module} can be done in 50 lines of Python
+        \item The framework {\bf supports multi-processors/cores by default}. Any analysis module can be started multiple times to support faster processing during peak times or bulk import
+        \item \textbf{Multiple} concurrent \textbf{data inputs}
+        \item Tor Crawler (handle cookies authentication)
+        \item Feeders: Discord, Telegram, ...
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Analysis of unstructured information}
+    \begin{center}
+        \includegraphics[scale=0.225]{images/ail-internal.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{AIL Framework: Features}
+    \begin{itemize}
+        \item Extracting \textbf{credit card numbers, credentials, phone numbers, ...}
+        \item Extracting and validating potential \textbf{hostnames}
+        \item Keeps track of \textbf{duplicates}
+        \item Submission to threat sharing and incident response platforms (\textbf{MISP}) % and \textbf{flowIntel})
+        \item \textbf{Full-text indexer} to index unstructured information
+        \item \textbf{Tagging} for classification and searches
+        \item Terms, sets, regex and YARA \textbf{tracking, occurrences, and history}
+        \item Archives, files, and raw \textbf{submission} from the UI
+        \item Correlation engine based on PGP ID, cryptocurrencies, decoded (Base64, ...), usernames, cookie names, and many selectors to find relationships
+        \item And many more
+    \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Trackers - Retro Hunt}
+        \begin{itemize}
+        	\item Search and monitor specific keywords/patterns
+        	\begin{itemize}
+            	\item Automatic Tagging
+            	\item Email Notifications
+            \end{itemize}
+            \item Track Word
+            \begin{itemize}
+            	\item ddos
+            \end{itemize}
+            \item Track Set
+            \begin{itemize}
+            	\item booter,ddos,stresser;2
+            \end{itemize}
+            \item Track Regex
+            \begin{itemize}
+            	\item circl\textbackslash.lu
+            \end{itemize}
+            \item YARA rules
+            	\begin{itemize}
+            	\item https://github.com/ail-project/ail-yara-rules
+            \end{itemize}
         \end{itemize}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Are leaks frequent?}
-    \begin{center}
-    \Large{Yes!}\\ and we have to deal with this as a CSIRT.
-    \end{center}
+    \frametitle{YARA Tracker}
+        \begin{figure}
+            \includegraphics[scale=0.22]{screenshot/tracker_yara.png}
+        \end{figure}
+\end{frame}
 
+\begin{frame}
+    \frametitle{Trackers - Practical part}
+        \begin{itemize}
+        	\item \textbf{Create and test} your own tracker
+        	\includegraphics[scale=0.21]{screenshot/tracker_create.png}
+        \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Retro Hunt}
+        \begin{figure}
+            \includegraphics[scale=0.22]{screenshot/retro_hunt.png}
+        \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Recon and intelligence gathering tools}
+        \begin{itemize}
+            \item {\bf Attacker also share informations}
+            \item Recon tools detected: 94
+            \begin{itemize}
+            	\item sqlmap
+            	\item dnscan
+            	\item whois
+            	\item msfconsole (metasploit)
+            	\item dnmap
+            	\item nmap
+            	\item ...
+            \end{itemize}
+        \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Recon and intelligence gathering tools}
+        \begin{figure}
+            \includegraphics[scale=0.4]{images/recon-paste.png}
+        \end{figure}
+\end{frame}
+
+% TODO AIL OBJECTS SLIDES
+
+\begin{frame}
+    \frametitle{Decoder}
     \begin{itemize}
-            \item {\bf Contacting companies or organisations} who did specific accidental leaks
-            \item {\bf Discussing with media} about specific case of leaks and how to make it more practical/factual for everyone
-            \item Evaluating the economical market for cyber criminals (e.g. DDoS booters\footnote{\url{https://github.com/D4-project/}} or reselling personal information - reality versus media coverage)
-            \item Analysing collateral effects of malware, software vulnerabilities or exfiltration
+    	\item Search for encoded strings
+    		\begin{itemize}
+				\item Base64
+				\item Hexadecimal
+				\item Binary
+			\end{itemize}
+    	\item Guess Mime-type
+    	\item Items/Domains Correlation
     \end{itemize}
+\end{frame}
 
+% \begin{frame}
+%     \frametitle{AIL objects}
+%     \begin{center}
+%         \includegraphics[scale=0.225]{images/ail-internal.png}
+%     \end{center}
+% \end{frame}
+
+\begin{frame}
+    \frametitle{Decoder:}
+    \centerline{
+        \includegraphics[scale=0.23]{screenshot/decodeds_dashboard.png}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Decoder:}
+    \centerline{
+        \includegraphics[scale=0.23]{screenshot/decodeds_dos.png}
+    }
+\end{frame}
+
+\begin{frame}[fragile]{OCR: Optical Character Recognition}
+    \begin{columns}[T,onlytextwidth]
+        \column{0.45\textwidth}
+            \centering
+            \includegraphics[width=\linewidth]{screenshot/ocr-1.png}
+        \column{0.55\textwidth}
+            \begin{itemize}
+                \item Threat actors are often verbose and frequently {\bf share extensive details in private channels}.
+                \item Many messages contain screenshots and images.
+                \item Text detection and extraction are performed across 80+ languages using a CRNN (Convolutional Recurrent Neural Network).
+                \item {\bf Enables keyword-based matching and detection}.
+            \end{itemize}
+    \end{columns}
+\end{frame}
+
+\begin{frame}
+    \frametitle{QR Code Extractor}
     \begin{center}
-    $\rightarrow$ And it's important to detect them automatically.
+        \includegraphics[scale=0.27]{images/qr_decoder.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{QR Codes}
+    \begin{center}
+        \includegraphics[scale=0.235]{screenshot/qr-pay.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}[fragile]{Bar Codes}
+    \begin{center}
+        \includegraphics[scale=0.22]{screenshot/barcode.png}
     \end{center}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Paste monitoring at CIRCL: Statistics}
-    \begin{itemize}
-        \item Monitored paste sites: 27
-            \begin{itemize}
-                \item \textit{pastebin.com}
-                \item \textit{ideone.com}
-                \item \textit{...}
-            \end{itemize}
-    \end{itemize}
-    \begin{table}[h]
-		\centering
-		\begin{tabular}{|lrrr|}
-		    \hline
-		    \rowcolor{lightgray} & 2016 & 2017 & 08.2018\\
-		    Collected pastes & 18,565,124 & 19,145,300 & 11,591,987 \\
-		    Incidents & 244 & 266 & 208\\
-		    \hline
-		\end{tabular}
-		\caption{Pastes collected and incident\footnote{\url{http://www.circl.lu/pub/tr-46}} raised by CIRCL}
-		\label{circlStats}
-	\end{table}
+    \frametitle{Collection - Lacus Crawler}
+    \centerline{
+        \includegraphics[scale=0.28]{images/ail-lacus.png}
+    }
 \end{frame}
 
+\begin{frame}
+        \frametitle {Crawler}
+        \begin{itemize}
+                \item Crawlers are used to navigate on regular website as well as .onion addresses (via automatic extraction of urls or manual submission)
+                \item Lacus\footnote{\url{https://github.com/ail-project/lacus}} ("scriptable" browser) is rending the pages (including javascript) and produce screenshots (HAR archive too)
+                \item How a domain is crawled by default:
+		\begin{enumerate}
+		    \item Fetch the first url
+            \item Render javascript (webkit browser)
+		    \item Extract all urls
+		    \item Filter url: keep all url of this domain
+		    \item crawl next url (max depth = 1)
+		\end{enumerate}
+        \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Lacus}
+    	\begin{itemize}
+            \item Lacus\footnote{\url{https://github.com/ail-project/lacus}} is a capturing system using playwright, as a web service
+		    \item AIL utilizes Lacus for fetching and rendering domains.
+			\begin{itemize}
+				\item Lacus can be installed and executed outside of AIL,
+				\item Enqueue what you want to capture,
+				\item Trigger the capture,
+				\item Get the capture result,
+			\end{itemize}
+        \end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Crawler Settings - Lacus}
+		\begin{figure}
+		    \includegraphics[scale=0.28]{screenshot/crawler_settings.png}
+		\end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Crawler: Cookiejar}
+    Use your cookies to login and bypass captcha
+    \centerline{
+        \includegraphics[scale=0.23]{screenshot/crawler-cookiejar-edit.png}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Crawler: Cookiejar}
+    \centerline{
+        \includegraphics[scale=0.23]{screenshot/crawler-cookiejar-domain-crawled.png}
+    }
+\end{frame}
+
+\section{Live demo!}
+
+\begin{frame}
+    \frametitle{Crawler: DDoS Booter}
+    \centerline{
+        \includegraphics[scale=0.23]{images/crawled-ddos.png}
+    }
+\end{frame}
+
+\begin{frame}
+    \frametitle{Correlations and relationship}
+    \begin{figure}
+        \includegraphics[scale=0.18, angle=0]{screenshot/correlation.png}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Investigations}
+    \begin{figure}
+        \includegraphics[scale=0.22, angle=0]{screenshot/investigation_mixer.png}
+    \end{figure}
+\end{frame}
+
+% -> screenshot + user + images +
+% \begin{frame}
+%     \frametitle{Chats Monitoring}
+%     \begin{figure}
+%         \includegraphics[scale=0.22, angle=0]{screenshot/investigation_mixer.png}
+%     \end{figure}
+% \end{frame}
 
 
+\begin{frame}
+    \frametitle{Dashboard}
+    \begin{figure}
+        \includegraphics[scale=0.18, angle=0]{screenshot/dashboard.jpeg}
+    \end{figure}
+\end{frame}
 
+\begin{frame}
+    \frametitle{Example: Items Extracted}
+    \begin{figure}
+        \includegraphics[scale=0.20, angle=0]{screenshot/item_meta.png}
+    \end{figure}
+\end{frame}
 
+\begin{frame}
+    \frametitle{Example: Items Domain}
+    \begin{figure}
+        \includegraphics[scale=0.22, angle=0]{screenshot/item_domain.png}
+    \end{figure}
+\end{frame}
 
+\begin{frame}
+    \frametitle{Example: Browsing content}
+    \begin{figure}
+        \includegraphics[scale=0.3, angle=0]{images/ail_06.png}
+    \end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Example: Search by tags}
+    \begin{figure}
+        \includegraphics[scale=0.22, angle=0]{screenshot/tags_search_items.png}
+    \end{figure}
+\end{frame}
 \section{MISP}
 
 \begin{frame}
@@ -391,11 +822,11 @@ response platforms
 \begin{frame}
     \frametitle{threat sharing and incident response platforms}
     \centerline{
-        \includegraphics[scale=0.20]{images/circl-small.png}
+        \includegraphics[scale=0.14]{images/ail-project.png}
         \hskip 2em 
         $\longrightarrow$
         \hskip 2em
-        \includegraphics[scale=0.7]{images/MISP.png}
+        \includegraphics[scale=0.8]{images/MISP.png}
     }
 
     \vskip 2em
@@ -406,514 +837,250 @@ response platforms.
 \begin{frame}
     \frametitle{threat sharing and incident response platforms}
     \centerline{
-        \includegraphics[scale=0.20]{images/circl-small.png}
+        \includegraphics[scale=0.12]{images/ail-project.png}
         \hskip 2em
         $\longrightarrow$
         \hskip 2em
-        \includegraphics[scale=0.7]{images/MISP.png}
+        \includegraphics[scale=0.8]{images/MISP.png}
     }
 
     \vskip 2em
     \begin{enumerate}
             \item Use infoleak taxonomy\footnote{\url{https://www.misp-project.org/taxonomies.html}}
         \item Add your own tags
-	\item Create an event on a paste
+	\item Export AIL objects to MISP core format
+	\item Download it or Create a MISP Event\footnote{\url{https://www.misp-standard.org/rfc/misp-standard-core.txt}}
     \end{enumerate}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Automatic submission on tags}
-    \centerline{\includegraphics[scale=0.25]{screenshot/tag_auto_export.png}}
+    \frametitle{MISP Export}
+    \centerline{\includegraphics[scale=0.35]{screenshot/bitcoin-misp.png}}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Create a MISP event}
-    \centerline{\includegraphics[scale=0.25]{screenshot/create-event-base64.png}}
+    \frametitle{MISP Export}
+    \centerline{\includegraphics[scale=0.35]{screenshot/domain-misp.png}}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Create a MISP event}
-    \centerline{\includegraphics[scale=0.25]{screenshot/create-misp-event-base64.png}}
-\end{frame}
-
-
-\section{Current capabilities}
-
-\begin{frame}
-    \frametitle{AIL Framework: Current capabilities}
-    \begin{itemize}
-        \item Extending AIL to add a new {\bf analysis module} can be done in 50 lines of Python
-        \item The framework {\bf supports multi-processors/cores by default}. Any analysis module can be started multiple times to support faster processing during peak times or bulk import
-        \item \textbf{Multiple} concurrent \textbf{data input}
-        \item Tor Crawler
-    \end{itemize}
+    \frametitle{MISP Export}
+    \centerline{\includegraphics[scale=0.25]{screenshot/misp-export.png}}
 \end{frame}
 
 \begin{frame}
-    \frametitle{AIL Framework: Current features}
-    \begin{itemize}
-        \item Extracting \textbf{credit cards numbers, credentials, phone numbers, ...}
-        \item Extracting and validating potential \textbf{hostnames}
-        \item Keeps track of \textbf{duplicates}
-        \item Submission to threat sharing and incident response platform (\textbf{MISP} and \textbf{TheHive})
-        \item \textbf{Full-text indexer} to index unstructured information
-        \item \textbf{Tagging} for classification and searches
-        \item Terms, sets and regex \textbf{tracking and occurences}
-        \item Archives, files and raw \textbf{submission} from the UI
-        \item PGP and Decoded (Base64, ...) Correlation
-        \item And many more
-    \end{itemize}
+    \frametitle{Automatic MISP Export on tags}
+    \centerline{\includegraphics[scale=0.25]{screenshot/tags_misp_auto.png}}
 \end{frame}
 
-
-\begin{frame}
-    \frametitle{Terms Tracker}
-        \begin{itemize}
-        	\item Search and monitor specific keywords
-        	\begin{itemize}
-            	\item Automatic Tagging
-            	\item Email Notifications
-            \end{itemize}
-            \item Track Term
-            \begin{itemize}
-            	\item ddos
-            \end{itemize}
-            \item Track Set
-            \begin{itemize}
-            	\item booter,ddos,stresser;2
-            \end{itemize}
-            \item Trag Regex
-            \begin{itemize}
-            	\item circl\textbackslash.lu
-
-            \end{itemize}
-        \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Terms Tracker:}
-        \begin{figure}
-            \includegraphics[scale=0.22]{images/term-tracker.png}
-        \end{figure}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Terms Tracker - Practical part}
-        \begin{itemize}
-        	\item \textbf{Create and test} your own term tracker
-        	\includegraphics[scale=0.3]{images/term-tracker-create.png}
-        \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Recon and intelligence gathering tools}
-        \begin{itemize}
-            \item {\bf Attacker also share informations}
-            \item Recon tools detected: 94
-            \begin{itemize}
-            	\item sqlmap
-            	\item dnscan
-            	\item whois
-            	\item msfconsole (metasploit)
-            	\item dnmap
-            	\item nmap
-            	\item ...
-            \end{itemize}
-        \end{itemize}
-\end{frame}
-
-
-\begin{frame}
-    \frametitle{Recon and intelligence gathering tools}
-        \begin{figure}
-            \includegraphics[scale=0.4]{images/recon-paste.png}
-        \end{figure}
-\end{frame}
-
-
-\begin{frame}
-    \frametitle{Decoder}
-    \begin{itemize}
-    	\item Search for encoded strings
-    		\begin{itemize}
-				\item Base64
-				\item Hexadecimal
-				\item Binary
-			\end{itemize}
-    	\item Guess Mime-type
-    	\item Correlate paste with decoded items
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Decoder: Practical Part}
-    \begin{itemize}
-    	\item[] Which type of decoded file have the highest size ?
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Decoder: Practical Part}
-    \centerline{
-        \includegraphics[scale=0.23]{images/decoded-dos.png}
-    }
-\end{frame}
-
-\begin{frame}
-        \frametitle {Crawler}
-        \begin{itemize}
-                \item Crawlers are used to navigate on regular website as well as .onion addresses (via automatic extraction of urls or manual submission)
-                \item Splash ("scriptable" browser) is rending the pages (including javascript) and produce screenshots (HAR archive too)
-        \end{itemize}
-\begin{figure}[h] 
-    \centering 
-    \begin{tikzpicture}[scale=1.0, 
-        mymatrix/.style={matrix of nodes, nodes=typetag, row sep=1em}, 
-        mycontainer/.style={draw=gray, inner sep=1ex}, 
-        typetag/.style={draw=gray, inner sep=1ex, anchor=west}, 
-        title/.style={draw=none, color=gray, inner sep=0pt} 
-    ] 
- 
-    %styles 
-    \tikzstyle{Docker}=[ellipse,draw,align=center] 
-    \tikzstyle{AIL}=[rectangle,draw, align=center, fill={rgb:red,1;green,2;blue,5}] 
-    \tikzstyle{Splash}=[rectangle,draw, align=center, fill={rgb:red,1;green,2;blue,5}] 
-    \tikzstyle{commu}=[<->,>=latex,very thick] 
- 
-    %nodes 
-    \matrix[mymatrix] (mx1) at (0, 0) { 
-        |[title]|Docker container \\ 
-        Splash \\ 
-    }; 
-    \matrix[mymatrix, right=of mx1.north east, matrix anchor=north west] (mx2) { 
-    %\matrix[mymatrix] (mx2) at (1, 0) { 
-        |[title]|... \\ 
-    }; 
-    \matrix[mymatrix, right=of mx2.north east, matrix anchor=north west] (mx3) { 
-    %\matrix[mymatrix] (mx3) (2, 0){ 
-        |[title]|Docker container \\ 
-        Splash \\ 
-    }; 
- 
-    \node[mycontainer, fit=(mx1)] (c1) {}; 
-    \node[mycontainer, fit=(mx2)] (c2) {}; 
-    \node[mycontainer, fit=(mx3)] (c3) {}; 
- 
-    %\node[AIL, below=of mx2.south, matrix anchor=north] (ail) {\color{white}AIL-framework}; 
-    \node[AIL, below= 3cm of mx2.south, matrix anchor=north] (ail) {\color{white}AIL-framework}; 
- 
-    %arraws 
-    \draw[commu] (ail)--(c1); 
-    \draw[commu] (ail)--(c2); 
-    \draw[commu] (ail)--(c3); 
- 
- 
-    \end{tikzpicture} 
-\end{figure} 
-\end{frame}
-
-\begin{frame}
-    \frametitle{Crawler}
-    \begin{itemize}
-    \item[] How a domain is crawled by default
-		\begin{enumerate}
-		    \item Fetch the first url
-            \item Render javascript (webkit browser)
-		    \item Extract all urls
-		    \item Filter url: keep all url of this domain
-		    \item crawl next url (max depth = 1)
-		\end{enumerate}
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Crawler: DDoS Booter}
-    \centerline{
-        \includegraphics[scale=0.23]{images/crawled-ddos.png}
-    }
-\end{frame}
-
-\section{Child Sexual Abuse Material (CSAM)}
-\begin{frame}
-    \frametitle{Child Sexual Abuse Material (CSAM)}
-    \centerline{
-        \includegraphics[scale=0.25]{images/crawled-ce.png}
-    }
-\end{frame}
-
-\begin{frame}
-   \frametitle{Child Sexual Abuse Material: Challenges}
-   \begin{itemize}
-           \item {\bf Lack of automatic exchange with law enforcement}
-        \item Missing a list of keywords related to some sensitive topics such as CSAM
-        \begin{itemize}
-             \item Optimise the detection
-             \item Could bootstrap integration of machine learning (supervised learning)
-        \end{itemize}
-   \end{itemize}
-
-    \vskip0.5cm
-    Temporary solution: manual incremental construction of a corpus
-    \centerline{
-        \begin{tabular}{l}
-            $\rightarrow$ Not always optimal\\
-            $\rightarrow$ Not our expertise\\
-        \end{tabular}
-    }
-\end{frame}
-
-\section{Correlations and relationship}
-
-\section{Live demo!}
-
-\begin{frame}
-    \frametitle{Example: Dashboard}
-    \begin{figure}
-        \includegraphics[scale=0.18, angle=0]{screenshot/dashboard.png}
-    \end{figure}
-\end{frame}
-
-
-\begin{frame}
-    \frametitle{Example: Text search}
-    \begin{figure}
-        \includegraphics[scale=0.3, angle=0]{images/ail_02.png}
-    \end{figure}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Example: Pastes Metadata (1)}
-    \begin{figure}
-        \includegraphics[scale=0.21, angle=0]{images/ail_15.png}
-    \end{figure}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Example: Pastes Metadata (2)}
-    \begin{figure}
-        \includegraphics[scale=0.28, angle=0]{images/ail_16.png}
-    \end{figure}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Example: Pastes Metadata (3)}
-    \begin{figure}
-        \includegraphics[scale=0.28, angle=0]{images/ail_17.png}
-    \end{figure}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Example: Browsing content}
-    \begin{figure}
-        \includegraphics[scale=0.3, angle=0]{images/ail_04.png}
-    \end{figure}
-\end{frame}
-
-
-\begin{frame}
-    \frametitle{Example: Browsing content}
-    \begin{figure}
-        \includegraphics[scale=0.3, angle=0]{images/ail_06.png}
-    \end{figure}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Example: Search by tags}
-    \begin{figure}
-        \includegraphics[scale=0.26, angle=0]{images/ail_14.png}
-    \end{figure}
-\end{frame}
 
 \section{API}
 
+\begin{frame}[fragile]
+AIL exposes a ReST API which can be used to interact with the back-end\footnote{\url{https://github.com/ail-project/ail-framework/blob/master/doc/README.md}}.
+
+        \begin{lstlisting}
+curl https://127.0.0.1:7000/api/v1/add/crawler/task
+        --header "Authorization: iHc1_ChZxj1aXmiFiF1mkxxQkzawwriEaZpPqyTQj"
+        -H "Content-Type: application/json"
+        --data @input.json -X POST
+        \end{lstlisting}
+%         \begin{itemize}
+%                 \item AIL API is currently covering 60\% of the functionality of back-end.
+%         \end{itemize}
+\end{frame}
 
 \section{Setting up the framework}
 \lstset{style=bash}
 \begin{frame}[fragile]
-    \frametitle{Setting up AIL-Framework from source or virtual machine}
+    \frametitle{Setting up AIL-Framework from source}
     \begin{tcblisting}{colback=black!85,coltext=green,listing only,
         title=Setting up AIL-Framework from source, fonttitle=\bfseries}
-git clone https://github.com/CIRCL/AIL-framework.git
+git clone https://github.com/ail-project/ail-framework.git
 cd AIL-framework
 ./installing_deps.sh
 \end{tcblisting}
 \end{frame}
 
+%IMPORTERS
+\section{Feeding the framework}
+
+\begin{frame}
+\frametitle{Feeding Data to AIL}
+    There are different ways to feed data into AIL:
+    \begin{enumerate}
+        \item AIL Importers:
+            \begin{itemize}
+                \item Dir / Files
+                \item ZMQ
+                % \item Be a trusted partner with CIRCL and ask to get access to our zmq feed {\tiny \href{mailto:info@circl.lu}{info@circl.lu}}
+                \item \textit{pystemon}
+            \end{itemize}
+        \item AIL Feeders (discord, telegram, ...)
+        \item Feed your own data using the API
+        \item Feed your own file/text using the UI (\texttt{Submit section})
+    \end{enumerate}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Feeding Data to AIL - Limitation}
+    \centerline{\includegraphics[scale=0.1]{images/alert.png}}
+    \alert{/!$\backslash$ Limitation:}
+    \vskip 1em
+    \begin{itemize}
+        \item Each file to be fed must be of a reasonable size:
+        \begin{itemize}
+            \item \texttt{$\sim$ 3 Mb /} file is already large
+            \item This is because some modules are doing regex matching (default timeout of 30 seconds)
+            \item If you want to feed a large file, better split it in multiple ones
+        \end{itemize}
+
+    \end{itemize}
+\end{frame}
+
+\subsection{UI}
+
+\begin{frame}
+    \frametitle{Via the UI (1)}
+    \centerline{\includegraphics[scale=0.20]{screenshot/ui_submit.png}}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Via the UI (2)}
+    \centerline{\includegraphics[scale=0.29]{screenshot/ui_submit0.png}}
+\end{frame}
+
+\subsection{API}
+
+\begin{frame}[fragile]
+    \frametitle{API - Feeding AIL with your own data}
+    \begin{tcblisting}{colback=black!85,coltext=green,listing only,
+        title=api/v1/import/item, fonttitle=\bfseries}
+{
+  "type": "text",
+  "tags": [
+    "infoleak:analyst-detection=\"private-key\""
+  ],
+  "text": "text to import"
+}
+\end{tcblisting}
+ 
+\end{frame}
+
+\subsection{Importers}
+
+\begin{frame}
+    \frametitle{Importers}
+    \begin{itemize}
+        \item Importers are located in the \texttt{/bin/importer} directory
+        \item They are used to import different types of data into AIL
+        \item Adding new Importers is straightforward.
+        \item Available Importers:
+            \begin{itemize}
+                \item AIL Feeders
+                \item ZMQ
+                \item pystemon
+                \item Files
+            \end{itemize}
+    \end{itemize}
+\end{frame}
+
+% ZMQ
+% Pystemon
+
+\lstset{style=bash}
+\begin{frame}[fragile]
+    \frametitle{File Importer}
+    \begin{itemize}
+        \item \texttt{importer/FileImporter.py}
+    \end{itemize}
+    \begin{tcblisting}{colback=black!85,coltext=green,listing only,
+        title=Import File, fonttitle=\bfseries}
+. ./AILENV/bin/activate
+cd tools/
+./file_dir_importer.py -f MY_FILE_PATH
+    \end{tcblisting}
+    \begin{tcblisting}{colback=black!85,coltext=green,listing only,
+        title=Import Dir, fonttitle=\bfseries}
+. ./AILENV/bin/activate
+cd tools/
+./file_dir_importer.py -d MY_DIR_PATH
+    \end{tcblisting}
+\end{frame}
+
+\include{feeder_importer}
+%% CONTI leak example
+\include{feeder_conti}
+
+%STARTING THE SYSTEM
+\section{Starting the framework}
+\lstset{style=bash}
+\begin{frame}[fragile]
+    \frametitle{Running your own instance from source}
+    \begin{tcblisting}{colback=black!85,coltext=green,listing only,
+        title=Accessing the environment and starting AIL, fonttitle=\bfseries}
+
+# Launch the system and the web interface
+cd bin/
+./LAUNCH -l
+
+\end{tcblisting}
+\end{frame}
+
+\begin{frame}[fragile]
+    \frametitle{Updating AIL}
+    \begin{tcblisting}{colback=black!85,coltext=green,listing only,
+        title=Launch the updater:, fonttitle=\bfseries}
+cd bin/
+# git pull and launch all updates:
+./LAUNCH -u
+
+
+# PS:
+# The Updater is launched by default each time
+# you start the framework with
+# ./LAUNCH -l
+\end{tcblisting}
+
+\end{frame}
+
+\begin{frame}[fragile]
+   \frametitle{Running your own instance using the virtual machine}
+   \begin{tcblisting}{colback=black!85,coltext=green,listing only,
+       title=Login and passwords:, fonttitle=\bfseries}
+# Web interface (default network settings)
+   https://127.0.0.1:7000/
+# Web interface:
+   admin@admin.test
+   Password1234
+# SSH:
+   test
+   Password1234
+\end{tcblisting}
+\end{frame}
+
+
 \section{AIL ecosystem - Challenges and design}
+
 \begin{frame}
     \frametitle{AIL ecosystem: Technologies used}
     \begin{itemize}
         \item[] \textbf{Programming language:} Full python3
-        \item[] \textbf{Databases:} Redis and ARDB
+        \item[] \textbf{Databases:} Redis and Kvrocks
         \item[] \textbf{Server:} Flask
-        \item[] \textbf{Data message passing:} ZMQ, Redis list and Redis Publisher/Subscriber
+        \item[] \textbf{Data message passing:} Redis Set
     \end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]
-    \textbf{\large AIL global architecture 1/2}\\
-
-    \begin{figure}
-        \centering
-        \begin{tikzpicture}[scale=1.2]
-        %styles
-        \tikzstyle{mymatrix}=[matrix of nodes, nodes=typetag, row sep=0.3em, draw=gray, fill={rgb:red,0.04;green,0.43;blue,0.89}]
-        \tikzstyle{mycontainer}=[draw=gray, inner sep=1ex]
-        \tikzstyle{typetag}=[draw=gray, inner sep=1ex, anchor=west, color=lightgray]
-        \tikzstyle{title}=[draw=none, color=white, inner sep=0pt]
-    
-        \tikzstyle{feeder}=[rounded rectangle,draw, align=center, fill={rgb:red,1;green,5;blue,2}]
-        \tikzstyle{ail}=[rectangle,draw, align=center, fill={rgb:red,0.04;green,0.43;blue,0.89}]
-        \tikzstyle{ail2}=[rectangle,draw, align=center, fill={rgb:red,0.74;green,0.43;blue,0.89}]
-        \tikzstyle{storage}=[ellipse,draw, align=center, fill={rgb:red,3;green,3;blue,3}]
-        \tikzstyle{commu}=[->,>=latex,very thick]
-        \tikzstyle{commuboth}=[<->,>=latex,very thick]
-    
-        %nodes
-        \node[feeder] (f1) at (0,0) {\color{white}ZMQ feed};
-        \node[feeder] (f2) at (0,-0.5) {\color{white}\texttt{API}};
-        \node[feeder] (f3) at (0,-1) {\color{white}Via GUI};
-    
-        \node[storage] (st1) at (2.5,-0.5) {\color{white}ZMQ};
-    
-        \matrix[mymatrix] (a2) at (4,-3) {
-            |[title]|AIL framework\\
-            Credentials & credit-cards\\
-            CVEs & API keys\\
-            Emails & Bank account\\
-            Onions & $\cdots$\\
-        };
-    
-        \node[storage] (st2) at (5,0) {\color{white}Redis\\\color{white}ARDB (RocksDB)};
-        \node[ail2] (a3) at (5,1.5) {\color{white}Flask web interface};
-        
-        %arraws
-        \draw[commu] (f1)--(st1);
-        \draw[commu] (f2)--(a2);
-        \draw[commu] (f3)--(a2);
-    
-        \draw[commu] (st1)--(a2);
-    
-        \draw[commuboth] (a2)--(st2);
-    
-        \draw[commuboth] (st2)--(a3);
-        
-        \end{tikzpicture}
-    \end{figure}
-\end{frame}
-
-\begin{frame}
-    \textbf{\large AIL global architecture 2/2}\\
-    {\tiny Redis PubSub 1: port 6380, channel queuing}\\
-    \vskip -0.5em
-    {\tiny Redis PubSub 2: port 6380, channel script}
-    
-    \begin{center}
-    \vskip -2.0em
-    \begin{tikzpicture}[scale=1.0]
-    %styles
-    \tikzstyle{queue}=[ellipse,draw,align=center]
-    \tikzstyle{module}=[rectangle,draw, align=center, fill={rgb:red,1;green,2;blue,5}]
-    \tikzstyle{commu}=[->,>=latex,very thick]
-    \tikzstyle{subs}=[->,dashed,very thick]
-    %nodes
-    \node[module] (py) at (0,0.5) {\color{white}Pystemon};
-    \node[module] (imp) at (4,0.5) {\color{white}\texttt{API}};
-    \node[queue] (zmq) at (0,-0.7) {ZMQ};
-    \node[module] (ail) at (0,-2) {\color{white}AIL Mixer};
-    \node[queue] (rps1) at (-4,-3) {\tiny Redis set 1};
-    \node[queue] (rps2) at (0,-3) {\tiny Redis set 2};
-    \node[queue] (rps3) at (4,-3) {\tiny Redis set 3};
-    \node[module] (m1) at (-2,-4) {\color{white}Module$_x$};
-    \node[module] (m4) at (-4,-4) {\color{white}Module$_x$};
-    \node[module] (m2) at (0,-4) {\color{white}Module$_y$};
-    \node[module] (m3) at (2,-4) {\color{white}Module$_z$};
-    \node[queue] (rps4) at (0,-5) {\tiny Redis PubSub};
-    \node[module] (flask) at (0,-6.5) {\color{white}Flask server};
-    
-    %arraws
-    \draw[commu] (py)--(zmq);
-    \draw[commu] (imp)--(zmq);
-    \draw[subs]  (ail)--(zmq);
-    \draw[commu] (ail)--(rps1);
-    \draw[commu] (ail)--(rps2);
-    \draw[commu] (ail)--(rps3);
-    \draw[commu] (rps1)--(m1);
-    \draw[commu] (rps1)--(m4);
-    \draw[commu] (rps2)--(m2);
-    \draw[commu] (rps3)--(m3);
-    \draw[commu] (m1)--(rps4);
-    \draw[commu] (m4)--(rps4);
-    \draw[commu] (m3)--(rps4);
-    \draw[subs]  (flask)--(rps4);
-
-    \end{tikzpicture}
-    \end{center}
-
-\end{frame}
-
-\begin{frame}
-    \frametitle{Data feeder: Gathering pastes with pystemon}
-    \textbf{\large Pystemon global architecture}\\
-    {\tiny Redis PubSub 1: port 6380, channel queuing}\\
-    \vskip -0.5em
-    {\tiny Redis PubSub 2: port 6380, channel script}
-    
-    \begin{center}
-    %\vskip -2.0em
-    \begin{tikzpicture}[scale=1.2]
-    %styles
-    \tikzstyle{queue}=[ellipse,draw,align=center]
-    \tikzstyle{module}=[rectangle,draw, align=center, fill={rgb:red,1;green,2;blue,5}]
-    \tikzstyle{commu}=[->,>=latex,very thick]
-    \tikzstyle{subs}=[->,dashed,very thick]
-    %nodes
-    \node[module] (py1) at (-0.5,1) {\color{white}\texttt{Pystemon$_1$}};
-    \node[module] (py2) at (-0.5,0) {\color{white}\texttt{Pystemon$_2$}};
-    \node[module] (py3) at (-0.5,-1) {\color{white}\texttt{Pystemon$_3$}};
-        \node[queue] (red) at (2,0) {{\scriptsize Redis set}};
-    \node[module] (dis) at (4,0) {\color{white}Dispatcher};
-    \node[queue] (zmq) at (7,0) {\texttt{ZMQ:5555}};
-    \node[module] (soc) at (7,1) {\color{white}\texttt{SOCAT:5555}};
-    \node[module] (ail) at (7,-2) {\color{white}AIL Subscriber};
-
-    \node (c1) at (5.5,1.8) {Org};
-    \node (c2) at (5,1.4) {Org};
-    \node (c3) at (5,1)   {Org};
-    \node (c4) at (6.5,1.8) {Org};
-    \node (c5) at (7.5,1.8) {Org};
-
-
-    %arraws
-    \draw[commu] (py1)--(red);
-    \draw[commu] (py2)--(red);
-    \draw[commu] (py3)--(red);
-    \draw[commu] (dis)--(red);
-    \draw[commu] (dis)--(zmq);
-    \draw[commu] (soc)--(zmq);
-    \draw[subs] (ail)--(zmq);
-
-    \draw[commu] (c1)--(soc);
-    \draw[commu] (c2)--(soc);
-    \draw[commu] (c3)--(soc);
-    \draw[commu] (c4)--(soc);
-    \draw[commu] (c5)--(soc);
-
-    \end{tikzpicture}
-    \end{center}
-
-
 \end{frame}
 
 
 \begin{frame}
     \frametitle{AIL global architecture: Data streaming between module}
-    \centerline{\includegraphics[scale=0.15]{images/module-data-flow.png}}
+    \centerline{\includegraphics[scale=0.09]{images/ail_queues.png}}
 \end{frame}
 
 \begin{frame}
     \frametitle{AIL global architecture: Data streaming between module (Credential example)}
-    \centerline{\includegraphics[scale=0.31]{images/stream_exemp_cred.png}}
+    \centerline{\includegraphics[scale=0.26]{images/ail_queues_credential.png}}
 \end{frame}
 
 \begin{frame}
@@ -949,137 +1116,6 @@ cd AIL-framework
     \end{center}
 \end{frame}
 
-
-%STARTING THE SYSTEM
-\section{Starting the framework}
-\lstset{style=bash}
-\begin{frame}[fragile]
-    \frametitle{Running your own instance from source}
-    {\scriptsize Make sure that ZMQ\_Global$\rightarrow$address = \texttt{tcp://crf.circl.lu:5556,tcp://127.0.0.1:5556} in configs/core.cfg}
-    \begin{tcblisting}{colback=black!85,coltext=green,listing only,
-        title=Accessing the environment and starting AIL, fonttitle=\bfseries}
-
-# Launch the system and the web interface
-cd bin/
-./LAUNCH -l
-
-\end{tcblisting}
-\end{frame}
-
-%\begin{frame}[fragile]
-%    \frametitle{Running your own instance using the virtual machine}
-%    Login and passwords:
-%    \lstset{style=default}
-%    \begin{lstlisting}
-%Web interface (default network settings):
-%    https://192.168.56.51:7000/
-%Shell/SSH:
-%    ail/Password1234
-%Web interface:
-%    admin@admin.test/Password1234
-%    \end{lstlisting}
-%\end{frame}
-
-\section{Feeding the framework}
-\begin{frame}
-\frametitle{Feeding AIL}
-    There are different way to feed AIL with data:
-    \begin{enumerate}
-        \item Be a trusted partner with CIRCL and ask to get access to our feed {\tiny \href{mailto:info@circl.lu}{info@circl.lu}}
-        \item Setup \textit{pystemon} and use the custom feeder
-            \begin{itemize}
-                \item \textit{pystemon} will collect pastes for you
-            \end{itemize}
-        \item Feed your own data using the API or the \texttt{import\_dir.py} script
-        \item Feed your own file/text using the UI (\texttt{Submit section})
-    \end{enumerate}
-\end{frame}
-
-\begin{frame}
-\frametitle{Feeding AIL}
-    There are different way to feed AIL with data:
-    \begin{enumerate}
-        \item CIRCL trusted partners can ask to access our feed {\tiny \href{mailto:info@circl.lu}{info@circl.lu}}
-            \begin{itemize}
-                \item[$\rhd$] You already have access
-            \end{itemize}
-        \item \st{Setup \textit{pystemon} and use the custom feeder}
-            \begin{itemize}
-                \item \st{\textit{pystemon} will collect pastes for you}
-            \end{itemize}
-        \item Feed your own data using the API or \texttt{import\_dir.py} script
-        \item Feed your own file/text using the UI (\texttt{Submit section})
-    \end{enumerate}
-\end{frame}
-
-
-
-%\begin{frame}
-%    \frametitle{Plug-in AIL to the CIRCL feed}
-%        You can freely access the CIRCL feed during this workshop!
-%        \begin{itemize}
-%            \item In the file \texttt{\large{bin/package/config.cfg}},
-%            \item Set \texttt{ZMQ\_Global->address} to \texttt{tcp://crf.circl.lu:5556}
-%        \end{itemize}
-%\end{frame}
-
-\begin{frame}
-    \frametitle{Via the UI (1)}
-    \centerline{\includegraphics[scale=0.20]{screenshot/paste_submit.png}}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Via the UI (2)}
-    \centerline{\includegraphics[scale=0.25]{screenshot/paste_submitted.png}}
-\end{frame}
-
-\begin{frame}[fragile]
-    \frametitle{Feeding AIL with your own data - API}
-    \begin{tcblisting}{colback=black!85,coltext=green,listing only,
-        title=api/v1/import/item, fonttitle=\bfseries}
-{
-  "type": "text",
-  "tags": [
-    "infoleak:analyst-detection=\"private-key\""
-  ],
-  "text": "text to import"
-}
-\end{tcblisting}
-    
-\end{frame}
-
-\begin{frame}
-    \frametitle{Feeding AIL with your own data - \texttt{import\_dir.py} (1)}
-    /!$\backslash$ requirements:
-    \vskip 1em
-    \begin{itemize}
-        \item Each file to be fed must be of a reasonable size:
-        \begin{itemize}
-            \item \texttt{$\sim$ 3 Mb /} file is already large
-            \item This is because some modules are doing regex matching
-            \item If you want to feed a large file, better split it in multiple ones
-        \end{itemize}
-
-    \end{itemize}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Feeding AIL with your own data - \texttt{import\_dir.py} (2)}
-    \begin{enumerate}
-        \item Check your local configuration \texttt{\large{bin/package/config.cfg}}
-            \begin{itemize}
-                \item In the file \texttt{\large{bin/package/config.cfg}},
-                \item Add \texttt{127.0.0.1:5556} in \texttt{ZMQ\_Global} 
-                \item (should already be set by default)
-            \end{itemize}
-%        \pause
-        \item Launch \texttt{import\_dir.py} with de directory you want to import
-            \begin{itemize}
-                \item \texttt{import\_dir.py -d dir\_path}
-            \end{itemize}
-    \end{enumerate}
-\end{frame}
-
 %DEVELOPING NEW FEATURES
 \section{Creating new features}
 %Modules flow
@@ -1089,11 +1125,11 @@ cd bin/
         \item[] Choose where to put your module in the data flow:
     \end{enumerate}
     \begin{figure}
-        \centerline{\includegraphics[scale=0.15]{images/module-data-flow.png}}
+        \centerline{\includegraphics[scale=0.15]{images/ail_queues_simplified.png}}
     \end{figure}
     \vskip -1em
     \begin{enumerate}
-        \item[] Then, modify \texttt{bin/package/modules.cfg} accordingly
+        \item[] Then, modify \texttt{configs/modules.cfg} accordingly
     \end{enumerate}
 \end{frame}
 
@@ -1101,61 +1137,88 @@ cd bin/
 \lstset{style=code}
 \lstset{basicstyle=\fontsize{6}{8}\ttfamily}
 \begin{frame}[fragile]
-    \frametitle{Writing your own modules - \texttt{/bin/template.py}}
+    \frametitle{Writing your own modules - \texttt{/bin/modules/TemplateModule.py}}
     \begin{lstlisting}
-import time
-from pubsublogger import publisher
-from Helper import Process
+from modules.abstract_module import AbstractModule
+
+class NewModule(AbstractModule):
+
+	def __init__(self):
+        super().__init__()
+		self.logger.info(f'Module {self.module_name} initialized')
+
+	# Do something with the message from the queue
+	def compute(self, message):
+		# Process Message
+
+# LAUNCH MODULE
 if __name__ == '__main__':
-    # logger setup
-    publisher.port = 6380
-    publisher.channel = 'Script'
-    # Section name in configs/core.cfg
-    config_section = '<section name>'
-    # Setup the I/O queues
-    p = Process(config_section)
-    # Endless loop getting messages from the input queue
-    while True:
-        # Get one message from the input queue
-        message = p.get_from_set()
-        if message is None:
-            publisher.debug("{} queue is empty, waiting".format(config_section))
-            time.sleep(1)
-            continue
-        # Do something with the message from the queue
-        something_has_been_done = do_something(message)
+    module = NewModule()
+    module.run()
+
     \end{lstlisting}
 \end{frame}
 
-\section{Practical part}
-\begin{frame}
-    \frametitle{Practical part: Pick your choice}
+\lstset{style=code}
+\lstset{basicstyle=\fontsize{6}{8}\ttfamily}
+\begin{frame}[fragile]
+    \frametitle{Writing your own Importer - \texttt{/bin/importer/}}
+    \begin{lstlisting}
+from importer.abstract_importer import AbstractImporter
+from modules.abstract_module import AbstractModule
 
-    \begin{enumerate}
-        \item Update support of docker/ansible
-        \item Graph database on \texttt{Credential.py}
-        \begin{itemize}
-            \item Top used passwords, most compromised user, ...
-        \end{itemize}
-        \item Webpage scrapper
-        \begin{itemize}
-            \item Download html from URL found in pastes
-            \item Re-inject html as paste in AIL
-        \end{itemize}
-    \item Improvement of \texttt{Phone.py}
-        \begin{itemize}
-            \item Way to much false positive as of now. Exploring new ways to validate phone numbers could be interesting
-        \end{itemize}
+class MyNewImporter(AbstractImporter):
 
-        \item \textbf{Your custom feature}
-    \end{enumerate}
+    def __init__(self):
+        super().__init__()
+        # super().__init__(queue=True)   # if it's an one-time run importer
+        self.logger.info(f'Importer {self.name} initialized')
+
+    def importer(self, my_var): # import function
+        # Process my_var and get content to import
+        content = GET_MY_CONTENT_TO_IMPORT
+        # if content is not gzipped and/or not b64 encoded,
+        # set gzipped and/or b64 to False
+        message = self.create_message(item_id, content)
+        return message
+        # if it's an one-time run, otherwise create an AIL Module
+        # self.add_message_to_queue(message)
+
+class MyNewModuleImporter(AbstractModule):
+    def __init__(self):
+        super().__init__() # init module ...
+        # init module ...
+        self.importer = MyNewImporter()
+
+    \end{lstlisting}
 \end{frame}
 
+\begin{frame}[fragile]
+    \frametitle{Writing your own Importer - \texttt{/bin/importer/}}
+    \begin{lstlisting}
+
+    def get_message(self):
+        return self.importer.importer()
+
+    def compute(self, message):
+        self.add_message_to_queue(message)
+
+if __name__ == '__main__':
+    module = MyNewModuleImporter()
+    module.run()
+
+    # if it's an one-time run:
+    # importer = MyImporter()
+    # importer.importer(my_var)
+
+    \end{lstlisting}
+\end{frame}
 
 \section{Contribution rules}
+
 \begin{frame}
 \frametitle{How to contribute}
-    \centerline{\includegraphics[scale=0.5]{images/one-does-not-simply.jpeg}}
+    \centerline{\includegraphics[scale=0.33]{images/cat.png}}
 \end{frame}
 
 \begin{frame}
@@ -1196,53 +1259,40 @@ if __name__ == '__main__':
    \end{itemize}
 \end{frame}
 
+\begin{frame}
+    \frametitle{Implementation Steps in AIL project}
+    \begin{itemize}
+            \item {\bf Gradual changes} in AIL to add required functionalities to support the objectives.
+            \item {\bf Time-memory trade-off} can be challenging to ensure a functional framework.
+            \item Evaluation and integration of new modules in AIL based on time-memory comparisons.
+            \item Semantic aspects are challenging due to the diverse data sources, unstructured data and languages seen.
+    \end{itemize}
+\end{frame}
+
 
 
 \begin{frame}
-    \frametitle{Ongoing developments}
+    \frametitle{Ongoing Developments}
         \begin{itemize}
-            \item Python API wrapper
-            \item {\bf Data retention (export/import)}
-            \item MISP format support (MISP modules expansion)
-            \item auto Classify content by set of terms
-            \begin{itemize}
-            	\item CE contents
-            	\item DDOS booters
-            	\item ...
-            \end{itemize}
-            \item Crawled items
-            \begin{itemize}
-            	\item add screenshot correlation
-            	\item duplicate crawled domains
-            	\item tor indexer
-            	\item crawler cookie authentication
-            \end{itemize}
+            \item Text Geolocation
+            \item Improved MISP Export
+            \item Bloom filter filtering - PSS
+            \item Analysis of relationships and activity between chats, including message forwards, replies, timelines, etc.
+            \item Improved indexing relying on Solr, Lucene or other components
+            \item Integration with FlowIntel
         \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+    \frametitle{Private Search Set (PSS)}
+    \begin{center}
+        \includegraphics[scale=0.27]{images/pss-overview.png}
+    \end{center}
 \end{frame}
 
 
 \section{Annexes}
-
-
-\begin{frame}
-        \frametitle{Privacy, AIL and GDPR}
-        \begin{itemize}
-                \item Many modules in AIL can process personal data and even special categories of data as defined in GDPR (Art. 9).
-                \item The data controller is often the operator of the AIL framework (limited to the organisation) and has to define {\bf legal grounds for processing personal data}.
-                \item To help users of AIL framework, a document is available which describe points of AIL in regards to the regulation\footnote{\url{https://www.circl.lu/assets/files/inform
-ation-leaks-analysis-and-gdpr.pdf}}.
-        \end{itemize}
-\end{frame}
-
-\begin{frame}
-        \frametitle{Potential legal grounds}
-        \begin{itemize}
-                \item {\bf Consent of the data subject} is in many cases not feasible in practice and often impossible or illogical to obtain (Art. 6(1)(a)).
-                \item Legal obligation (Art. 6(1)(c)) - This legal ground applies mostly to CSIRTs, in accordance with the powers and responsibilities set out in CSIRTs mandate and with their constituency, as they may have the legal obligation to collect, analyse and share information leaks without having a prior consent of the data subject.
-				\item Art. 6(1)(f) - Legitimate interest - Recital 49 explicitly refers to CSIRTs’ right to process personal data provided that they have a legitimate interest but not colliding with fundamental rights and freedoms of data subject.
-        \end{itemize}
-\end{frame}
-
 
 
 %MANAGING THE SYSTEM
@@ -1271,13 +1321,6 @@ screen -r Script
     \end{tabular}
 \end{table}
 \end{frame}
-
-
-\begin{frame}[fragile]
-    \frametitle{Managing your modules: Using the helper}
-    \centerline{\includegraphics[scale=0.22]{images/moduleManager.png}}
-\end{frame}
-
 
 
 \end{document}
