@@ -19,6 +19,7 @@ The courses overview is centered around information sharing, collaboration aroun
 - E.202 Network forensic - Analysing black-hole monitoring dataset How to better understand DDoS attacks from backscatter traffic, opportunistic network scanning and exploitation
 - E.203 Digital Forensics - Introduction: File System and Data Recovery
 - E.204 Digital Forensics - Introduction: Windows Memory and File Forensics
+- E.205 Reversing - Introduction: ELF Binary Analysis
 - E.300 Data mining using the [AIL project](https://www.github.com/ail-project)
 - E.301 Cryptography Workarounds For Law Enforcement
 
@@ -31,8 +32,10 @@ The courses overview is centered around information sharing, collaboration aroun
 | [e.202-network-forensic](https://github.com/neolea/neolea-training-materials/blob/master/output/e.202-network-forensic.pdf) | [source](https://github.com/neolea/neolea-training-materials/tree/master/e.202-network-forensic) |
 | [e.203-file-system-data-recovery](https://github.com/neolea/neolea-training-materials/blob/master/output/e.203-file-system-data-recovery.pdf) | [source](https://github.com/neolea/neolea-training-materials/tree/master/e.203-file-system-data-recovery) |
 | [e.204-windows-memory-files](https://github.com/neolea/neolea-training-materials/blob/master/output/e.204-windows-memory-files.pdf) | [source](https://github.com/neolea/neolea-training-materials/tree/master/e.204-windows-memory-files) |
+| [e.205-dfir-elf-analysis](https://github.com/neolea/neolea-training-materials/blob/master/output/e.205-dfir-elf-analysis.pdf) | [source](https://github.com/neolea/neolea-training-materials/tree/master/e.205-dfir-elf-analysis) |
 | [e.300-data-mining](https://github.com/neolea/neolea-training-materials/blob/master/output/e.300-data-mining.pdf) | [source](https://github.com/neolea/neolea-training-materials/tree/master/e.300-data-mining) |
 | [e.301-cryptography](https://github.com/neolea/neolea-training-materials/blob/master/output/e.301-cryptography.pdf) | [source](https://github.com/neolea/neolea-training-materials/tree/master/e.301-cryptography) |
+                                                                                                                                                                                                                      
 
 # Open Source License
 
