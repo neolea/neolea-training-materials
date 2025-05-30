@@ -378,7 +378,7 @@ http://www.invoke-ir.com/2015/05/ontheforensictrail-part2.html?m=0
 - 1024\*255\*63*512 = 8,422,686,720 bytes &rarr; 8G
 
 ## 2.4.3 CHS vs LBA
-![\ ](./img/chs_lba.gif){height=130pt}
+![\ ](./img/chs_lba.png){height=130pt}
 \AddToHookNext{env/Highlighting/begin}{\tiny}
 ```default
 https://benkixmiller.com/2023/10/08/chs-vs-lba-addressing/

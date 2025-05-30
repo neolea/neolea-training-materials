@@ -1,0 +1,1335 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="David Cruciani">
+
+<title>Forensic Introduction</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="course_1_files/libs/clipboard/clipboard.min.js"></script>
+<script src="course_1_files/libs/quarto-html/quarto.js"></script>
+<script src="course_1_files/libs/quarto-html/popper.min.js"></script>
+<script src="course_1_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="course_1_files/libs/quarto-html/anchor.min.js"></script>
+<link href="course_1_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="course_1_files/libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="course_1_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="course_1_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="course_1_files/libs/bootstrap/bootstrap-e163e0fd111fdb6da7d4f8e68351a74f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="course_1_files/libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="course_1_files/libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="course_1_files/libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#me" id="toc-me" class="nav-link active" data-scroll-target="#me">Me</a></li>
+  <li><a href="#overview" id="toc-overview" class="nav-link" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link" data-scroll-target="#introduction">1. Introduction</a>
+  <ul class="collapse">
+  <li><a href="#incident-reponse" id="toc-incident-reponse" class="nav-link" data-scroll-target="#incident-reponse">1.1 Incident reponse</a></li>
+  <li><a href="#incident-reponse---finding-answers" id="toc-incident-reponse---finding-answers" class="nav-link" data-scroll-target="#incident-reponse---finding-answers">1.1 Incident reponse - Finding answers</a></li>
+  <li><a href="#incident-reponse---basic-problem-admin" id="toc-incident-reponse---basic-problem-admin" class="nav-link" data-scroll-target="#incident-reponse---basic-problem-admin">1.1 Incident reponse - Basic problem: Admin</a></li>
+  <li><a href="#preservation-of-evidences" id="toc-preservation-of-evidences" class="nav-link" data-scroll-target="#preservation-of-evidences">1.2 Preservation of evidences</a></li>
+  <li><a href="#order-of-volatility-oov" id="toc-order-of-volatility-oov" class="nav-link" data-scroll-target="#order-of-volatility-oov">1.3 Order of Volatility (OOV)</a></li>
+  <li><a href="#forensic-science" id="toc-forensic-science" class="nav-link" data-scroll-target="#forensic-science">1.4 Forensic Science</a></li>
+  <li><a href="#forensic-disciplines" id="toc-forensic-disciplines" class="nav-link" data-scroll-target="#forensic-disciplines">1.5 Forensic Disciplines</a></li>
+  <li><a href="#first-responder-be-prepared" id="toc-first-responder-be-prepared" class="nav-link" data-scroll-target="#first-responder-be-prepared">1.6 First Responder: Be prepared</a></li>
+  <li><a href="#first-responder-first-steps" id="toc-first-responder-first-steps" class="nav-link" data-scroll-target="#first-responder-first-steps">1.6 First Responder: First steps</a></li>
+  <li><a href="#first-responder-live-response" id="toc-first-responder-live-response" class="nav-link" data-scroll-target="#first-responder-live-response">1.6 First Responder: Live Response</a></li>
+  <li><a href="#first-responder-live-response-1" id="toc-first-responder-live-response-1" class="nav-link" data-scroll-target="#first-responder-live-response-1">1.6 First Responder: Live Response</a></li>
+  <li><a href="#post-mortem-analysis" id="toc-post-mortem-analysis" class="nav-link" data-scroll-target="#post-mortem-analysis">1.7 Post-mortem Analysis</a></li>
+  <li><a href="#post-mortem-analysis-1" id="toc-post-mortem-analysis-1" class="nav-link" data-scroll-target="#post-mortem-analysis-1">1.7 Post-mortem Analysis</a></li>
+  <li><a href="#forensic-distributions" id="toc-forensic-distributions" class="nav-link" data-scroll-target="#forensic-distributions">1.8 Forensic Distributions</a></li>
+  </ul></li>
+  <li><a href="#understand-disk" id="toc-understand-disk" class="nav-link" data-scroll-target="#understand-disk">2. Understand disk</a>
+  <ul class="collapse">
+  <li><a href="#some-history" id="toc-some-history" class="nav-link" data-scroll-target="#some-history">2.1 Some history</a></li>
+  <li><a href="#ata-disks" id="toc-ata-disks" class="nav-link" data-scroll-target="#ata-disks">2.2 ATA Disks</a></li>
+  <li><a href="#hidden-sectors" id="toc-hidden-sectors" class="nav-link" data-scroll-target="#hidden-sectors">2.3 Hidden Sectors</a></li>
+  <li><a href="#hidden-sectors-1" id="toc-hidden-sectors-1" class="nav-link" data-scroll-target="#hidden-sectors-1">2.3 Hidden Sectors</a></li>
+  <li><a href="#hidden-sectors-2" id="toc-hidden-sectors-2" class="nav-link" data-scroll-target="#hidden-sectors-2">2.3 Hidden Sectors</a></li>
+  <li><a href="#hidden-sectors-3" id="toc-hidden-sectors-3" class="nav-link" data-scroll-target="#hidden-sectors-3">2.3 Hidden Sectors</a></li>
+  <li><a href="#hidden-sectors-4" id="toc-hidden-sectors-4" class="nav-link" data-scroll-target="#hidden-sectors-4">2.3 Hidden Sectors</a></li>
+  <li><a href="#disk-structure" id="toc-disk-structure" class="nav-link" data-scroll-target="#disk-structure">2.4 Disk structure</a></li>
+  <li><a href="#mbr" id="toc-mbr" class="nav-link" data-scroll-target="#mbr">2.4.1 MBR</a></li>
+  <li><a href="#chs" id="toc-chs" class="nav-link" data-scroll-target="#chs">2.4.2 CHS</a></li>
+  <li><a href="#chs-vs-lba" id="toc-chs-vs-lba" class="nav-link" data-scroll-target="#chs-vs-lba">2.4.3 CHS vs LBA</a></li>
+  <li><a href="#gpt" id="toc-gpt" class="nav-link" data-scroll-target="#gpt">2.4.4 GPT</a></li>
+  <li><a href="#gpt-1" id="toc-gpt-1" class="nav-link" data-scroll-target="#gpt-1">2.4.4 GPT</a></li>
+  </ul></li>
+  <li><a href="#imaging-cloning-and-mounting" id="toc-imaging-cloning-and-mounting" class="nav-link" data-scroll-target="#imaging-cloning-and-mounting">3. Imaging / Cloning and Mounting</a>
+  <ul class="collapse">
+  <li><a href="#disk-imaging-cloning" id="toc-disk-imaging-cloning" class="nav-link" data-scroll-target="#disk-imaging-cloning">3.1 Disk Imaging / Cloning</a></li>
+  <li><a href="#dd---disk-imaging-rudimentary" id="toc-dd---disk-imaging-rudimentary" class="nav-link" data-scroll-target="#dd---disk-imaging-rudimentary">3.2 dd - disk imaging rudimentary</a></li>
+  <li><a href="#dd---disk-imaging-rudimentary-1" id="toc-dd---disk-imaging-rudimentary-1" class="nav-link" data-scroll-target="#dd---disk-imaging-rudimentary-1">3.2 dd - disk imaging rudimentary</a></li>
+  <li><a href="#dd---disk-imaging-rudimentary-2" id="toc-dd---disk-imaging-rudimentary-2" class="nav-link" data-scroll-target="#dd---disk-imaging-rudimentary-2">3.2 dd - disk imaging rudimentary</a></li>
+  <li><a href="#dd---disk-imaging-rudimentary-3" id="toc-dd---disk-imaging-rudimentary-3" class="nav-link" data-scroll-target="#dd---disk-imaging-rudimentary-3">3.2 dd - disk imaging rudimentary</a></li>
+  <li><a href="#dd---disk-imaging-rudimentary---tools" id="toc-dd---disk-imaging-rudimentary---tools" class="nav-link" data-scroll-target="#dd---disk-imaging-rudimentary---tools">3.2 dd - disk imaging rudimentary - Tools</a></li>
+  <li><a href="#connecting-devices" id="toc-connecting-devices" class="nav-link" data-scroll-target="#connecting-devices">3.3 Connecting devices</a></li>
+  <li><a href="#connecting-devices-1" id="toc-connecting-devices-1" class="nav-link" data-scroll-target="#connecting-devices-1">3.3 Connecting devices</a></li>
+  <li><a href="#connecting-devices-2" id="toc-connecting-devices-2" class="nav-link" data-scroll-target="#connecting-devices-2">3.3 Connecting devices</a></li>
+  <li><a href="#imaging-devices" id="toc-imaging-devices" class="nav-link" data-scroll-target="#imaging-devices">3.4 Imaging devices</a></li>
+  <li><a href="#imaging-devices-1" id="toc-imaging-devices-1" class="nav-link" data-scroll-target="#imaging-devices-1">3.4 Imaging devices</a></li>
+  <li><a href="#mounting" id="toc-mounting" class="nav-link" data-scroll-target="#mounting">3.5 Mounting</a></li>
+  <li><a href="#mounting-1" id="toc-mounting-1" class="nav-link" data-scroll-target="#mounting-1">3.5 Mounting</a></li>
+  <li><a href="#mounting-2" id="toc-mounting-2" class="nav-link" data-scroll-target="#mounting-2">3.5 Mounting</a></li>
+  <li><a href="#contact-and-reference" id="toc-contact-and-reference" class="nav-link" data-scroll-target="#contact-and-reference">Contact and Reference</a></li>
+  </ul></li>
+  </ul>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="course_1.pdf"><i class="bi bi-file-pdf"></i>Beamer</a></li></ul></div></nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Forensic Introduction</h1>
+</div>
+
+
+<div class="quarto-title-meta-author">
+  <div class="quarto-title-meta-heading">Author</div>
+  <div class="quarto-title-meta-heading">Affiliation</div>
+  
+    <div class="quarto-title-meta-contents">
+    <p class="author">David Cruciani </p>
+  </div>
+  <div class="quarto-title-meta-contents">
+        <p class="affiliation">
+            david.cruciani@circl.lu
+          </p>
+      </div>
+  </div>
+
+<div class="quarto-title-meta">
+
+      
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">Invalid Date</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="me" class="level2">
+<h2 class="anchored" data-anchor-id="me">Me</h2>
+<ul>
+<li><p>David Cruciani - david.cruciani@circl.lu</p></li>
+<li><p>M2 SSI - Univ Lorraine - 2021</p></li>
+<li><p>CIRCL since 2021</p></li>
+<li><p>Forensic Analyst</p></li>
+<li><p>Developer</p></li>
+</ul>
+</section>
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<ul>
+<li><ol type="1">
+<li>Introduction - (<em>Course 1</em>)</li>
+</ol></li>
+<li><ol start="2" type="1">
+<li>Understand disk - (<em>Course 1</em>)</li>
+</ol></li>
+<li><ol start="3" type="1">
+<li>Imaging / Cloning and Mounting - (<em>Course 1</em>)</li>
+</ol></li>
+<li><ol start="4" type="1">
+<li>File system analysis - (<em>Course 2</em>)</li>
+</ol></li>
+<li><ol start="5" type="1">
+<li>NTFS - (<em>Course 2</em>)</li>
+</ol></li>
+<li><ol start="6" type="1">
+<li>File System Time Line - (<em>Course 2</em>)</li>
+</ol></li>
+<li><ol start="7" type="1">
+<li>Carving and String Search - (<em>Course 2</em>)</li>
+</ol></li>
+<li><ol start="8" type="1">
+<li>Windows Registry - (<em>Course 2</em>)</li>
+</ol></li>
+<li><ol start="9" type="1">
+<li>Windows Event Logs - (<em>Course 2</em>)</li>
+</ol></li>
+<li><ol start="10" type="1">
+<li>Other Windows Artifacts - (<em>Course 2</em>)</li>
+</ol></li>
+<li><ol start="11" type="1">
+<li>Introduction to Flowintel - (<em>Course 3</em>)</li>
+</ol></li>
+<li><ol start="12" type="1">
+<li>The Exercise - (<em>Course 3</em>)</li>
+</ol></li>
+</ul>
+</section>
+<section id="introduction" class="level1">
+<h1>1. Introduction</h1>
+<section id="incident-reponse" class="level2">
+<h2 class="anchored" data-anchor-id="incident-reponse">1.1 Incident reponse</h2>
+<ul>
+<li>Someone call for an incident</li>
+<li>Compromised server</li>
+<li>Strange connection from PC of John</li>
+<li>Multiple disks are collected</li>
+</ul>
+</section>
+<section id="incident-reponse---finding-answers" class="level2">
+<h2 class="anchored" data-anchor-id="incident-reponse---finding-answers">1.1 Incident reponse - Finding answers</h2>
+<ul>
+<li>Is there an incident</li>
+<li>System involved at all</li>
+<li>If yes, how and when</li>
+<li>System compromised</li>
+<li>Malware/RAT involved<br>
+</li>
+<li>Persistence mechanisms<br>
+</li>
+<li>Root cause of the compromise<br>
+</li>
+<li>Lateral movement inside LAN<br>
+</li>
+<li>Access sensitive data<br>
+</li>
+<li>Data exfiltration<br>
+</li>
+<li>Illegal content</li>
+</ul>
+</section>
+<section id="incident-reponse---basic-problem-admin" class="level2">
+<h2 class="anchored" data-anchor-id="incident-reponse---basic-problem-admin">1.1 Incident reponse - Basic problem: Admin</h2>
+<ul>
+<li>Get operational asap
+<ul>
+<li><p>Re-install</p></li>
+<li><p>Re-image</p></li>
+<li><p>Restore from backup</p>
+<p>→ Destroy of evidences</p></li>
+</ul></li>
+</ul>
+<p><br></p>
+<ul>
+<li>Analyse the system on his own:
+<ul>
+<li><p>Do some investigations</p></li>
+<li><p>Install and run (several) Anti virus</p></li>
+<li><p>Apply updates for OS and Apps</p>
+<p>→ Create big noise</p>
+<p>→ Overwrite evidences</p></li>
+</ul></li>
+</ul>
+<p>→ Negative impact on forensics</p>
+</section>
+<section id="preservation-of-evidences" class="level2">
+<h2 class="anchored" data-anchor-id="preservation-of-evidences">1.2 Preservation of evidences</h2>
+<ul>
+<li><p>Legal case:</p>
+<p>→ Collect &amp; safe evidences</p>
+<p>→ Witness testimony for court</p></li>
+<li><p>Use cryptographic hash function</p>
+<p>→ Ensure integrity of the evidences</p></li>
+<li><p>Make copy of evidences</p></li>
+<li><p>Write blocker</p></li>
+</ul>
+</section>
+<section id="order-of-volatility-oov" class="level2">
+<h2 class="anchored" data-anchor-id="order-of-volatility-oov">1.3 Order of Volatility (OOV)</h2>
+<ul>
+<li>CPU registers → nanoseconds</li>
+<li>CPU cache → nanoseconds</li>
+<li>RAM memory → tens of nanoseconds</li>
+<li>Network state → milliseconds</li>
+<li>Processes running → seconds</li>
+<li>Disk, system settings, data → minutes</li>
+<li>External disks, backup → years</li>
+<li>Optical storage, printouts → tens of ears</li>
+</ul>
+</section>
+<section id="forensic-science" class="level2">
+<h2 class="anchored" data-anchor-id="forensic-science">1.4 Forensic Science</h2>
+<ul>
+<li><p>Write down everything you see, hear, smell and do</p></li>
+<li><p>Scope of the analysis</p></li>
+<li><p>Chain of custody</p>
+<ul>
+<li>A process that tracks the movement of evidence through its collection, safeguarding, and analysis lifecycle by documenting each person who handled the evidence, the date/time it was collected or transferred, and the purpose for any transfers.</li>
+</ul>
+<p>→ https://www.nist.gov/document/sample-chain-custody-formdocx</p></li>
+</ul>
+</section>
+<section id="forensic-disciplines" class="level2">
+<h2 class="anchored" data-anchor-id="forensic-disciplines">1.5 Forensic Disciplines</h2>
+<ul>
+<li>Post-mortem Analysis</li>
+<li>Memory Forensics</li>
+<li>Reverse Engineering</li>
+<li>Code-Deobfuscation</li>
+<li>Network Forensics</li>
+<li>Mobile Forensics</li>
+<li>Cloud Forensics</li>
+</ul>
+</section>
+<section id="first-responder-be-prepared" class="level2">
+<h2 class="anchored" data-anchor-id="first-responder-be-prepared">1.6 First Responder: Be prepared</h2>
+<ul>
+<li>Prepare your toolbox
+<ul>
+<li><p>Write Blocker</p></li>
+<li><p>Photo camera</p></li>
+<li><p>Flash light, magnifying glasses</p></li>
+<li><p>Labelling device, labels, tags, stickers</p></li>
+<li><p>Toolkit, screwdriver kits</p></li>
+<li><p>Packing boxes, bags, faraday bag</p></li>
+<li><p>Cable kits, storage devices</p></li>
+<li><p>Anti-static band, network cables</p></li>
+<li><p>Pens, markers, notepads</p>
+<p>→ Chain of custody</p></li>
+<li><p>Mouse jiggler</p></li>
+</ul></li>
+<li>Talk with people; Take notes</li>
+<li>Identify potential evidences (Computer, devices, paper, …)</li>
+</ul>
+</section>
+<section id="first-responder-first-steps" class="level2">
+<h2 class="anchored" data-anchor-id="first-responder-first-steps">1.6 First Responder: First steps</h2>
+<ul>
+<li>Powered-on versus powered-off
+<ul>
+<li>Shutdown: Lost of live (memory) data</li>
+<li>Pull power: Corrupt file system</li>
+<li>Live analysis: Modify memory and disk</li>
+<li>Live analysis: Working with compromised binaries?</li>
+</ul></li>
+<li>USB stick
+<ul>
+<li>256 GB USB3</li>
+<li>File system: exFAT</li>
+<li>Memory dump: Comae-Toolkit</li>
+<li>Memory and Live Acquisition: FTK Imager Lite</li>
+<li>Encrypted Disk Detector - Edd</li>
+<li>Security Scanner: Nmap command line</li>
+<li>Sysinternals Suite</li>
+</ul></li>
+</ul>
+</section>
+<section id="first-responder-live-response" class="level2">
+<h2 class="anchored" data-anchor-id="first-responder-live-response">1.6 First Responder: Live Response</h2>
+<ul>
+<li>In case of a live analysis:<br>
+→ System time<br>
+→ Logged-on users<br>
+→ Open files<br>
+→ Network - connections - status<br>
+→ Process information - memory<br>
+→ Process / port mapping<br>
+→ Clipboard content<br>
+→ Services<br>
+→ Command history<br>
+→ Mapped drives / shares<br>
+→ !!! Do not store information on the subject system !!!<br>
+</li>
+</ul>
+</section>
+<section id="first-responder-live-response-1" class="level2">
+<h2 class="anchored" data-anchor-id="first-responder-live-response-1">1.6 First Responder: Live Response</h2>
+<ul>
+<li>Isolate system from (WiFi) network</li>
+<li>Perform memory dump</li>
+<li>Shutdown and do disk image (If possible)</li>
+<li>Logical image of live system (Possible issues)</li>
+</ul>
+</section>
+<section id="post-mortem-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="post-mortem-analysis">1.7 Post-mortem Analysis</h2>
+<ul>
+<li>Hardware layer &amp; acquisition
+<ul>
+<li>Best copy (in the safe)</li>
+<li>Working copy (on a NAS)</li>
+<li>Working copy attached with Write Blocker</li>
+<li>Disk volumes and partitions</li>
+<li>Simple tools: dmesg, dd, mount</li>
+</ul></li>
+<li>Sector layer
+<ul>
+<li>Carving: foremost, scalpel, testdisk/photorec</li>
+<li>String search</li>
+</ul></li>
+<li>File system layer
+<ul>
+<li>FAT, NTFS</li>
+<li>File system timeline</li>
+<li>Restore deleted files</li>
+</ul></li>
+</ul>
+</section>
+<section id="post-mortem-analysis-1" class="level2">
+<h2 class="anchored" data-anchor-id="post-mortem-analysis-1">1.7 Post-mortem Analysis</h2>
+<ul>
+<li>OS layer
+<ul>
+<li>Registry</li>
+<li>Event logs</li>
+<li>Volume shadow copies</li>
+<li>Prefetch files</li>
+</ul></li>
+<li>Application layer
+<ul>
+<li>AV logs</li>
+<li>Browser history: IE, firefox, chrome</li>
+<li>Email</li>
+<li>Office files &amp; PDFs</li>
+</ul></li>
+<li>Searching for malware
+<ul>
+<li>TEMP folders</li>
+<li>Startup folders</li>
+<li>Windows tasks</li>
+</ul></li>
+</ul>
+</section>
+<section id="forensic-distributions" class="level2">
+<h2 class="anchored" data-anchor-id="forensic-distributions">1.8 Forensic Distributions</h2>
+<ul>
+<li>Commercial
+<ul>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+<li></li>
+</ul></li>
+<li>Open source tools
+<ul>
+<li></li>
+<li></li>
+</ul></li>
+<li>Consider using your favorite Linux and add tools</li>
+<li>Sometimes a Windows based VM could be helpful</li>
+</ul>
+</section>
+</section>
+<section id="understand-disk" class="level1">
+<h1>2. Understand disk</h1>
+<section id="some-history" class="level2">
+<h2 class="anchored" data-anchor-id="some-history">2.1 Some history</h2>
+<ul>
+<li>Magnetic storage
+<ul>
+<li>Tapes</li>
+<li>Floppy disks</li>
+<li>Hard disks</li>
+</ul></li>
+<li>Optical storage
+<ul>
+<li>Compact disks - CD</li>
+<li>Digital versatile disk - DVD</li>
+<li>Blu-ray disk</li>
+</ul></li>
+<li>Non-volatile memory
+<ul>
+<li>USB flash drive</li>
+<li>Solid state drive</li>
+<li>Flash memory cards</li>
+</ul></li>
+</ul>
+</section>
+<section id="ata-disks" class="level2">
+<h2 class="anchored" data-anchor-id="ata-disks">2.2 ATA Disks</h2>
+<ul>
+<li>ATA-3: Hard disk password</li>
+<li>ATA-4: HPA - Host Protected Area
+<ul>
+<li>Not accessible by OS / user</li>
+<li>Persistent data - Survive format and re-installation</li>
+<li>Vendor area - Created by manufactur</li>
+<li>Diagnostics and recovery tools</li>
+</ul></li>
+<li>ATA-6: DCO - Device Configuration Overlay
+<ul>
+<li>Supports manufacturs with a layer of abstraction
+<ul>
+<li><p>Use standard parts</p>
+<p>→ To build different products</p>
+<p>→ Example: Disks reports uniq amount of sectors</p></li>
+</ul></li>
+</ul></li>
+<li>ATA-7: Serial ATA</li>
+</ul>
+</section>
+<section id="hidden-sectors" class="level2">
+<h2 class="anchored" data-anchor-id="hidden-sectors">2.3 Hidden Sectors</h2>
+<ul>
+<li>Create hidden message</li>
+</ul>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> echo <span class="at">-n</span> <span class="st">'MySecret 123456'</span> <span class="kw">|</span> <span class="fu">dd</span> of=/dev/sdb seek=3500000000</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> dd if=/bin/dd of=/dev/sdb seek=3500000001</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>     <span class="ex">148+1</span> records in</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>     <span class="ex">148+1</span> records out</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>     <span class="ex">76000</span> bytes <span class="er">(</span><span class="ex">76</span> kB, 74 KiB<span class="kw">)</span> <span class="ex">copied,</span> 0,022659 s, 3,4 MB/s</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Create HPA </li>
+</ul>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> hdparm <span class="at">--yes-i-know-what-i-am-doing</span> <span class="at">-N</span> p3000000000 /dev/sdb</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">setting</span> max visible sectors to 3000000000 <span class="er">(</span><span class="ex">permanent</span><span class="kw">)</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">max</span> sectors   = 3000000000/3907029168, ACCESSIBLE MAX ADDRESS enabled</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Power</span> cycle your device after every ACCESSIBLE MAX ADDRESS</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="hidden-sectors-1" class="level2">
+<h2 class="anchored" data-anchor-id="hidden-sectors-1">2.3 Hidden Sectors</h2>
+<ul>
+<li>Create partition and format </li>
+</ul>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> dmesg</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">sd</span> 1:0:0:0: <span class="pp">[</span><span class="ss">sdb</span><span class="pp">]</span> 3000000000 512-byte logical blocks: <span class="er">(</span><span class="ex">1.54</span> TB/1.40 TiB<span class="kw">)</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> fdisk /dev/sdb</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="ex">primary</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">2048</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="ex">2999999999</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> mkfs.ntfs <span class="at">-L</span> CIRCL.DFIR <span class="at">-f</span> /dev/sdb1</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Creating</span> NTFS volume structures.</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="ex">mkntfs</span> completed successfully. Have a nice day.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="hidden-sectors-2" class="level2">
+<h2 class="anchored" data-anchor-id="hidden-sectors-2">2.3 Hidden Sectors</h2>
+<ul>
+<li>Investigate disk layout:</li>
+</ul>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> fdisk <span class="at">-l</span> /dev/sdb</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Device</span>     Boot Start        End    Sectors  Size Id Type</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">/dev/sdb1</span>        2048 2999999999 2999997952  1,4T  7 HPFS/NTFS/exFAT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Investigate last accessible sector:</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> dd if=/dev/sdb skip=2999999999 status=none<span class="kw">|</span> <span class="ex">xxd</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">00000000:</span> eb52 904e 5446 5320 2020 2000 0208 0000  .R.NTFS    .....</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>      <span class="ex">.......</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">000001f0:</span> 0000 0000 0000 0000 0000 0000 0000 55aa  ..............U.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="hidden-sectors-3" class="level2">
+<h2 class="anchored" data-anchor-id="hidden-sectors-3">2.3 Hidden Sectors</h2>
+<ul>
+<li>Try to access hidden message</li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> dd if=/dev/sdb skip=3500000000 count=1 <span class="kw">|</span> <span class="ex">xxd</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">dd:</span> /dev/sdb: cannot skip: Invalid argument</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">0+0</span> records in</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Resize HPA </li>
+</ul>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> hdparm <span class="at">-N</span> /dev/sdb</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">max</span> sectors   = 3000000000/3907029168, ACCESSIBLE MAX ADDRESS enabled</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> hdparm <span class="at">--yes-i-know-what-i-am-doing</span> <span class="at">-N</span> p3900000000 /dev/sdb</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="ex">max</span> sectors   = 3900000000/3907029168, ACCESSIBLE MAX ADDRESS enabled</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Power</span> cycle your device after every ACCESSIBLE MAX ADDRESS</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="hidden-sectors-4" class="level2">
+<h2 class="anchored" data-anchor-id="hidden-sectors-4">2.3 Hidden Sectors</h2>
+<ul>
+<li>Recover hidden message</li>
+</ul>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> dd if=/dev/sdb skip=3500000000 count=1 status=none</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">00000000:</span> 4d79 5365 6372 6574 2031 3233 3435 3600  MySecret 123456.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="disk-structure" class="level2">
+<h2 class="anchored" data-anchor-id="disk-structure">2.4 Disk structure</h2>
+<p><a href="./img/mbr_structure.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="./img/mbr_structure.png" style="height:2.22222in"></a></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>https://www.golinuxhub.com/2014/11/understanding-partition-scheme-mbr-vs/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="mbr" class="level2">
+<h2 class="anchored" data-anchor-id="mbr">2.4.1 MBR</h2>
+<p><a href="./img/MBR.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="./img/MBR.png" style="height:2.36111in"></a></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>http://www.invoke-ir.com/2015/05/ontheforensictrail-part2.html?m=0</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="chs" class="level2">
+<h2 class="anchored" data-anchor-id="chs">2.4.2 CHS</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./img/chs.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3" title="&nbsp;"><img src="./img/chs.png" style="height:1.38889in" alt="&nbsp;" class="figure-img"></a></p>
+<figcaption>&nbsp;</figcaption>
+</figure>
+</div>
+<ul>
+<li>C -&gt; Cylinder, [0, 1023]</li>
+<li>H -&gt; Head, [0, 254]</li>
+<li>S -&gt; Sector, [1, 63]</li>
+<li>1024*255*63*512 = 8,422,686,720 bytes → 8G</li>
+</ul>
+</section>
+<section id="chs-vs-lba" class="level2">
+<h2 class="anchored" data-anchor-id="chs-vs-lba">2.4.3 CHS vs LBA</h2>
+<p><img src="./img/chs_lba.png" style="height:1.80556in" alt="&nbsp;"> </p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>https://benkixmiller.com/2023/10/08/chs-vs-lba-addressing/</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>$((2^32 * 512 / 1024^3)) == 2 TByte</li>
+<li>48 bits -&gt; 144,000,000 GB -&gt; 144 000 TB</li>
+</ul>
+</section>
+<section id="gpt" class="level2">
+<h2 class="anchored" data-anchor-id="gpt">2.4.4 GPT</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><a href="./img/gpt.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4" title="Image (c) wikipedia.org - Image used solely for illustration purposes"><img src="./img/gpt.png" style="height:2.15278in" alt="Image (c) wikipedia.org - Image used solely for illustration purposes" class="figure-img"></a></p>
+<figcaption>Image (c) wikipedia.org - Image used solely for illustration purposes</figcaption>
+</figure>
+</div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>Image (c) wikipedia.org - Image used solely for illustration purposes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="gpt-1" class="level2">
+<h2 class="anchored" data-anchor-id="gpt-1">2.4.4 GPT</h2>
+<p><a href="./img/1B_GPT.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="./img/1B_GPT.png" style="height:2.36111in"></a></p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>http://www.invoke-ir.com/2015/06/ontheforensictrail-part3.html</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="imaging-cloning-and-mounting" class="level1">
+<h1>3. Imaging / Cloning and Mounting</h1>
+<section id="disk-imaging-cloning" class="level2">
+<h2 class="anchored" data-anchor-id="disk-imaging-cloning">3.1 Disk Imaging / Cloning</h2>
+<ul>
+<li>Clone disk-2-disk
+<ul>
+<li>Different sizes</li>
+<li>This will wipe target disk!</li>
+</ul></li>
+<li>Clone disk-2-image
+<ul>
+<li>Clear boundaries</li>
+<li>One big file</li>
+<li>Break file into chunks</li>
+</ul></li>
+<li>Image file format
+<ul>
+<li>RAW</li>
+<li>AFF (Advanced Forensic Format)</li>
+<li>EWF (Expert Witness Format)</li>
+<li>Please no 3rd party formats</li>
+</ul></li>
+<li>Write-Blockers
+<ul>
+<li>Hardware</li>
+</ul></li>
+</ul>
+</section>
+<section id="dd---disk-imaging-rudimentary" class="level2">
+<h2 class="anchored" data-anchor-id="dd---disk-imaging-rudimentary">3.2 dd - disk imaging rudimentary</h2>
+<ul>
+<li>Copy files from usb stick using dd: </li>
+</ul>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> dd if=img_1.txt of=out_1.txt bs=512</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="op">&lt;</span>input <span class="fu">file</span><span class="op">&gt;</span>   <span class="op">&lt;</span>output file<span class="op">&gt;</span>  <span class="op">&lt;</span>block size<span class="op">&gt;</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="ex">3+0</span> records in</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="ex">3+0</span> records out</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a><span class="ex">1536</span> bytes <span class="er">(</span><span class="ex">1.5</span> kB<span class="kw">)</span> <span class="ex">copied,</span> 0.000126 s, 12.2 MB/s</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Skip and count options: </li>
+</ul>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dd</span> if=img_3.txt bs=512 skip=0 count=1 status=none <span class="kw">|</span> <span class="fu">less</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dd</span> if=img_3.txt bs=512 skip=1 count=1 status=none <span class="kw">|</span> <span class="fu">less</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dd</span> if=img_3.txt bs=512 skip=2 count=1 status=none <span class="kw">|</span> <span class="fu">less</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="dd---disk-imaging-rudimentary-1" class="level2">
+<h2 class="anchored" data-anchor-id="dd---disk-imaging-rudimentary-1">3.2 dd - disk imaging rudimentary</h2>
+<ul>
+<li>Play with bs, skip and count option</li>
+</ul>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dd</span> if=img_3.txt bs=1 skip=<span class="va">$((</span><span class="dv">512</span><span class="op">*</span><span class="dv">3</span><span class="va">))</span> count=16 status=none</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dd</span> if=img_3.txt bs=16 skip=<span class="va">$((</span><span class="dv">32</span><span class="op">*</span><span class="dv">3</span><span class="va">))</span> count=1 status=none</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Exercise: dd | xxd | less </li>
+</ul>
+<div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dd</span> if=img_3.txt bs=512 skip=3 count=1 status=none <span class="kw">|</span> <span class="ex">xxd</span> <span class="kw">|</span> <span class="fu">less</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">0000000:</span> 4f76 6572 6865 6164 2031 3233 3435 3637  Overhead 1234567</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">0000010:</span> 3839 3020 204d 6573 7361 6765 2d31 2020  890  Message-1  </span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    <span class="ex">0000020:</span> 3039 3837 3635 3433 3231 2020 2020 2020  0987654321      </span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    <span class="ex">0000030:</span> 2020 2020 2020 20</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Exercice: Find the secret password behind sector 3</li>
+</ul>
+</section>
+<section id="dd---disk-imaging-rudimentary-2" class="level2">
+<h2 class="anchored" data-anchor-id="dd---disk-imaging-rudimentary-2">3.2 dd - disk imaging rudimentary</h2>
+<ul>
+<li>Exercise: Continue an interrupted imaging process</li>
+</ul>
+</section>
+<section id="dd---disk-imaging-rudimentary-3" class="level2">
+<h2 class="anchored" data-anchor-id="dd---disk-imaging-rudimentary-3">3.2 dd - disk imaging rudimentary</h2>
+<ul>
+<li>Exercise: Continue an interrupted imaging process</li>
+</ul>
+<div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> dd if=img_2.txt of=broken.raw bs=512 skip=0 count=2 status=none</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="kw">||</span>     <span class="ex">img_2.txt</span>  ..... 1591 Aug 13 14:40 img_2.txt<span class="pp">*</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a><span class="kw">||</span>     <span class="ex">broken.raw</span>  ..... 1024 Aug 13 15:05 broken.raw</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a><span class="fu">dd</span> if=img_2.txt of=broken.raw bs=512 skip=2 seek=2 status=none</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a><span class="fu">md5sum</span>  img_2.txt f319b1cc9d424a923a8c83c3e67185f1</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a><span class="fu">md5sum</span> broken.raw f319b1cc9d424a923a8c83c3e67185f1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="dd---disk-imaging-rudimentary---tools" class="level2">
+<h2 class="anchored" data-anchor-id="dd---disk-imaging-rudimentary---tools">3.2 dd - disk imaging rudimentary - Tools</h2>
+<ul>
+<li>dd</li>
+<li>ddrescue, gddrescue, dd_rescue</li>
+<li>dc3dd - Department of Defense Cyber Crime Center</li>
+<li>dcfldd - Defense Computer Forensic Labs</li>
+<li>rdd-copy, netcat, socat, ssh</li>
+<li>Guymager</li>
+</ul>
+</section>
+<section id="connecting-devices" class="level2">
+<h2 class="anchored" data-anchor-id="connecting-devices">3.3 Connecting devices</h2>
+<ul>
+<li>List all disk</li>
+</ul>
+<div class="sourceCode" id="cb19"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> lsblk <span class="at">-o</span> NAME,FSTYPE,SIZE,MOUNTPOINT,LABEL</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Where there are mount:
+<ul>
+<li>/dev/sd* # SCSI, SATA
+<ul>
+<li>/dev/sda1 # Partition 1 on disk 1</li>
+<li>/dev/sda2 # Partition 2 on disk 1</li>
+<li>…</li>
+</ul></li>
+<li>/dev/hd* # IDE. EIDE</li>
+<li>/dev/md* # RAID</li>
+<li>/dev/nvme*n* # NVME devices</li>
+</ul></li>
+</ul>
+</section>
+<section id="connecting-devices-1" class="level2">
+<h2 class="anchored" data-anchor-id="connecting-devices-1">3.3 Connecting devices</h2>
+<ul>
+<li>dmesg</li>
+</ul>
+<div class="sourceCode" id="cb20"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="ex">[106834.127269]</span> sd 6:0:0:0: Attached scsi generic sg1 type 0</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="ex">[106834.127503]</span> sd 6:0:0:0: <span class="pp">[</span><span class="ss">sdb</span><span class="pp">]</span> 15826944 512-byte logical blocks: <span class="er">(</span><span class="ex">8.10</span> GB/7.54 GiB<span class="kw">)</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="ex">[106834.130380]</span> sd 6:0:0:0: <span class="pp">[</span><span class="ss">sdb</span><span class="pp">]</span> Write Protect is off</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>fdisk -l /dev/sda</li>
+</ul>
+<div class="sourceCode" id="cb21"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Disk</span> /dev/sda: 7.62 GiB, 8178892800 bytes, 15974400 sectors</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Disk</span> model: Flash Disk      </span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Units:</span> sectors of 1 <span class="pp">*</span> 512 = 512 bytes</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Sector</span> size <span class="er">(</span><span class="ex">logical/physical</span><span class="kw">)</span><span class="bu">:</span> 512 bytes / 512 bytes</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="ex">I/O</span> size <span class="er">(</span><span class="ex">minimum/optimal</span><span class="kw">)</span><span class="bu">:</span> 512 bytes / 512 bytes</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Disklabel</span> type: dos</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Disk</span> identifier: 0x223f3288</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a><span class="ex">Device</span>     Boot Start      End  Sectors Size Id Type</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a><span class="ex">/dev/sda1</span>        2048 10485759 10483712   <span class="pp">?</span>  7 HPFS/NTFS/exFAT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="connecting-devices-2" class="level2">
+<h2 class="anchored" data-anchor-id="connecting-devices-2">3.3 Connecting devices</h2>
+<ul>
+<li>fdisk -l /dev/sda</li>
+</ul>
+<div class="sourceCode" id="cb22"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Disk</span> /dev/sda: 7.62 GiB, 8178892800 bytes, 15974400 sectors</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Disk</span> model: Flash Disk      </span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="ex">Units:</span> sectors of 1 <span class="pp">*</span> 512 = 512 bytes</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Sector</span> size <span class="er">(</span><span class="ex">logical/physical</span><span class="kw">)</span><span class="bu">:</span> 512 bytes / 512 bytes</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a><span class="ex">I/O</span> size <span class="er">(</span><span class="ex">minimum/optimal</span><span class="kw">)</span><span class="bu">:</span> 512 bytes / 512 bytes</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Disklabel</span> type: dos</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Disk</span> identifier: 0x223f3288</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a><span class="ex">Device</span>     Boot Start      End  Sectors Size Id Type</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a><span class="ex">/dev/sda1</span>        2048 10485759 10483712   5G  7 HPFS/NTFS/exFAT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="imaging-devices" class="level2">
+<h2 class="anchored" data-anchor-id="imaging-devices">3.4 Imaging devices</h2>
+<ul>
+<li><p>Image your usb stick</p></li>
+<li><p>What are the steps ?</p></li>
+</ul>
+</section>
+<section id="imaging-devices-1" class="level2">
+<h2 class="anchored" data-anchor-id="imaging-devices-1">3.4 Imaging devices</h2>
+<div class="sourceCode" id="cb23"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dd</span> if=/dev/sda of=circl_dfir.dd bs=512</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dd</span> if=/dev/sda of=/home/david/Desktop/circl_dfir_ntfs.dd skip=2048</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dd</span> if=/dev/sda1 of=/home/david/Desktop/circl_dfir_ntfs_2.dd</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="mounting" class="level2">
+<h2 class="anchored" data-anchor-id="mounting">3.5 Mounting</h2>
+<ul>
+<li>Basiscs</li>
+</ul>
+<div class="sourceCode" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> /mnt/ntfs                             <span class="co"># Create mount point</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mount</span> /dev/sda1 /mnt/ntfs                   <span class="co"># Mounting</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="fu">mount</span> <span class="at">-o</span> ro,remount /dev/sda1 /mnt/ntfs     <span class="co"># Re-mounting</span></span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="fu">umount</span> /mnt/ntfs                            <span class="co"># Un-mounting</span></span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a><span class="fu">umount</span> /dev/sda1                            <span class="co"># Also un-mounting</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="mounting-1" class="level2">
+<h2 class="anchored" data-anchor-id="mounting-1">3.5 Mounting</h2>
+<ul>
+<li>More Advanced:</li>
+</ul>
+<div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Mounting readonly, no journaling, no executable</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mount</span> <span class="at">-o</span> ro,noload,noexec /dev/sda1 /mnt/ntfs</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">mount</span> <span class="at">-o</span> ro,noload,noexec,remount /dev/sda1 /mnt/ntfs</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Mounting with offset. mounting from image files</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="fu">mount</span> <span class="at">-o</span> ro,noload,noexec,offset=<span class="va">$((</span><span class="dv">512</span><span class="op">*</span><span class="dv">2048</span><span class="va">))</span> circl-dfir.dd /mnt/ntfs</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Mounting NTFS file systems</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a><span class="fu">mount</span> <span class="at">-o</span> ro,noload,noexec,offset=<span class="va">$((</span><span class="dv">512</span><span class="op">*</span><span class="dv">2048</span><span class="va">))</span>,</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>      <span class="ex">show_sys_files,streams_interface=windows</span> circl-dfir.dd /mnt/ntfs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="mounting-2" class="level2">
+<h2 class="anchored" data-anchor-id="mounting-2">3.5 Mounting</h2>
+<div class="sourceCode" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dd</span> if=/dev/sda of=circl_dfir.dd bs=512</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dd</span> if=/dev/sda of=/home/david/Desktop/circl_dfir_ntfs.dd skip=2048</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">dd</span> if=/dev/sda1 of=/home/david/Desktop/circl_dfir_ntfs_2.dd</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mount</span> <span class="at">-o</span> offset=<span class="va">$((</span><span class="dv">512</span><span class="op">*</span><span class="dv">2048</span><span class="va">))</span> circl_dfir.dd mnt_pt</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a><span class="fu">mount</span> circl_dfir.dd mnt_pt</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a><span class="fu">mount</span> circl_dfir.dd mnt_pt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="contact-and-reference" class="level2">
+<h2 class="anchored" data-anchor-id="contact-and-reference">Contact and Reference</h2>
+<ul>
+<li><p>david.cruciani@circl.lu</p></li>
+<li><p>https://github.com/DavidCruciani</p></li>
+<li><p>info@circl.lu</p></li>
+</ul>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+</body></html>

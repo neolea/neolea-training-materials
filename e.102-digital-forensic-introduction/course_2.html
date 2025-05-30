@@ -1,0 +1,2306 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="David Cruciani">
+
+<title>Forensic Introduction</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="course_2_files/libs/clipboard/clipboard.min.js"></script>
+<script src="course_2_files/libs/quarto-html/quarto.js"></script>
+<script src="course_2_files/libs/quarto-html/popper.min.js"></script>
+<script src="course_2_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="course_2_files/libs/quarto-html/anchor.min.js"></script>
+<link href="course_2_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="course_2_files/libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="course_2_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="course_2_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="course_2_files/libs/bootstrap/bootstrap-e163e0fd111fdb6da7d4f8e68351a74f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="course_2_files/libs/quarto-contrib/glightbox/glightbox.min.js"></script>
+<link href="course_2_files/libs/quarto-contrib/glightbox/glightbox.min.css" rel="stylesheet">
+<link href="course_2_files/libs/quarto-contrib/glightbox/lightbox.css" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
+  <li><a href="#file-system-analysis" id="toc-file-system-analysis" class="nav-link" data-scroll-target="#file-system-analysis">4. File System Analysis</a>
+  <ul class="collapse">
+  <li><a href="#organizing-data-in-files" id="toc-organizing-data-in-files" class="nav-link" data-scroll-target="#organizing-data-in-files">4.1 Organizing data in files</a></li>
+  <li><a href="#organizing-data-in-files-1" id="toc-organizing-data-in-files-1" class="nav-link" data-scroll-target="#organizing-data-in-files-1">4.1 Organizing data in files</a></li>
+  <li><a href="#organizing-data-in-files-2" id="toc-organizing-data-in-files-2" class="nav-link" data-scroll-target="#organizing-data-in-files-2">4.1 Organizing data in files</a></li>
+  <li><a href="#organizing-data-in-files-3" id="toc-organizing-data-in-files-3" class="nav-link" data-scroll-target="#organizing-data-in-files-3">4.1 Organizing data in files</a></li>
+  <li><a href="#deleting-a-file" id="toc-deleting-a-file" class="nav-link" data-scroll-target="#deleting-a-file">4.2 Deleting a file</a></li>
+  <li><a href="#slack-space---fileslack" id="toc-slack-space---fileslack" class="nav-link" data-scroll-target="#slack-space---fileslack">4.3 Slack space - FileSlack</a></li>
+  <li><a href="#slack-space---fileslack-1" id="toc-slack-space---fileslack-1" class="nav-link" data-scroll-target="#slack-space---fileslack-1">4.3 Slack space - FileSlack</a></li>
+  <li><a href="#data-recovery" id="toc-data-recovery" class="nav-link" data-scroll-target="#data-recovery">4.4 Data Recovery</a></li>
+  <li><a href="#data-recovery-1" id="toc-data-recovery-1" class="nav-link" data-scroll-target="#data-recovery-1">4.4 Data Recovery</a></li>
+  <li><a href="#data-recovery-2" id="toc-data-recovery-2" class="nav-link" data-scroll-target="#data-recovery-2">4.4 Data Recovery</a></li>
+  <li><a href="#the-sleuth-kit" id="toc-the-sleuth-kit" class="nav-link" data-scroll-target="#the-sleuth-kit">4.5 The Sleuth Kit</a></li>
+  <li><a href="#the-sleuth-kit-exercise" id="toc-the-sleuth-kit-exercise" class="nav-link" data-scroll-target="#the-sleuth-kit-exercise">4.5 The Sleuth Kit: Exercise</a></li>
+  <li><a href="#the-sleuth-kit-exercise-1" id="toc-the-sleuth-kit-exercise-1" class="nav-link" data-scroll-target="#the-sleuth-kit-exercise-1">4.5 The Sleuth Kit: Exercise</a></li>
+  <li><a href="#the-sleuth-kit-exercise-2" id="toc-the-sleuth-kit-exercise-2" class="nav-link" data-scroll-target="#the-sleuth-kit-exercise-2">4.5 The Sleuth Kit: Exercise</a></li>
+  <li><a href="#the-sleuth-kit-exercise-3" id="toc-the-sleuth-kit-exercise-3" class="nav-link" data-scroll-target="#the-sleuth-kit-exercise-3">4.5 The Sleuth Kit: Exercise</a></li>
+  </ul></li>
+  <li><a href="#ntfs" id="toc-ntfs" class="nav-link" data-scroll-target="#ntfs">5. NTFS</a>
+  <ul class="collapse">
+  <li><a href="#file-system-structure" id="toc-file-system-structure" class="nav-link" data-scroll-target="#file-system-structure">5.1 File system structure</a></li>
+  <li><a href="#volume-boot-record" id="toc-volume-boot-record" class="nav-link" data-scroll-target="#volume-boot-record">5.2 Volume Boot Record</a></li>
+  <li><a href="#master-file-table" id="toc-master-file-table" class="nav-link" data-scroll-target="#master-file-table">5.3 Master File Table</a></li>
+  <li><a href="#mft" id="toc-mft" class="nav-link" data-scroll-target="#mft">5.3 MFT</a></li>
+  <li><a href="#deleting-a-file-what-will-change" id="toc-deleting-a-file-what-will-change" class="nav-link" data-scroll-target="#deleting-a-file-what-will-change">5.4 Deleting a file: What will change?</a></li>
+  <li><a href="#deleting-a-file-what-will-change-1" id="toc-deleting-a-file-what-will-change-1" class="nav-link" data-scroll-target="#deleting-a-file-what-will-change-1">5.4 Deleting a file: What will change?</a></li>
+  </ul></li>
+  <li><a href="#file-system-time-line" id="toc-file-system-time-line" class="nav-link" data-scroll-target="#file-system-time-line">6. File System Time Line</a>
+  <ul class="collapse">
+  <li><a href="#time-stamps-nomenclature" id="toc-time-stamps-nomenclature" class="nav-link" data-scroll-target="#time-stamps-nomenclature">6.1 Time stamps: Nomenclature</a></li>
+  <li><a href="#last-access-time" id="toc-last-access-time" class="nav-link" data-scroll-target="#last-access-time">6.2 Last Access Time</a></li>
+  <li><a href="#time-line-exercise" id="toc-time-line-exercise" class="nav-link" data-scroll-target="#time-line-exercise">6.3 Time Line: Exercise</a></li>
+  <li><a href="#time-line-exercise---what-could-we-reproduce-yesno" id="toc-time-line-exercise---what-could-we-reproduce-yesno" class="nav-link" data-scroll-target="#time-line-exercise---what-could-we-reproduce-yesno">6.3 Time Line: Exercise - What could we reproduce Yes/No</a></li>
+  <li><a href="#create-a-time-line" id="toc-create-a-time-line" class="nav-link" data-scroll-target="#create-a-time-line">6.4 Create a Time line</a></li>
+  <li><a href="#create-a-time-line-1" id="toc-create-a-time-line-1" class="nav-link" data-scroll-target="#create-a-time-line-1">6.4 Create a Time line</a></li>
+  <li><a href="#create-a-time-line-2" id="toc-create-a-time-line-2" class="nav-link" data-scroll-target="#create-a-time-line-2">6.4 Create a Time line</a></li>
+  </ul></li>
+  <li><a href="#carving-and-string-search" id="toc-carving-and-string-search" class="nav-link" data-scroll-target="#carving-and-string-search">7. Carving and String Search</a>
+  <ul class="collapse">
+  <li><a href="#magic-bytes---file-signatures" id="toc-magic-bytes---file-signatures" class="nav-link" data-scroll-target="#magic-bytes---file-signatures">7.1 Magic Bytes - File signatures</a></li>
+  <li><a href="#carving-tools" id="toc-carving-tools" class="nav-link" data-scroll-target="#carving-tools">7.2 Carving tools</a></li>
+  <li><a href="#limitations" id="toc-limitations" class="nav-link" data-scroll-target="#limitations">7.3 Limitations</a></li>
+  <li><a href="#exercise-recover-data-from-formated-drive" id="toc-exercise-recover-data-from-formated-drive" class="nav-link" data-scroll-target="#exercise-recover-data-from-formated-drive">7.4 Exercise: Recover data from formated drive</a></li>
+  <li><a href="#exercise-recover-data-from-formated-drive-1" id="toc-exercise-recover-data-from-formated-drive-1" class="nav-link" data-scroll-target="#exercise-recover-data-from-formated-drive-1">7.4 Exercise: Recover data from formated drive</a></li>
+  <li><a href="#string-search" id="toc-string-search" class="nav-link" data-scroll-target="#string-search">7.5 String Search</a></li>
+  <li><a href="#steps-to-do-a-string-search" id="toc-steps-to-do-a-string-search" class="nav-link" data-scroll-target="#steps-to-do-a-string-search">7.6 Steps to do a String Search</a></li>
+  </ul></li>
+  <li><a href="#windows-registry" id="toc-windows-registry" class="nav-link" data-scroll-target="#windows-registry">8. Windows Registry</a>
+  <ul class="collapse">
+  <li><a href="#about-windows-registry" id="toc-about-windows-registry" class="nav-link" data-scroll-target="#about-windows-registry">8.1 About Windows Registry</a></li>
+  <li><a href="#about-windows-registry-1" id="toc-about-windows-registry-1" class="nav-link" data-scroll-target="#about-windows-registry-1">8.1 About Windows Registry</a></li>
+  <li><a href="#about-windows-registry-2" id="toc-about-windows-registry-2" class="nav-link" data-scroll-target="#about-windows-registry-2">8.1 About Windows Registry</a></li>
+  <li><a href="#hive-files" id="toc-hive-files" class="nav-link" data-scroll-target="#hive-files">8.2 Hive files</a></li>
+  <li><a href="#hive-files-1" id="toc-hive-files-1" class="nav-link" data-scroll-target="#hive-files-1">8.2 Hive files</a></li>
+  <li><a href="#regripper" id="toc-regripper" class="nav-link" data-scroll-target="#regripper">8.3 RegRipper</a></li>
+  <li><a href="#regripper-1" id="toc-regripper-1" class="nav-link" data-scroll-target="#regripper-1">8.3 RegRipper</a></li>
+  <li><a href="#regripper---exercise" id="toc-regripper---exercise" class="nav-link" data-scroll-target="#regripper---exercise">8.3 RegRipper - Exercise</a></li>
+  <li><a href="#regripper---solution" id="toc-regripper---solution" class="nav-link" data-scroll-target="#regripper---solution">8.3 RegRipper - Solution</a></li>
+  <li><a href="#regripper---solution-1" id="toc-regripper---solution-1" class="nav-link" data-scroll-target="#regripper---solution-1">8.3 RegRipper - Solution</a></li>
+  <li><a href="#tracing-user-activity" id="toc-tracing-user-activity" class="nav-link" data-scroll-target="#tracing-user-activity">8.4 Tracing user activity</a></li>
+  <li><a href="#tracing-user-activity-1" id="toc-tracing-user-activity-1" class="nav-link" data-scroll-target="#tracing-user-activity-1">8.4 Tracing user activity</a></li>
+  <li><a href="#fred" id="toc-fred" class="nav-link" data-scroll-target="#fred">8.5 Fred</a></li>
+  </ul></li>
+  <li><a href="#windows-event-logs" id="toc-windows-event-logs" class="nav-link" data-scroll-target="#windows-event-logs">9. Windows Event Logs</a>
+  <ul class="collapse">
+  <li><a href="#about-windows-event-logs" id="toc-about-windows-event-logs" class="nav-link" data-scroll-target="#about-windows-event-logs">9.1 About Windows Event Logs</a></li>
+  <li><a href="#about-windows-event-logs-1" id="toc-about-windows-event-logs-1" class="nav-link" data-scroll-target="#about-windows-event-logs-1">9.1 About Windows Event Logs</a></li>
+  <li><a href="#windows-event-logs-1" id="toc-windows-event-logs-1" class="nav-link" data-scroll-target="#windows-event-logs-1">9.1 Windows Event Logs</a></li>
+  <li><a href="#windows-event-logs-2" id="toc-windows-event-logs-2" class="nav-link" data-scroll-target="#windows-event-logs-2">9.1 Windows Event Logs</a></li>
+  <li><a href="#parsing" id="toc-parsing" class="nav-link" data-scroll-target="#parsing">9.2 Parsing</a></li>
+  <li><a href="#other-tools" id="toc-other-tools" class="nav-link" data-scroll-target="#other-tools">9.3 Other tools</a></li>
+  </ul></li>
+  <li><a href="#other-windows-artifacts" id="toc-other-windows-artifacts" class="nav-link" data-scroll-target="#other-windows-artifacts">10 Other Windows artifacts</a>
+  <ul class="collapse">
+  <li><a href="#recycle-bin" id="toc-recycle-bin" class="nav-link" data-scroll-target="#recycle-bin">10.1 Recycle Bin</a></li>
+  <li><a href="#recycle-bin---life-investigate" id="toc-recycle-bin---life-investigate" class="nav-link" data-scroll-target="#recycle-bin---life-investigate">10.1 Recycle Bin - Life-Investigate</a></li>
+  <li><a href="#recycle-bin---forensics" id="toc-recycle-bin---forensics" class="nav-link" data-scroll-target="#recycle-bin---forensics">10.1 Recycle Bin - Forensics</a></li>
+  <li><a href="#recycle-bin---forensics-1" id="toc-recycle-bin---forensics-1" class="nav-link" data-scroll-target="#recycle-bin---forensics-1">10.1 Recycle Bin - Forensics</a></li>
+  <li><a href="#lnk-files" id="toc-lnk-files" class="nav-link" data-scroll-target="#lnk-files">10.2 LNK Files</a></li>
+  <li><a href="#lnk-files-1" id="toc-lnk-files-1" class="nav-link" data-scroll-target="#lnk-files-1">10.2 LNK Files</a></li>
+  <li><a href="#jump-lists" id="toc-jump-lists" class="nav-link" data-scroll-target="#jump-lists">10.3 Jump Lists</a></li>
+  <li><a href="#jump-lists-1" id="toc-jump-lists-1" class="nav-link" data-scroll-target="#jump-lists-1">10.3 Jump Lists</a></li>
+  <li><a href="#jump-lists-2" id="toc-jump-lists-2" class="nav-link" data-scroll-target="#jump-lists-2">10.3 Jump Lists</a></li>
+  <li><a href="#jump-lists-3" id="toc-jump-lists-3" class="nav-link" data-scroll-target="#jump-lists-3">10.3 Jump Lists</a></li>
+  <li><a href="#prefetch-files" id="toc-prefetch-files" class="nav-link" data-scroll-target="#prefetch-files">10.4 Prefetch Files</a></li>
+  <li><a href="#prefetch-files-1" id="toc-prefetch-files-1" class="nav-link" data-scroll-target="#prefetch-files-1">10.4 Prefetch Files</a></li>
+  <li><a href="#prefetch-files-2" id="toc-prefetch-files-2" class="nav-link" data-scroll-target="#prefetch-files-2">10.4 Prefetch Files</a></li>
+  <li><a href="#vss---volume-shadow-copy-service" id="toc-vss---volume-shadow-copy-service" class="nav-link" data-scroll-target="#vss---volume-shadow-copy-service">10.5 VSS - Volume Shadow Copy Service</a></li>
+  <li><a href="#vss---configuration-analysis" id="toc-vss---configuration-analysis" class="nav-link" data-scroll-target="#vss---configuration-analysis">10.5 VSS - Configuration &amp; Analysis</a></li>
+  <li><a href="#contact-and-reference" id="toc-contact-and-reference" class="nav-link" data-scroll-target="#contact-and-reference">Contact and Reference</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Forensic Introduction</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>David Cruciani </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">Invalid Date</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<ul>
+<li><del>1. Introduction - (<em>Course 1</em>)</del></li>
+<li><del>2. Understand disk - (<em>Course 1</em>)</del></li>
+<li><del>3. Imaging / Cloning and Mounting - (<em>Course 1</em>)</del></li>
+<li><ol start="4" type="1">
+<li>File system analysis - (<em>Course 2</em>)</li>
+</ol></li>
+<li><ol start="5" type="1">
+<li>NTFS - (<em>Course 2</em>)</li>
+</ol></li>
+<li><ol start="6" type="1">
+<li>File System Time Line - (<em>Course 2</em>)</li>
+</ol></li>
+<li><ol start="7" type="1">
+<li>Carving and String Search - (<em>Course 2</em>)</li>
+</ol></li>
+<li><ol start="8" type="1">
+<li>Windows Registry - (<em>Course 2</em>)</li>
+</ol></li>
+<li><ol start="9" type="1">
+<li>Windows Event Logs - (<em>Course 2</em>)</li>
+</ol></li>
+<li><ol start="10" type="1">
+<li>Other Windows Artifacts - (<em>Course 2</em>)</li>
+</ol></li>
+<li><ol start="11" type="1">
+<li>Introduction to Flowintel - (<em>Course 3</em>)</li>
+</ol></li>
+<li><ol start="12" type="1">
+<li>The Exercise - (<em>Course 3</em>)</li>
+</ol></li>
+</ul>
+</section>
+<section id="file-system-analysis" class="level1">
+<h1>4. File System Analysis</h1>
+<section id="organizing-data-in-files" class="level2">
+<h2 class="anchored" data-anchor-id="organizing-data-in-files">4.1 Organizing data in files</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>             - Organizing data on a volume</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>             - Maintain file related meta data</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>             - Maintain allocation status of clusters</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                            </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                Metadata                                   Content     </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       ----------------------------------</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  1 |                                |       |                                | 5001</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    |                                |       |                                | 5002</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    |                                |       |                                | 5003</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    |                                |       |                                | 5004</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    |                                |       |                                | 5005</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    |--------------------------------|       |                                | 5006</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  2 |                                |       |                                | ...</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    |                                |       |                                | ...</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    |                                |       |                                | ...</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    |                                |       |                                | ...</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    |                                |       |                                | ...</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       |                                | ...</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  3 |                                |       |                                | ...</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    |             .....              |       |                                | 5014</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       ----------------------------------</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>                                              |       |       |       |      |</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>                                              0       8      16      24     31</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>       Allocation table:</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="organizing-data-in-files-1" class="level2">
+<h2 class="anchored" data-anchor-id="organizing-data-in-files-1">4.1 Organizing data in files</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>             - Organizing data on a volume</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>             - Maintain file related meta data</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>             - Maintain allocation status of clusters</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>                            </span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>                Metadata                                   Content     </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       ----------------------------------</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  1 |                                |       |11111111111111111111111111111111| 5001</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    |                                |       |11111111111111111111111111111111| 5002</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    |                                |       |1111                            | 5003</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>    |                                |       |                                | 5004</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    |                                |       |                                | 5005</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    |--------------------------------|       |                                | 5006</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  2 |                                |       |                                | ...</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>    |                                |       |                                | ...</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>    |                                |       |                                | ...</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    |                                |       |                                | ...</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    |                                |       |                                | ...</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       |                                | ...</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  3 |                                |       |                                | ...</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    |             .....              |       |                                | 5014</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       ----------------------------------</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>                                              |       |       |       |      |</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>                                              0       8      16      24     31</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>       Allocation table:</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="organizing-data-in-files-2" class="level2">
+<h2 class="anchored" data-anchor-id="organizing-data-in-files-2">4.1 Organizing data in files</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>             - Organizing data on a volume</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>             - Maintain file related meta data</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>             - Maintain allocation status of clusters</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                            </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                Metadata                                   Content     </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       ----------------------------------</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  1 | Filename: file01.txt           |       |11111111111111111111111111111111| 5001</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    | Time stamps: MACB              |       |11111111111111111111111111111111| 5002</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    | Rights: Owner, Group, All      |       |1111                            | 5003</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    | Size: 68 Byte                  |       |                                | 5004</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    | Clusters: 5001,5002,5003       |       |                                | 5005</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    |--------------------------------|       |                                | 5006</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>  2 |                                |       |                                | ...</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    |                                |       |                                | ...</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    |                                |       |                                | ...</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    |                                |       |                                | ...</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    |                                |       |                                | ...</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       |                                | ...</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>  3 |                                |       |                                | ...</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    |             .....              |       |                                | 5014</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       ----------------------------------</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>                                              |       |       |       |      |</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>                                              0       8      16      24     31</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>       Allocation table: 5001, 5002, 5003</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="organizing-data-in-files-3" class="level2">
+<h2 class="anchored" data-anchor-id="organizing-data-in-files-3">4.1 Organizing data in files</h2>
+<div class="sourceCode" id="cb4"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>             - Organizing data on a volume</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>             - Maintain file related meta data</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>             - Maintain allocation status of clusters</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                            </span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                Metadata                                   Content     </span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       ----------------------------------</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  1 | Filename: file01.txt           |       |11111111111111111111111111111111| 5001</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    | Time stamps: MACB              |       |11111111111111111111111111111111| 5002</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    | Rights: Owner, Group, All      |       |1111                            | 5003</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    | Size: 68 Byte                  |       |22222222222222222222222222222222| 5004</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    | Clusters: 5001,5002,5003       |       |22222222222222222222222         | 5005</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    |--------------------------------|       |                                | 5006</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>  2 | Filename: file02.txt           |       |                                | ...</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>    | Time stamps: MACB              |       |                                | ...</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>    | Rights: Owner, Group, All      |       |                                | ...</span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>    | Size: 55 Byte                  |       |                                | ...</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    | Clusters: 5004, 5005           |       |                                | ...</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       |                                | ...</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  3 |                                |       |                                | ...</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    |             .....              |       |                                | 5014</span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       ----------------------------------</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>                                              |       |       |       |      |</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>                                              0       8      16      24     31</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>       Allocation table: 5001, 5002, 5003, 5004, 5005</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="deleting-a-file" class="level2">
+<h2 class="anchored" data-anchor-id="deleting-a-file">4.2 Deleting a file</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>             - Organizing data on a volume</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>             - Maintain file related meta data</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>             - Maintain allocation status of clusters</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                            </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>                Metadata                                   Content     </span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       ----------------------------------</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  1 | Filename: file01.txt           |       |11111111111111111111111111111111| 5001</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    | Time stamps: MACB              |       |11111111111111111111111111111111| 5002</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    | Rights: Owner, Group, All      |       |1111                            | 5003</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    | Size: 68 Byte                  |       |22222222222222222222222222222222| 5004</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    | Clusters: 5001,5002,5003       |       |22222222222222222222222         | 5005</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    |--------------------------------|       |                                | 5006</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  2 | Filename: file02.txt (deleted) |       |                                | ...</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    | Time stamps: MACB              |       |                                | ...</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    | Rights: Owner, Group, All      |       |                                | ...</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    | Size: 55 Byte                  |       |                                | ...</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    | Clusters: 5004, 5005           |       |                                | ...</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       |                                | ...</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  3 |                                |       |                                | ...</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    |             .....              |       |                                | 5014</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       ----------------------------------</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>                                              |       |       |       |      |</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>                                              0       8      16      24     31</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>       Allocation table: 5001, 5002, 5003</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="slack-space---fileslack" class="level2">
+<h2 class="anchored" data-anchor-id="slack-space---fileslack">4.3 Slack space - FileSlack</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>             - Metadata: Case 1: Re-Use Metadata</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>             - Content: End of sector: Filled with zeros (RAM slack)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>             - Content: End of cluter: Don't touch (File slack)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>                            </span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>                Metadata                                   Content     </span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       ----------------------------------</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  1 | Filename: file01.txt           |       |11111111111111111111111111111111| 5001</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    | Time stamps: MACB              |       |11111111111111111111111111111111| 5002</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    | Rights: Owner, Group, All      |       |1111                            | 5003</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    | Size: 68 Byte                  |       |3333333333      2222222222222222| 5004</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    | Clusters: 5001,5002,5003       |       |22222222222222222222222         | 5005</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    |--------------------------------|       |                                | 5006</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  2 | Filename: file03.txt           |       |                                | ...</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    | Time stamps: MACB              |       |                                | ...</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    | Rights: Owner, Group, All      |       |                                | ...</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    | Size: 10 Byte                  |       |                                | ...</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    | Clusters: 5004                 |       |                                | ...</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       |                                | ...</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>  3 |                                |       |                                | ...</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    |             .....              |       |                                | 5014</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       ----------------------------------</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>                                              |       |       |       |      |</span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a>                                              0       8      16      24     31</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>       Allocation table: 5001, 5002, 5003, 5004</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="slack-space---fileslack-1" class="level2">
+<h2 class="anchored" data-anchor-id="slack-space---fileslack-1">4.3 Slack space - FileSlack</h2>
+<div class="sourceCode" id="cb7"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>             - Metadata: Case 2: New Metadata</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>             - Content: End of sector: Filled with zeros (RAM slack)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>             - Content: End of cluter: Don't touch (File slack)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>                            </span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                Metadata                                   Content     </span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       ----------------------------------</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>  1 | Filename: file01.txt           |       |11111111111111111111111111111111| 5001</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    | Time stamps: MACB              |       |11111111111111111111111111111111| 5002</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    | Rights: Owner, Group, All      |       |1111                            | 5003</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    | Size: 68 Byte                  |       |3333333333      2222222222222222| 5004</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    | Clusters: 5001,5002,5003       |       |22222222222222222222222         | 5005</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    |--------------------------------|       |                                | 5006</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  2 | Filename: file02.txt (deleted) |       |                                | ...</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    | Time stamps: MACB              |       |                                | ...</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    | Rights: Owner, Group, All      |       |                                | ...</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    | Size: 55 Byte                  |       |                                | ...</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    | Clusters: 5004, 5005           |       |                                | ...</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       |                                | ...</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  3 | Filename: file03.txt           |       |                                | ...</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    | Time stamps: MACB              |       |                                | 5014</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    | Rights: Owner, Group, All      |       ----------------------------------</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    | Size: 10 Byte                  |        |       |       |       |      |</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    | Clusters: 5004                 |        0       8      16      24     31</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    ----------------------------------</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>       Allocation table: 5001, 5002, 5003, 5004</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="data-recovery" class="level2">
+<h2 class="anchored" data-anchor-id="data-recovery">4.4 Data Recovery</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>             # Recover sectors</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>             # Read from disk and write into a file</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>             dd if=deleted.raw of=file02.txt bs=32 skip=5003 count=2</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                            </span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                Metadata                                   Content     </span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       ----------------------------------</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  1 | Filename: file01.txt           |       |11111111111111111111111111111111| 5001</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    | Time stamps: MACB              |       |11111111111111111111111111111111| 5002</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    | Rights: Owner, Group, All      |       |1111                            | 5003</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    | Size: 68 Byte                  |       |3333333333      2222222222222222| 5004</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    | Clusters: 5001,5002,5003       |       |22222222222222222222222         | 5005</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    |--------------------------------|       |                                | 5006</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  2 | Filename: file02.txt (deleted) |       |                                | ...</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>    | Time stamps: MACB              |       |                                | ...</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    | Rights: Owner, Group, All      |       |                                | ...</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    | Size: 55 Byte                  |       |                                | ...</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    | Clusters: 5004, 5005           |       |                                | ...</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       |                                | ...</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  3 | Filename: file03.txt           |       |                                | ...</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>    | Time stamps: MACB              |       |                                | 5014</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    | Rights: Owner, Group, All      |       ----------------------------------</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>    | Size: 10 Byte                  |        |       |       |       |      |</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>    | Clusters: 5004                 |        0       8      16      24     31</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>    ----------------------------------</span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>       Allocation table: 5001, 5002, 5003, 5004</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="data-recovery-1" class="level2">
+<h2 class="anchored" data-anchor-id="data-recovery-1">4.4 Data Recovery</h2>
+<div class="sourceCode" id="cb9"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>             # Recover exisiting (deleted) file</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>             # Based on metadata</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>             icat deleted.raw 3 &gt; file03.txt</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>                            </span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>                Metadata                                   Content     </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       ----------------------------------</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  1 | Filename: file01.txt           |       |11111111111111111111111111111111| 5001</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    | Time stamps: MACB              |       |11111111111111111111111111111111| 5002</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    | Rights: Owner, Group, All      |       |1111                            | 5003</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    | Size: 68 Byte                  |       |3333333333      2222222222222222| 5004</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    | Clusters: 5001,5002,5003       |       |22222222222222222222222         | 5005</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    |--------------------------------|       |                                | 5006</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  2 | Filename: file02.txt (deleted) |       |                                | ...</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    | Time stamps: MACB              |       |                                | ...</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    | Rights: Owner, Group, All      |       |                                | ...</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    | Size: 55 Byte                  |       |                                | ...</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    | Clusters: 5004, 5005           |       |                                | ...</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       |                                | ...</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>  3 | Filename: file03.txt (deleted) |       |                                | ...</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    | Time stamps: MACB              |       |                                | 5014</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>    | Rights: Owner, Group, All      |       ----------------------------------</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>    | Size: 10 Byte                  |        |       |       |       |      |</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a>    | Clusters: 5004                 |        0       8      16      24     31</span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    ----------------------------------</span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>       Allocation table: 5001, 5002, 5003</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="data-recovery-2" class="level2">
+<h2 class="anchored" data-anchor-id="data-recovery-2">4.4 Data Recovery</h2>
+<div class="sourceCode" id="cb10"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>             # Recover overwritten file</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>             # Based on metadata</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>             icat deleted.raw 2 &gt; file02.txt</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                            </span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                Metadata                                   Content     </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       ----------------------------------</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>  1 | Filename: file01.txt           |       |11111111111111111111111111111111| 5001</span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>    | Time stamps: MACB              |       |11111111111111111111111111111111| 5002</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    | Rights: Owner, Group, All      |       |1111                            | 5003</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>    | Size: 68 Byte                  |       |3333333333      2222222222222222| 5004</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>    | Clusters: 5001,5002,5003       |       |22222222222222222222222         | 5005</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>    |--------------------------------|       |                                | 5006</span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  2 | Filename: file02.txt (deleted) |       |                                | ...</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>    | Time stamps: MACB              |       |                                | ...</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>    | Rights: Owner, Group, All      |       |                                | ...</span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>    | Size: 55 Byte                  |       |                                | ...</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>    | Clusters: 5004, 5005           |       |                                | ...</span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>    ----------------------------------       |                                | ...</span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>  3 | Filename: file03.txt (deleted) |       |                                | ...</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>    | Time stamps: MACB              |       |                                | 5014</span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>    | Rights: Owner, Group, All      |       ----------------------------------</span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>    | Size: 10 Byte                  |        |       |       |       |      |</span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>    | Clusters: 5004                 |        0       8      16      24     31</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>    ----------------------------------</span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>       Allocation table: 5001, 5002, 5003</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="the-sleuth-kit" class="level2">
+<h2 class="anchored" data-anchor-id="the-sleuth-kit">4.5 The Sleuth Kit</h2>
+<div class="sourceCode" id="cb11"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>mmstat  # Volume system information</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>mmls        # List partition table</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>mmcat       # Cat a partition</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>fsstat  # File system information</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>fls     # List files and directories</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>fcat        # Cat a file</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>ffind       # Find filename of an inode</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>istat       # Inode information</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>ils     # List inodes</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>icat        # Cat an inode</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>ifind       # Find inode of a sector</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a>blkstat # Information of a data unit</span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a>blkls       # Output data units</span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a>blkcat  # Cat a data unit</span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>jls     # List content of journal</span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>jcat        # Cat a block from journal</span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>mactime # File system time line</span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a>srch_strings    # Display printable characters</span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a>hfind       # Hash database lookup</span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a>....</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="the-sleuth-kit-exercise" class="level2">
+<h2 class="anchored" data-anchor-id="the-sleuth-kit-exercise">4.5 The Sleuth Kit: Exercise</h2>
+<p>Recover deleted files from <code>/carving/deleted.dd</code> </p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a># File system information</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>$ </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a># List files</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>$ </span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a># Recover files based on inode numbers</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>$ </span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>$ </span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>$ </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="the-sleuth-kit-exercise-1" class="level2">
+<h2 class="anchored" data-anchor-id="the-sleuth-kit-exercise-1">4.5 The Sleuth Kit: Exercise</h2>
+<p>Recover deleted files from <code>/carving/deleted.dd</code> </p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a># File system information</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>$ fsstat deleted.dd</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    FILE SYSTEM INFORMATION</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>    --------------------------------------------</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>    File System Type: NTFS</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>    Volume Serial Number: 4978FE7D06B65661</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>    OEM Name: NTFS</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>    Version: Windows XP</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>    CONTENT INFORMATION</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    --------------------------------------------</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>    Sector Size: 512</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>    Cluster Size: 4096</span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a># List files</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>$ </span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a># Recover files based on inode numbers</span>
+<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>$ </span>
+<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>$ </span>
+<span id="cb13-24"><a href="#cb13-24" aria-hidden="true" tabindex="-1"></a>$ </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="the-sleuth-kit-exercise-2" class="level2">
+<h2 class="anchored" data-anchor-id="the-sleuth-kit-exercise-2">4.5 The Sleuth Kit: Exercise</h2>
+<p>Recover deleted files from <code>/carving/deleted.dd</code> </p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a># File system information</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>$ fsstat deleted.dd</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>    FILE SYSTEM INFORMATION</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    --------------------------------------------</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    File System Type: NTFS</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    Volume Serial Number: 4978FE7D06B65661</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    OEM Name: NTFS</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>    Version: Windows XP</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>    CONTENT INFORMATION</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>    --------------------------------------------</span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>    Sector Size: 512</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>    Cluster Size: 4096</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a># List files</span>
+<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>$ fls -r deleted.dd</span>
+<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>    .....</span>
+<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>    + -/r * 70-128-2:   aware.jpg</span>
+<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a>    + -/r * 71-128-2:   cases.jpg</span>
+<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a>    + -/r * 72-128-2:   circl.png</span>
+<span id="cb14-21"><a href="#cb14-21" aria-hidden="true" tabindex="-1"></a>    .....</span>
+<span id="cb14-22"><a href="#cb14-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-23"><a href="#cb14-23" aria-hidden="true" tabindex="-1"></a># Recover files based on inode numbers</span>
+<span id="cb14-24"><a href="#cb14-24" aria-hidden="true" tabindex="-1"></a>$ </span>
+<span id="cb14-25"><a href="#cb14-25" aria-hidden="true" tabindex="-1"></a>$ </span>
+<span id="cb14-26"><a href="#cb14-26" aria-hidden="true" tabindex="-1"></a>$ </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="the-sleuth-kit-exercise-3" class="level2">
+<h2 class="anchored" data-anchor-id="the-sleuth-kit-exercise-3">4.5 The Sleuth Kit: Exercise</h2>
+<p>Recover deleted files from <code>/carving/deleted.dd</code></p>
+<p><a href="./img/2/alloc_1.png" class="lightbox" data-gallery="quarto-lightbox-gallery-1"><img src="./img/2/alloc_1.png" style="height:2.22222in"></a></p>
+</section>
+</section>
+<section id="ntfs" class="level1">
+<h1>5. NTFS</h1>
+<section id="file-system-structure" class="level2">
+<h2 class="anchored" data-anchor-id="file-system-structure">5.1 File system structure</h2>
+<ul>
+<li>NTFS - New Technology File System</li>
+<li>Everything is a file</li>
+</ul>
+<p><a href="./img/2/ntfs.png" class="lightbox" data-gallery="quarto-lightbox-gallery-2"><img src="./img/2/ntfs.png" style="height:2.08333in"></a></p>
+</section>
+<section id="volume-boot-record" class="level2">
+<h2 class="anchored" data-anchor-id="volume-boot-record">5.2 Volume Boot Record</h2>
+<div class="sourceCode" id="cb15"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>     00000000: eb52 904e 5446 5320 2020 2000 0208 0000  .R.NTFS    .....</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>     00000010: 0000 0000 00f8 0000 0000 0000 0000 0000  ................</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>     00000020: 0000 0000 8000 8000 fff7 0300 0000 0000  ................</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>     00000030: 0400 0000 0000 0000 7f3f 0000 0000 0000  .........?......</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>     00000040: f600 0000 0100 0000 f92d c409 2fce 776f  .........-../.wo</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>     00000050: 0000 0000 0e1f be71 7cac 22c0 740b 56b4  .......q|.".t.V.</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>     00000060: 0ebb 0700 cd10 5eeb f032 e4cd 16cd 19eb  ......^..2......</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>     00000070: fe54 6869 7320 6973 206e 6f74 2061 2062  .This is not a b</span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>     00000080: 6f6f 7461 626c 6520 6469 736b 2e20 506c  ootable disk. Pl</span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>     00000090: 6561 7365 2069 6e73 6572 7420 6120 626f  ease insert a bo</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>     000000a0: 6f74 6162 6c65 2066 6c6f 7070 7920 616e  otable floppy an</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>       .....</span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>     000001e0: 0000 0000 0000 0000 0000 0000 0000 0000  ................</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>     000001f0: 0000 0000 0000 0000 0000 0000 0000 55aa  ..............U.</span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>      Offset: Length:    Content:   Description:</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>      -------------------------------------------------------------------</span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>        0000       3      JMP 52    Jump to bootcode at 54h</span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>        0003       8        NTFS    OEM ID</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a> -----  000B       2       00 02    Bytes per sector</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a> BIOS   000D       1          08    Sectors per cluster</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a> P.M.   0028       8   fff7 0300    262135 sectors in total</span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a> Block  0030       8          04    MFT start cluster</span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a> -----  0040       1          f6    Size of MFT records: 10 --&gt; 2^10 = 1.024</span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>        0054     426                Bootstrap code</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>        01FE       2       55 AA    End of sector signature</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="master-file-table" class="level2">
+<h2 class="anchored" data-anchor-id="master-file-table">5.3 Master File Table</h2>
+<ul>
+<li>MFT maintain 1 record per file/directory</li>
+<li>Size: 1024 Bytes per record</li>
+<li>In NTFS everything is a file
+<ul>
+<li>Incl. meta files like $MFT</li>
+</ul></li>
+<li>Structure: </li>
+</ul>
+<div class="sourceCode" id="cb16"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>    Header        Attributes   End           Empty            Error</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    ----------- ----------  ------------------------  --------------</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    |FILE         |            | FF FF FF FF |                |    |</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    ----------- ----------  ------------------------  --------------</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    0          55 56           ~450                                1023</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>    Record Header:</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>        Signature: FILE</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>        Link Count: File is listed in x directories</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>        Is this a file or a directory</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>        Size of the file</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>        Deleted: Is the file already deleted</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    Attributes: $STANDARD_INFORMATION; $FILE_NAME; $Data</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    End of Recort: FF FF FF FF</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    Empty (Resident Data)</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    Error Check Sequence</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="mft" class="level2">
+<h2 class="anchored" data-anchor-id="mft">5.3 MFT</h2>
+<div class="sourceCode" id="cb17"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>$ istat -o 2048 ntfs.raw 73 | less</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>$STANDARD_INFORMATION Attribute Values:</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    Flags: Archive</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    Owner ID: 0</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    Security ID: 0  ()</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    Created:        2019-12-02 16:25:22.099440400 (CET)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    File Modified:  2019-12-09 16:09:46.183651100 (CET)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    MFT Modified:   2019-12-09 16:09:46.183651100 (CET)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    Accessed:       2019-12-02 16:25:22.099440400 (CET)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>$FILE_NAME Attribute Values:</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    Flags: Archive</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    Name: small_text_file.txt</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>    Parent MFT Entry: 5     Sequence: 5</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>    Allocated Size: 16384           Actual Size: 0</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>    Created:        2019-12-02 16:25:22.099440400 (CET)</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>    File Modified:  2019-12-02 16:25:22.099440400 (CET)</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>    MFT Modified:   2019-12-02 16:25:22.099440400 (CET)</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>    Accessed:       2019-12-02 16:25:22.099440400 (CET)</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>Attributes:</span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>    Type: $STANDARD_INFORMATION (16-0)   Name: N/A   Resident   size: 48</span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>    Type: $FILE_NAME (48-3)   Name: N/A   Resident   size: 104</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>    Type: $SECURITY_DESCRIPTOR (80-1)   Name: N/A   Resident   size: 80</span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>    Type: $DATA (128-2)   Name: N/A   Non-Resident   size: 15000  init_size: 15000</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>    4169 4170 4171 4172</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="deleting-a-file-what-will-change" class="level2">
+<h2 class="anchored" data-anchor-id="deleting-a-file-what-will-change">5.4 Deleting a file: What will change?</h2>
+<div class="sourceCode" id="cb18"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>Before delete:</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>==============</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>MFT record:</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>-----------</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>00000000: 4649 4c45 3000 0300 0000 0000 0000 0000  FILE0...........</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>00000010: 0100 0100 3800 0100 b801 0000 0004 0000  ....8...........</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>00000020: 0000 0000 0000 0000 0400 0000 4900 0000  ............I...</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>00000030: 1300 0000 0000 0000 1000 0000 4800 0000  ............H...</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>00000040: 0000 0000 0000 0000 3000 0000 1800 0000  ........0.......</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>.....</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>000003f0: 0000 0000 0000 0000 0000 0000 0000 1300  ................</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a> offset:     size:    value:   description:</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>----------------------------------------------------------------------</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>    0010         2         1   Record sequence number</span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>    0012         2         1   Link count</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>    0016         2         1   Record flag: 0000 = file deleted</span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>                                        0100 = file in use</span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>                            0200 = dir deleted</span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>                                            0300 = dir in use</span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>    0030         2      1100   FixUp values</span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>    03fe         2      1300   CRC</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="deleting-a-file-what-will-change-1" class="level2">
+<h2 class="anchored" data-anchor-id="deleting-a-file-what-will-change-1">5.4 Deleting a file: What will change?</h2>
+<div class="sourceCode" id="cb19"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>After delete:</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>=============</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>MFT record:</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>-----------</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>00000000:  4649   4c45  3000  0300  0000 0000 0000  0000   FILE0...........</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>00000010: -0200- -0000- 3800 -0000- b801 0000 0004  0000   ....8...........</span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>00000020:  0000   0000  0000  0000  0400 0000 4900  0000   ............I...</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>00000030: -1400-  0000  0000  0000  1000 0000 4800  0000   ............H...</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>00000040:  0000   0000  0000  0000  3000 0000 1800  0000   ........0.......</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>.....</span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>000003f0:  0000   0000  0000  0000  0000 0000 0000 -1400-  ................</span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-15"><a href="#cb19-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-16"><a href="#cb19-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-17"><a href="#cb19-17" aria-hidden="true" tabindex="-1"></a> offset:     size:    value:   description:</span>
+<span id="cb19-18"><a href="#cb19-18" aria-hidden="true" tabindex="-1"></a>----------------------------------------------------------------------</span>
+<span id="cb19-19"><a href="#cb19-19" aria-hidden="true" tabindex="-1"></a>    0010         2         2   Record sequence number</span>
+<span id="cb19-20"><a href="#cb19-20" aria-hidden="true" tabindex="-1"></a>    0012         2         0   Link count</span>
+<span id="cb19-21"><a href="#cb19-21" aria-hidden="true" tabindex="-1"></a>    0016         2         0   Record flag: 0000 = file deleted</span>
+<span id="cb19-22"><a href="#cb19-22" aria-hidden="true" tabindex="-1"></a>                                        0100 = file in use</span>
+<span id="cb19-23"><a href="#cb19-23" aria-hidden="true" tabindex="-1"></a>                            0200 = dir deleted</span>
+<span id="cb19-24"><a href="#cb19-24" aria-hidden="true" tabindex="-1"></a>                                            0300 = dir in use</span>
+<span id="cb19-25"><a href="#cb19-25" aria-hidden="true" tabindex="-1"></a>    0030         2      1400   FixUp values</span>
+<span id="cb19-26"><a href="#cb19-26" aria-hidden="true" tabindex="-1"></a>    03fe         2      1400   CRC</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="file-system-time-line" class="level1">
+<h1>6. File System Time Line</h1>
+<section id="time-stamps-nomenclature" class="level2">
+<h2 class="anchored" data-anchor-id="time-stamps-nomenclature">6.1 Time stamps: Nomenclature</h2>
+<ul>
+<li>FAT
+<ul>
+<li>MAC times
+<ul>
+<li>M time: Content last Modified</li>
+<li>A time: Content last Accessed</li>
+<li>C time: File Created</li>
+</ul></li>
+</ul></li>
+<li>NTFS
+<ul>
+<li>MACE times
+<ul>
+<li>M time: Content last Modified</li>
+<li>A time: Content last Accessed</li>
+<li>C time: File Created</li>
+<li>E time: MFT Entry last mofidied</li>
+</ul></li>
+<li>MACB times
+<ul>
+<li>M time: Content last Modified</li>
+<li>A time: Content last Accessed</li>
+<li>C time: MFT record last Changed</li>
+<li>B time: File created (Born)</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="last-access-time" class="level2">
+<h2 class="anchored" data-anchor-id="last-access-time">6.2 Last Access Time</h2>
+<ul>
+<li>Updated in memory, writen to disk after <span class="math inline">\(\approx\)</span> 1h</li>
+<li>As of Win Vista
+<ul>
+<li>Not updated per default
+<ul>
+<li>HKEY LOCAL MACHINE/SYSTEM/CurrentControlSet/Control/ /FileSystem/NtfsDisableLastAccessUpdate</li>
+<li><img src="./img/2/lastAccess.png" style="height:0.83333in"></li>
+<li>Performance reasons</li>
+<li>Good for file server</li>
+</ul></li>
+<li>Still updated some times
+<ul>
+<li>File new created</li>
+<li>File copied</li>
+<li>File moved</li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+<section id="time-line-exercise" class="level2">
+<h2 class="anchored" data-anchor-id="time-line-exercise">6.3 Time Line: Exercise</h2>
+<div class="sourceCode" id="cb20"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>Reproduce file system activities</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>--------------------------------</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>     Thu Jun 27 2013 12:23:08      113 ...b         35-128-1 c:/01.txt</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>     Thu Jun 27 2013 12:24:20       75 m.cb         37-128-1 c:/02.txt</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>     Thu Jun 27 2013 12:25:24       75 m.cb         38-128-1 c:/03.txt</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>                                    75 m...         41-128-1 c:/03-copy.txt</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>     Thu Jun 27 2013 12:26:05       75 m..b         39-128-1 c:/44.txt</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>     Thu Jun 27 2013 12:27:00       75 macb         40-128-1 c:/05.txt (deleted)</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>     Thu Jun 27 2013 12:33:50      113 m.c.         35-128-1 c:/01.txt</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>     Thu Jun 27 2013 13:07:52       75 .acb         41-128-1 c:/03-copy.txt</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>     Thu Jun 27 2013 13:10:36       75 ..c.         39-128-1 c:/44.txt</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>     Thu Jun 27 2013 13:14:20       20 m...         42-128-1 c:/06.txt</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>     Thu Jun 27 2013 13:56:30       20 .acb         42-128-1 c:/06.txt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="time-line-exercise---what-could-we-reproduce-yesno" class="level2">
+<h2 class="anchored" data-anchor-id="time-line-exercise---what-could-we-reproduce-yesno">6.3 Time Line: Exercise - What could we reproduce Yes/No</h2>
+<div class="sourceCode" id="cb21"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>01.txt</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>      1. 12:23:08 01.txt ...b -&gt; new create                            Yes</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>      6. 12:29:07 01.txt m.c. -&gt; modified content                          No</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>      7. 12:33:50 01.txt m.c. -&gt; 2nd modification                      Yes</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>02.txt</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>      2. 12:24:20 02.txt m.cb -&gt; new create                            Yes</span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>      8. 12:29:50 02.txt .a.. -&gt; open/access file                          No</span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>      9. 12:30:01 02.txt .a.. -&gt; close                                     No</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>03.txt, 03 - Copy.txt</span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>      3. 12:25:24 03.txt m.cb -&gt; new create                            Yes</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>     10. 13:07:52 03.txt .acb -&gt; copy to 03 - Copy.txt                 Yes/No</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>44.txt</span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>      4. 12:26:05 04.txt m..b -&gt; new create                            Yes</span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>     11. 13:10:36 04.txt ..c. -&gt; rename to 44.txt                      Yes/No</span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>05.txt</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>      5. 12:27:00 05.txt macb -&gt; new create                            Yes</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>     14. 13:58:07 05.txt macb -&gt; delete file                               No</span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>06.txt</span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>     12. 13:14:20 06.txt m... -&gt; new created on other drive            Yes/No</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>     13. 13:56:30 06.txt .acb -&gt; copy to local drive                   Yes</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="create-a-time-line" class="level2">
+<h2 class="anchored" data-anchor-id="create-a-time-line">6.4 Create a Time line</h2>
+<div class="sourceCode" id="cb22"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>$ mkdir time</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>$ fls -o 2048 -r -m d:/ circl-dfir.dd &gt; time/d.body</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>          -r    Recursive</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>          -m    Time machine format</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>          D:/   Add D:/ as mountpoint in report</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>$ cd time</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>$ mactime -b d.body &gt; d.time</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a>$ less d.time</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="create-a-time-line-1" class="level2">
+<h2 class="anchored" data-anchor-id="create-a-time-line-1">6.4 Create a Time line</h2>
+<div class="sourceCode" id="cb23"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>Limit the timeline to the term Paula</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>------------------------------------</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>1.   grep -i paula d.body | grep -v FILE_NAME &gt; paula.body</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>2.   mactime -b paula.body &gt; paula.time</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>3.   less paula.time</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>     Wed May 03 2023 16:39:48       48 ...b     114-144-2 d:/Paula (deleted)</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>                                  1246 macb     115-128-2 d:/Paula/Paula.txt (deleted)</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>     Wed May 03 2023 16:40:25       48 mac.     114-144-2 d:/Paula (deleted)</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>Can you tell the story?</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>------------------------</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="create-a-time-line-2" class="level2">
+<h2 class="anchored" data-anchor-id="create-a-time-line-2">6.4 Create a Time line</h2>
+<div class="sourceCode" id="cb24"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>Can you tell the story?</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>------------------------</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>1. Wed May 03 2023 16:39:48 Directory 'Paula' created in the root directory</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>2. Wed May 03 2023 16:39:48 File 'Paula.txt' created in directory 'Paula'</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>3.              Directory 'Paula' and file 'Paula.txt' got deleted</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>4. Wed May 03 2023 16:40:25 Directory 'Paula' last access, content/meta modified</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>                -&gt; Most likely due to file 'Paula.txt deleted</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="carving-and-string-search" class="level1">
+<h1>7. Carving and String Search</h1>
+<section id="magic-bytes---file-signatures" class="level2">
+<h2 class="anchored" data-anchor-id="magic-bytes---file-signatures">7.1 Magic Bytes - File signatures</h2>
+<div class="sourceCode" id="cb25"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>$ xxd MECO-SMILE.pdf | less</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>0000000: 2550 4446 2d31 2e34 0a25 c7ec 8fa2 0a35  %PDF-1.4.%.....5</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>005c4d0: 3431 390a 2525 454f 460a                 419.%%EOF.</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>$ xxd LU-NCSS-2-EN.pdf | less</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>00000000: 2550 4446 2d31 2e35 0d25 e2e3 cfd3 0d0a  %PDF-1.5.%......</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>0007a7e0: 6566 0d31 3136 0d25 2545 4f46 0d         ef.116.%%EOF.</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>/etc/scalpel/scalpel.conf</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>-------------------------</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>   pdf     y       5000000     %PDF     %EOF\x0d     REVERSE</span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>   pdf     y       5000000     %PDF     %EOF\x0a     REVERSE</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="carving-tools" class="level2">
+<h2 class="anchored" data-anchor-id="carving-tools">7.2 Carving tools</h2>
+<ul>
+<li>Foremost</li>
+<li>Scalpel
+<ul>
+<li>Based on Foremost</li>
+</ul></li>
+<li>Bulk Extractor
+<ul>
+<li>Emails, Email addresses</li>
+<li>URLs</li>
+<li>Credit card numbers</li>
+<li>Social media</li>
+<li>Telephone numbers</li>
+<li>…</li>
+</ul></li>
+<li>Testdisk - Photorec</li>
+</ul>
+</section>
+<section id="limitations" class="level2">
+<h2 class="anchored" data-anchor-id="limitations">7.3 Limitations</h2>
+<ul>
+<li>Basically file system independent</li>
+<li>Data sequential
+<ul>
+<li>Data must be sequential</li>
+<li>Fragmented data leads to broken files</li>
+<li>Very large files are more fragmented</li>
+<li>Depends on file system</li>
+<li>Depends on media type</li>
+<li>Data could be overwritten partially</li>
+</ul></li>
+<li>End of file
+<ul>
+<li>Does the file format support end marker</li>
+<li>Do we find a new magic byte</li>
+<li>Overlapping files</li>
+<li>Empty space at the end of a sector</li>
+</ul></li>
+</ul>
+</section>
+<section id="exercise-recover-data-from-formated-drive" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-recover-data-from-formated-drive">7.4 Exercise: Recover data from formated drive</h2>
+<ul>
+<li>Work on <code>circl-dfir/carving/formated.dd</code></li>
+<li>Try <code>fls</code></li>
+<li><code>sudo apt install foremost</code></li>
+<li><code>https://www.cgsecurity.org/wiki/TestDisk_Download</code></li>
+</ul>
+</section>
+<section id="exercise-recover-data-from-formated-drive-1" class="level2">
+<h2 class="anchored" data-anchor-id="exercise-recover-data-from-formated-drive-1">7.4 Exercise: Recover data from formated drive</h2>
+<div class="sourceCode" id="cb26"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>mkdir out1/ &amp;&amp; foremost -t all -i formated.dd -o out1/</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>out1/audit.txt</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>--------------</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>File: deleted.dd</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>Start: Wed Aug 22 16:20:43 2018</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>Length: 32 MB (33554432 bytes)</span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>Num      Name (bs=512)         Size      File Offset     Comment</span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>0:      00009032.jpg           5 KB         4624384</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>1:      00009080.jpg          35 KB         4648960</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>2:      00037617.jpg          30 KB        19260232</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>3:      00037678.jpg         106 KB        19291633</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>.....</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>16:     00037608.pdf           1 MB        19255296</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>17:     00041288.pdf         489 KB        21139456       (PDF is Linearized)</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>Finish: Wed Aug 22 16:20:43 2018</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>18 FILES EXTRACTED</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>jpg:= 9</span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>png:= 6</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>pdf:= 3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="string-search" class="level2">
+<h2 class="anchored" data-anchor-id="string-search">7.5 String Search</h2>
+<ul>
+<li>Not sophisticated</li>
+<li>Search for strings
+<ul>
+<li>At least 4 characters long</li>
+<li>From any file: Text, binary, disk image</li>
+<li>Search for ASCII, Unicode, big/little endian</li>
+</ul></li>
+<li>Search the disk image for known words
+<ul>
+<li>Terms used in a secret document</li>
+<li>IBAN ot other banking details</li>
+<li>Email addresses or URLs</li>
+</ul></li>
+<li>Search through all the blocks
+<ul>
+<li>Allocated and non allocated blocks</li>
+<li>File slack and outside partition boundaries</li>
+</ul></li>
+<li>Goal
+<ul>
+<li>Proof that the data was there once</li>
+<li>Identify interesting data that are close</li>
+</ul></li>
+</ul>
+</section>
+<section id="steps-to-do-a-string-search" class="level2">
+<h2 class="anchored" data-anchor-id="steps-to-do-a-string-search">7.6 Steps to do a String Search</h2>
+<ol type="1">
+<li>Identify block/cluster size<br>
+<code>mmls, fsstat</code></li>
+<li>Search for the string and the offset<br>
+<code>blkls | srch_strings | grep</code></li>
+<li>Calculate block/cluster of the string<br>
+<code>xxxxxxxxxx / 4096 = yyyy</code></li>
+<li>Review block/cluster content<br>
+<code>blkcat</code></li>
+<li>Identify inode of the block/cluster<br>
+<code>ifind</code></li>
+<li>Identify associated file<br>
+<code>ffind</code></li>
+<li>Recover file<br>
+<code>icat</code><br>
+Or mount and copy file</li>
+</ol>
+</section>
+</section>
+<section id="windows-registry" class="level1">
+<h1>8. Windows Registry</h1>
+<section id="about-windows-registry" class="level2">
+<h2 class="anchored" data-anchor-id="about-windows-registry">8.1 About Windows Registry</h2>
+<ul>
+<li>MS DOS and old Windows
+<ul>
+<li>On system boot: What programs to load</li>
+<li>How the system interact with the user<br>
+→ <code>autoexec.bat</code><br>
+→ <code>config.sys</code><br>
+→ <code>system.ini</code><br>
+→ <code>win.ini</code><br>
+</li>
+</ul></li>
+<li>https://support.microsoft.com/en-us/help/256986/
+<ul>
+<li>A central hierarchical database</li>
+<li>Replace text based config files</li>
+<li>Contains information for operating
+<ul>
+<li>Hardware system wide</li>
+<li>OS all aspects</li>
+<li>Applications installed</li>
+<li>User preferences / behavior</li>
+</ul></li>
+</ul>
+→ A gold mine for forensics</li>
+</ul>
+</section>
+<section id="about-windows-registry-1" class="level2">
+<h2 class="anchored" data-anchor-id="about-windows-registry-1">8.1 About Windows Registry</h2>
+<p><a href="./img/2/registry.png" class="lightbox" data-gallery="quarto-lightbox-gallery-3"><img src="./img/2/registry.png" style="height:2.56944in"></a></p>
+</section>
+<section id="about-windows-registry-2" class="level2">
+<h2 class="anchored" data-anchor-id="about-windows-registry-2">8.1 About Windows Registry</h2>
+<ul>
+<li>Hive files location:
+<ul>
+<li><code>%SystemRoot%\system32\config</code><br>
+→ SAM, SECURITY, SYSTEM, SOFTWARE</li>
+<li><code>%UserProfile%\NTUSER.DAT</code></li>
+<li><code>%UserProfile%\AppData\Local\Microsoft\Windows\UsrClass.dat</code></li>
+</ul></li>
+</ul>
+</section>
+<section id="hive-files" class="level2">
+<h2 class="anchored" data-anchor-id="hive-files">8.2 Hive files</h2>
+<ul>
+<li>SAM
+<ul>
+<li>Security Accounts Manager: Local users</li>
+</ul></li>
+<li>Security
+<ul>
+<li>Audit settings</li>
+<li>Machine, domain SID</li>
+</ul></li>
+<li>System
+<ul>
+<li>Hardware configuration</li>
+<li>System configuration</li>
+</ul></li>
+<li>Software
+<ul>
+<li>Windows settings</li>
+<li>Application information</li>
+</ul></li>
+<li>NTUser.dat
+<ul>
+<li>User behavior and settings</li>
+</ul></li>
+<li>UsrClass.dat
+<ul>
+<li>Graphical User Interface information</li>
+</ul></li>
+</ul>
+</section>
+<section id="hive-files-1" class="level2">
+<h2 class="anchored" data-anchor-id="hive-files-1">8.2 Hive files</h2>
+<ul>
+<li>Windows XP:
+<ul>
+<li><code>C:\Documents and Settings\&lt;username&gt;\NTUSER.DAT</code></li>
+<li><code>C:\Documents and Settings\&lt;username&gt;\Local Settings\</code><br>
+<code>Application Data\Microsoft\Windows\UsrClass.dat</code></li>
+</ul></li>
+<li>Windows Vista and above:
+<ul>
+<li><code>C:\Users\&lt;user&gt;\NTUSER.DAT</code></li>
+<li><code>C:\Users\&lt;user&gt;\AppData\Local\Microsoft\Windows\</code><br>
+<code>UsrClass.dat</code></li>
+</ul></li>
+<li><code>C:\Windows\inf\setupapi.log</code><br>
+(Plug and Play Log)</li>
+</ul>
+</section>
+<section id="regripper" class="level2">
+<h2 class="anchored" data-anchor-id="regripper">8.3 RegRipper</h2>
+<ul>
+<li>Installation:
+<ul>
+<li><code>sudo apt install regripper</code><br>
+or</li>
+<li>Install wine</li>
+<li>Clone https://github.com/keydet89/RegRipper3.0</li>
+<li>Use rip.exe with wine</li>
+</ul></li>
+</ul>
+</section>
+<section id="regripper-1" class="level2">
+<h2 class="anchored" data-anchor-id="regripper-1">8.3 RegRipper</h2>
+<div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> regripper <span class="at">-h</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Rip</span> v.3.0 <span class="at">-</span> CLI RegRipper tool  </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Rip</span> [-r Reg hive file] [-f profile] [-p plugin] <span class="pp">[</span><span class="ss">options</span><span class="pp">]</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Parse</span> Windows Registry files, using either a single module, or a profile.</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ls /usr/lib/regripper/plugins <span class="kw">|</span> <span class="fu">grep</span> pl$ <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">249</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> ls /usr/lib/regripper/plugins <span class="kw">|</span> <span class="fu">grep</span> <span class="at">-v</span> pl$</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="ex">all</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>    <span class="ex">amcache</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>    <span class="ex">ntuser</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>    <span class="ex">sam</span></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>    <span class="ex">security</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>    <span class="ex">software</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>    <span class="ex">syscache</span></span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>    <span class="ex">system</span></span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>    <span class="ex">usrclass</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="regripper---exercise" class="level2">
+<h2 class="anchored" data-anchor-id="regripper---exercise">8.3 RegRipper - Exercise</h2>
+<ul>
+<li><p><code>circl-dfir/case_02/registry</code></p></li>
+<li><p>Use regripper to find:</p>
+<ul>
+<li>Computer name</li>
+<li>Software that run when a user logs on</li>
+<li>Informations on Windows</li>
+<li>Network cards</li>
+</ul>
+<p><br></p>
+<ul>
+<li>List of uninstaller</li>
+<li>Ips</li>
+<li>List of users</li>
+<li>Shutdown</li>
+<li>Timezone</li>
+</ul></li>
+</ul>
+</section>
+<section id="regripper---solution" class="level2">
+<h2 class="anchored" data-anchor-id="regripper---solution">8.3 RegRipper - Solution</h2>
+<ul>
+<li>Computer name: </li>
+</ul>
+<div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="ex">regripper</span> <span class="at">-p</span> compname <span class="at">-r</span> system</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Software that run when a user logs on: </li>
+</ul>
+<div class="sourceCode" id="cb30"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="ex">regripper</span> <span class="at">-p</span> run <span class="at">-r</span> NTUSER.DAT</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="ex">regripper</span> <span class="at">-p</span> run <span class="at">-r</span> software </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Informations on Windows: </li>
+</ul>
+<div class="sourceCode" id="cb31"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="ex">regripper</span> <span class="at">-p</span> winver <span class="at">-r</span> software</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Network cards: </li>
+</ul>
+<div class="sourceCode" id="cb32"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="ex">regripper</span> <span class="at">-p</span> networkcards <span class="at">-r</span> software </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="regripper---solution-1" class="level2">
+<h2 class="anchored" data-anchor-id="regripper---solution-1">8.3 RegRipper - Solution</h2>
+<ul>
+<li>List of uninstaller: </li>
+</ul>
+<div class="sourceCode" id="cb33"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="ex">regripper</span> <span class="at">-p</span> uninstall <span class="at">-r</span> software</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Ips: </li>
+</ul>
+<div class="sourceCode" id="cb34"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="ex">regripper</span> <span class="at">-p</span> ips <span class="at">-r</span> system</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>List of users: </li>
+</ul>
+<div class="sourceCode" id="cb35"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="ex">regripper</span> <span class="at">-p</span> profilelist <span class="at">-r</span> software</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Shutdown: </li>
+</ul>
+<div class="sourceCode" id="cb36"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="ex">regripper</span> <span class="at">-p</span> shutdown <span class="at">-r</span> system </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Timezone: </li>
+</ul>
+<div class="sourceCode" id="cb37"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="ex">regripper</span> <span class="at">-p</span> timezone <span class="at">-r</span> system</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="tracing-user-activity" class="level2">
+<h2 class="anchored" data-anchor-id="tracing-user-activity">8.4 Tracing user activity</h2>
+<ul>
+<li>MRU - Most Recently Used
+<ul>
+<li>Open/Save As dialog box </li>
+</ul>
+<div class="sourceCode" id="cb38"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="ex">regripper</span> <span class="at">-p</span> comdlg32 <span class="at">-r</span> NTUSER.DAT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Recent Docs opened via Win. Explorer </li>
+</ul>
+<div class="sourceCode" id="cb39"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="ex">regripper</span> <span class="at">-p</span> recentdocs <span class="at">-r</span> NTUSER.DAT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ul>
+<p><br></p>
+<ul>
+<li>ShellBags (Win7+)
+<ul>
+<li>Properties of folders </li>
+</ul>
+<div class="sourceCode" id="cb40"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="ex">regripper</span> <span class="at">-p</span> shellbags <span class="at">-r</span> UsrClass.dat</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ul>
+<p><br></p>
+<ul>
+<li>Program execution
+<ul>
+<li>UserAssist: GUI based launched </li>
+</ul>
+<div class="sourceCode" id="cb41"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="ex">regripper</span> <span class="at">-p</span> userassist <span class="at">-r</span> NTUSER.DAT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>ShimCache: Track compatibility issues </li>
+</ul>
+<div class="sourceCode" id="cb42"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="ex">regripper</span> <span class="at">-p</span> shimcache <span class="at">-r</span> system</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ul>
+</section>
+<section id="tracing-user-activity-1" class="level2">
+<h2 class="anchored" data-anchor-id="tracing-user-activity-1">8.4 Tracing user activity</h2>
+<ul>
+<li>USB attached devices
+<ul>
+<li>USBStor: Attached devices </li>
+</ul>
+<div class="sourceCode" id="cb43"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">less</span> /media/case1/WINDOWS/setupapi.log</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="ex">regripper</span> <span class="at">-p</span> usbstor <span class="at">-r</span> system</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>USBStor: Vendor &amp; Product ID </li>
+</ul>
+<div class="sourceCode" id="cb44"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="ex">regripper</span> <span class="at">-p</span> usb <span class="at">-r</span> system</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>MountedDevices </li>
+</ul>
+<div class="sourceCode" id="cb45"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="ex">regripper</span> <span class="at">-p</span> mountdev <span class="at">-r</span> system</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>MountPoints </li>
+</ul>
+<div class="sourceCode" id="cb46"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="ex">regripper</span> <span class="at">-p</span> mp2 <span class="at">-r</span> NTUSER.DAT</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ul>
+<p><br></p>
+<ul>
+<li>https://www.sans.org/posters/windows-forensic-analysis/</li>
+</ul>
+</section>
+<section id="fred" class="level2">
+<h2 class="anchored" data-anchor-id="fred">8.5 Fred</h2>
+<p>https://code.sits.lu/foss/fred <img src="./img/2/fred.png" style="height:2.08333in"></p>
+</section>
+</section>
+<section id="windows-event-logs" class="level1">
+<h1>9. Windows Event Logs</h1>
+<section id="about-windows-event-logs" class="level2">
+<h2 class="anchored" data-anchor-id="about-windows-event-logs">9.1 About Windows Event Logs</h2>
+<ul>
+<li>Up to Windows XP
+<ul>
+<li>Mainly 3 .evt files:
+<ul>
+<li>Security: secevent.evt</li>
+<li>System: sysevent.evt</li>
+<li>Application: appevent.evt</li>
+</ul></li>
+<li>Location: <code>/Windows/System32/config/</code></li>
+<li>Binary Event Log file format</li>
+</ul></li>
+<li>Beginning with Vista
+<ul>
+<li>Many .evtx files:
+<ul>
+<li><code>Security.evtx</code></li>
+<li><code>System.evtx</code></li>
+<li><code>Application.evtx</code></li>
+<li>120 files ++</li>
+</ul></li>
+<li>Location: <code>/Windows/System32/winevt/Logs/</code></li>
+<li>New binary XML format</li>
+</ul></li>
+</ul>
+</section>
+<section id="about-windows-event-logs-1" class="level2">
+<h2 class="anchored" data-anchor-id="about-windows-event-logs-1">9.1 About Windows Event Logs</h2>
+<ul>
+<li>Advantage
+<ul>
+<li>Full fledged logging</li>
+<li>Logging important events: E.g. Logon Success, …</li>
+<li>Detailed information</li>
+</ul></li>
+<li>Disadvantage
+<ul>
+<li>Limited period of time</li>
+<li>Important events not logged by default: E.g. Logon Fail</li>
+<li>Many events, hard to find related information</li>
+</ul></li>
+<li>Always interesting
+<ul>
+<li>Logon / Logoff</li>
+<li>System boot</li>
+<li>Services started</li>
+<li>Hardware (dis)connected</li>
+</ul></li>
+</ul>
+</section>
+<section id="windows-event-logs-1" class="level2">
+<h2 class="anchored" data-anchor-id="windows-event-logs-1">9.1 Windows Event Logs</h2>
+<p><a href="./img/2/evtx.png" class="lightbox" data-gallery="quarto-lightbox-gallery-4"><img src="./img/2/evtx.png" style="height:2.56944in"></a></p>
+</section>
+<section id="windows-event-logs-2" class="level2">
+<h2 class="anchored" data-anchor-id="windows-event-logs-2">9.1 Windows Event Logs</h2>
+<ul>
+<li>Review logging policies </li>
+</ul>
+<div class="sourceCode" id="cb47"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="ex">$</span> regripper <span class="at">-r</span> SECURITY <span class="at">-p</span> auditpol</span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a><span class="ex">.....</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="ex">System:Other</span> System Events                         S/F  </span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a><span class="ex">Logon/Logoff:Logon</span>                                 S    </span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Logon/Logoff:Logoff</span>                                S    </span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a><span class="ex">Logon/Logoff:Account</span> Lockout                       S    </span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a><span class="ex">Logon/Logoff:IPsec</span> Main Mode                       N    </span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a><span class="ex">Logon/Logoff:IPsec</span> Quick Mode                      S    </span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a><span class="ex">Logon/Logoff:IPsec</span> Extended Mode                   N    </span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a><span class="ex">Logon/Logoff:Special</span> Logon                         N    </span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a><span class="ex">Logon/Logoff:Other</span> Logon/Logoff Events             N    </span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a><span class="ex">Logon/Logoff:Network</span> Policy Server                 S/F  </span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a><span class="ex">Object</span> Access:File System                          N    </span>
+<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a><span class="ex">.....</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="parsing" class="level2">
+<h2 class="anchored" data-anchor-id="parsing">9.2 Parsing</h2>
+<div class="sourceCode" id="cb48"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install libevt-utils</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt install libevtx-utils</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a><span class="ex">evtinfo</span> evtx/AppEvent.Evt</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a><span class="ex">evtinfo</span> evtx/SecEvent.Evt</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a><span class="ex">evtinfo</span> evtx/SysEvent.Evt</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a><span class="ex">evtexport</span> AppEvent.Evt <span class="kw">|</span> <span class="fu">less</span></span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a><span class="ex">evtexport</span> SysEvent.Evt <span class="kw">|</span> <span class="fu">less</span></span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a><span class="ex">evtxexport</span> Security.evtx <span class="kw">|</span> <span class="fu">less</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Search for:
+<ul>
+<li>4624</li>
+<li>4625</li>
+</ul></li>
+</ul>
+</section>
+<section id="other-tools" class="level2">
+<h2 class="anchored" data-anchor-id="other-tools">9.3 Other tools</h2>
+<ul>
+<li>Chainsaw
+<ul>
+<li>https://github.com/WithSecureLabs/chainsaw</li>
+</ul></li>
+<li>Hayabusa
+<ul>
+<li>https://github.com/Yamato-Security/hayabusa</li>
+</ul></li>
+</ul>
+</section>
+</section>
+<section id="other-windows-artifacts" class="level1">
+<h1>10 Other Windows artifacts</h1>
+<section id="recycle-bin" class="level2">
+<h2 class="anchored" data-anchor-id="recycle-bin">10.1 Recycle Bin</h2>
+<ul>
+<li>Files move to Recycle Bin:
+<ul>
+<li>Moved by mouse</li>
+<li>Right click: Delete</li>
+</ul></li>
+<li>Not move to Recycle Bin:
+<ul>
+<li>Right click: <code>Delete + SHIFT</code></li>
+<li>Command line: <code>del</code></li>
+<li>Files on network shares</li>
+</ul></li>
+<li>NukeOnDelete <code>HKEY_USERS/_UUID_/Software/Microsoft/Windows/CurrentVersion/</code> <code>Explorer/BitBucket/Volume/{_Volume ID_}/NukeOnDelete</code></li>
+</ul>
+</section>
+<section id="recycle-bin---life-investigate" class="level2">
+<h2 class="anchored" data-anchor-id="recycle-bin---life-investigate">10.1 Recycle Bin - Life-Investigate</h2>
+<ul>
+<li>Play Script: TextFile.txt
+<ul>
+<li>Moved with mouse into Recycle Bin</li>
+<li>2019-04-30 17:31:57 UTC+2: Born</li>
+<li>2019-04-30 17:34:44 UTC+2: Content Modified</li>
+<li>2019-04-30 17:35:32 UTC+2: Deleted</li>
+</ul></li>
+</ul>
+</section>
+<section id="recycle-bin---forensics" class="level2">
+<h2 class="anchored" data-anchor-id="recycle-bin---forensics">10.1 Recycle Bin - Forensics</h2>
+<ul>
+<li>Play Script: TextFile.txt
+<ul>
+<li>2019-04-30 17:31:57 UTC+2: Born</li>
+<li>2019-04-30 17:34:44 UTC+2: Content Modified</li>
+<li>2019-04-30 17:35:32 UTC+2: Deleted</li>
+</ul></li>
+<li>Analyze Recycle.Bin directory: </li>
+</ul>
+<div class="sourceCode" id="cb49"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="ex">/</span><span class="va">$Recycle</span><span class="ex">.Bin/S-1-5-21-3408732720-2018246097-660081352-1000/</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>    <span class="ex">129</span> Apr  5 11:46  desktop.ini</span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>    <span class="ex">544</span> Apr 30 17:35 <span class="st">'$IOMHI9A.txt'</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">320</span> Apr 30 17:34 <span class="st">'$ROMHI9A.txt'</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a><span class="fu">strings</span> <span class="at">-el</span> <span class="dt">\$</span>IOMHI9A.txt </span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>    <span class="ex">C:\Users\John\Documents\recycleTest\TestFile.txt</span></span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a><span class="fu">strings</span> <span class="dt">\$</span>ROMHI9A.txt </span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a>        <span class="ex">Test</span> File</span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a>        <span class="ex">=========</span></span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a>    <span class="ex">This</span> is a test file. It is just created to test Forensic</span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a>    <span class="ex">Artifacts</span> for the <span class="st">'Recycle Bin'</span>.</span>
+<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a>    <span class="ex">.....</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="recycle-bin---forensics-1" class="level2">
+<h2 class="anchored" data-anchor-id="recycle-bin---forensics-1">10.1 Recycle Bin - Forensics</h2>
+<ul>
+<li>Play Script: TextFile.txt
+<ul>
+<li>2019-04-30 17:31:57 UTC+2: Born</li>
+<li>2019-04-30 17:34:44 UTC+2: Content Modified</li>
+<li>2019-04-30 17:35:32 UTC+2: Deleted</li>
+</ul></li>
+<li>File system timeline Recycle.Bin directory: </li>
+</ul>
+<div class="sourceCode" id="cb50"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="ex">Tue</span> Apr 30 2019 17:31:57</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>     <span class="ex">320</span> ...b   47164-128-1 /<span class="va">$Recycle</span>.Bin/S-1-5-21- ..... <span class="at">-1000</span>/<span class="va">$ROMHI9A</span>.txt</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a><span class="ex">Tue</span> Apr 30 2019 17:34:44</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>     <span class="ex">320</span> ma..   47164-128-1 /<span class="va">$Recycle</span>.Bin/S-1-5-21- ..... <span class="at">-1000</span>/<span class="va">$ROMHI9A</span>.txt</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a><span class="ex">Tue</span> Apr 30 2019 17:35:32</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>     <span class="ex">544</span> macb   44155-128-1 /<span class="va">$Recycle</span>.Bin/S-1-5-21- ..... <span class="at">-1000</span>/<span class="va">$IOMHI9A</span>.txt</span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>      <span class="ex">48</span> mac.   47022-144-1 /Users/John/Documents/recycleTest</span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>     <span class="ex">320</span> ..c.   47164-128-1 /<span class="va">$Recycle</span>.Bin/S-1-5-21- ..... <span class="at">-1000</span>/<span class="va">$ROMHI9A</span>.txt</span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>     <span class="ex">376</span> mac.    9632-144-1 /<span class="va">$Recycle</span>.Bin/S-1-5-21- ..... <span class="at">-1000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="lnk-files" class="level2">
+<h2 class="anchored" data-anchor-id="lnk-files">10.2 LNK Files</h2>
+<ul>
+<li>Link or shortcut to files, applications, resources</li>
+<li>User activity: Files access
+<ul>
+<li>Local</li>
+<li>Network shares</li>
+<li>External devices</li>
+</ul></li>
+<li>LNK file remain after target file is deleted</li>
+</ul>
+</section>
+<section id="lnk-files-1" class="level2">
+<h2 class="anchored" data-anchor-id="lnk-files-1">10.2 LNK Files</h2>
+<ul>
+<li>Information inside LNK files
+<ul>
+<li>Target file MAC times</li>
+<li>Target file size</li>
+<li>Target file path</li>
+<li>Volume information</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb51"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>exiftool Test.txt.lnk</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>    ...</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>    Create Date         : 2019:05:02 14:54:28+02:00</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>    Access Date         : 2019:05:02 14:54:28+02:00</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>    Modify Date         : 2019:05:02 14:54:28+02:00</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>    Target File Size    : 66</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>    Icon Index          : (none)</span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>    Run Window          : Normal</span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>    Hot Key             : (none)</span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>    Drive Type          : Fixed Disk</span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a>    Volume Label        :</span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a>    Local Base Path     : C:\Users\</span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>    Net Name            : 8</span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a>    Net Provider Type   : Unknown (0x20000)</span>
+<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a>    Relative Path       : ..\..\..\..\..\Documents\Test\Test.txt</span>
+<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a>    Working Directory   : C:\Users\John\Documents\Test</span>
+<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a>    Machine ID          : john-pc</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="jump-lists" class="level2">
+<h2 class="anchored" data-anchor-id="jump-lists">10.3 Jump Lists</h2>
+<ul>
+<li>Introduced with Windows 7</li>
+<li>Similar <code>Recent</code> folder</li>
+<li>Recently opened documents / application</li>
+<li>Makes them accessible at Windows main menu</li>
+</ul>
+<p><a href="./img/2/jmp.png" class="lightbox" data-gallery="quarto-lightbox-gallery-5"><img src="./img/2/jmp.png" style="height:1.25in"></a></p>
+<p><code>AppData/Roaming/Microsoft/Windows/Recent/AutomaticDestinations</code> <code>AppData/Roaming/Microsoft/Windows/Recent/CustomDestinations</code></p>
+</section>
+<section id="jump-lists-1" class="level2">
+<h2 class="anchored" data-anchor-id="jump-lists-1">10.3 Jump Lists</h2>
+<ul>
+<li>File names start with 16 hex characters → JumpList ID</li>
+<li>File names end with .xxxDestinations-ms</li>
+</ul>
+<div class="sourceCode" id="cb52"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>C:&gt; dir \Users\John\AppData\Roaming\Microsoft\Windows\Recent\AutomaticDestinations</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>04/05/2020  12:50            33 792 1b4dd67f29cb1962.automaticDestinations-ms</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>14/06/2019  16:43             4 608 28c8b86deab549a1.automaticDestinations-ms</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>10/04/2019  14:32            29 696 6824f4a902c78fbd.automaticDestinations-ms</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>10/04/2020  14:12             9 216 7e4dca80246863e3.automaticDestinations-ms</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Each Hex value correspond to a fixed application</li>
+<li>918e0ecb43d17e23 = Notepad.exe</li>
+</ul>
+<p>https://github.com/EricZimmerman/JumpList/blob/master/JumpList/Resources/AppIDs.txt</p>
+</section>
+<section id="jump-lists-2" class="level2">
+<h2 class="anchored" data-anchor-id="jump-lists-2">10.3 Jump Lists</h2>
+<ul>
+<li>Exercise: Identify applications</li>
+</ul>
+<div class="sourceCode" id="cb53"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>cd JumpLists/AutomaticDestinations/</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>ls -l</span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>    1b4dd67f29cb1962.automaticDestinations-ms --&gt; </span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>    28c8b86deab549a1.automaticDestinations-ms --&gt; </span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>    6824f4a902c78fbd.automaticDestinations-ms --&gt; </span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>    7e4dca80246863e3.automaticDestinations-ms --&gt; </span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>    918e0ecb43d17e23.automaticDestinations-ms --&gt; </span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>    b74736c2bd8cc8a5.automaticDestinations-ms --&gt; </span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>    de48a32edcbe79e4.automaticDestinations-ms --&gt; </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="jump-lists-3" class="level2">
+<h2 class="anchored" data-anchor-id="jump-lists-3">10.3 Jump Lists</h2>
+<ul>
+<li>Exercise: Identify applications</li>
+</ul>
+<div class="sourceCode" id="cb54"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>cd JumpLists/AutomaticDestinations/</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>ls -l</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>    1b4dd67f29cb1962.automaticDestinations-ms --&gt; Windows Explorer</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>    28c8b86deab549a1.automaticDestinations-ms --&gt; Internet Explorer 8</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>    6824f4a902c78fbd.automaticDestinations-ms --&gt; Firefox 64.x</span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>    7e4dca80246863e3.automaticDestinations-ms --&gt; Control Panel</span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>    918e0ecb43d17e23.automaticDestinations-ms --&gt; Notepad (32-bit)</span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>    b74736c2bd8cc8a5.automaticDestinations-ms --&gt; WinZip</span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a>    de48a32edcbe79e4.automaticDestinations-ms --&gt; Acrobat Reader 15.x</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="prefetch-files" class="level2">
+<h2 class="anchored" data-anchor-id="prefetch-files">10.4 Prefetch Files</h2>
+<ul>
+<li>Application prefetching since XP
+<ul>
+<li>Monitor an application when it starts</li>
+<li>Collect information about resources needed</li>
+<li>Wait 10sec after application started → Know where to find the resources → Better performance: App launch faster → Better user experience</li>
+</ul></li>
+<li>Forensics value:
+<ul>
+<li>Proof an application was started
+<ul>
+<li>Secondary artifact</li>
+<li>Created by the OS</li>
+<li>Not deleted by the attacker</li>
+</ul></li>
+<li>Even if the application don’t exists anymore</li>
+<li>…</li>
+</ul></li>
+</ul>
+</section>
+<section id="prefetch-files-1" class="level2">
+<h2 class="anchored" data-anchor-id="prefetch-files-1">10.4 Prefetch Files</h2>
+<ul>
+<li>Example: From file system time line</li>
+</ul>
+<div class="sourceCode" id="cb55"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>Thu May 02 2019 14:52:40</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>    179712 .a..      10940-128-3 /Windows/notepad.exe</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>Thu May 02 2019 14:52:50</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>        56 mac.      42729-144-6 /Windows/Prefetch</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>     16280 macb      43700-128-4 /Windows/Prefetch/NOTEPAD.EXE-D8414F97.pf</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Elements of the file name at <code>/Windows/Prefetch</code>
+<ul>
+<li>Application name</li>
+<li>One way hash of path to the application</li>
+</ul></li>
+<li>Information found inside a Prefetch file:
+<ul>
+<li>Run count: How often application run</li>
+<li>Last time executed</li>
+<li>Application name incl.&nbsp;parameter</li>
+<li>Path to application and resources</li>
+</ul></li>
+</ul>
+</section>
+<section id="prefetch-files-2" class="level2">
+<h2 class="anchored" data-anchor-id="prefetch-files-2">10.4 Prefetch Files</h2>
+<ul>
+<li>Parsing a Prefetch file </li>
+</ul>
+<div class="sourceCode" id="cb56"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>prefetch_parser.py -f NOTEPAD.EXE-D8414F97.pf</span>
+<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>    Executable Name: NOTEPAD.EXE</span>
+<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>    Run count: 1</span>
+<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>    Last Executed: 2019-05-02 12:52:40.339584</span>
+<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>    Resources loaded:</span>
+<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>    1:    \DEVICE\HARDDISKVOLUME2\WINDOWS\SYSTEM32\NTDLL.DLL</span>
+<span id="cb56-9"><a href="#cb56-9" aria-hidden="true" tabindex="-1"></a>    2:    \DEVICE\HARDDISKVOLUME2\WINDOWS\SYSTEM32\KERNEL32.DLL</span>
+<span id="cb56-10"><a href="#cb56-10" aria-hidden="true" tabindex="-1"></a>    3:    \DEVICE\HARDDISKVOLUME2\WINDOWS\SYSTEM32\APISETSCHEMA.DLL</span>
+<span id="cb56-11"><a href="#cb56-11" aria-hidden="true" tabindex="-1"></a>    4:    \DEVICE\HARDDISKVOLUME2\WINDOWS\SYSTEM32\KERNELBASE.DLL</span>
+<span id="cb56-12"><a href="#cb56-12" aria-hidden="true" tabindex="-1"></a>    .....</span>
+<span id="cb56-13"><a href="#cb56-13" aria-hidden="true" tabindex="-1"></a>    .....</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<ul>
+<li>Additional benefits like:
+<ul>
+<li>User folder where the malware got executed</li>
+<li>Compare Run count of different VSS could</li>
+</ul></li>
+</ul>
+</section>
+<section id="vss---volume-shadow-copy-service" class="level2">
+<h2 class="anchored" data-anchor-id="vss---volume-shadow-copy-service">10.5 VSS - Volume Shadow Copy Service</h2>
+<ul>
+<li>Backup Service
+<ul>
+<li>System files</li>
+<li>User data files</li>
+<li>Operates on block level</li>
+</ul></li>
+<li>On live system
+<ul>
+<li>Run CMD as administrator</li>
+</ul></li>
+</ul>
+<div class="sourceCode" id="cb57"><pre class="sourceCode default code-with-copy"><code class="sourceCode default"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>&gt;vssadmin list shadows /for=c:/</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>vssadmin 1.1 - Volume Shadow Copy Service administrative command-line tool</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>(C) Copyright 2001-2005 Microsoft Corp.</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>Contents of shadow copy set ID: {33eb3a7b-6d03-4045-aa70-37b714d49c72}</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>   Contained 1 shadow copies at creation time: 10/04/2019 16:06:30</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>      Shadow Copy ID: {34d9910b-ac1d-4b10-b282-89dde217d0fb}</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>         Original Volume: (C:)\\?\Volume{a62c8cd4-5786-11e9-a9fd-806e6f6e6963}\</span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>         Shadow Copy Volume: \\?\GLOBALROOT\Device\HarddiskVolumeShadowCopy1</span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>         Originating Machine: Win7WS</span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a>         Service Machine: Win7WS</span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>         Provider: 'Microsoft Software Shadow Copy provider 1.0'</span>
+<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a>         Type: ClientAccessibleWriters</span>
+<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a>         Attributes: Persistent, Client-accessible, No auto release, Differential,</span>
+<span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a>         Auto recovered</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="vss---configuration-analysis" class="level2">
+<h2 class="anchored" data-anchor-id="vss---configuration-analysis">10.5 VSS - Configuration &amp; Analysis</h2>
+<p><code>HKEY LOCAL MACHINE/SYSTEM/CurrentControlSet/services/VSS</code></p>
+<p><code>HKEY LOCAL MACHINE/SYSTEM/CurrentControlSet/Control/BackupRestore</code></p>
+<ul>
+<li><p>Analyze disk image:<br>
+<code>vshadowinfo -o offset disk_image</code></p></li>
+<li><p>Mount VSS:<br>
+<code>vshadowmount -o offset disk_image mount_point</code></p></li>
+</ul>
+</section>
+<section id="contact-and-reference" class="level2">
+<h2 class="anchored" data-anchor-id="contact-and-reference">Contact and Reference</h2>
+<ul>
+<li><p>david.cruciani@circl.lu</p></li>
+<li><p>https://github.com/DavidCruciani</p></li>
+<li><p>info@circl.lu</p></li>
+</ul>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+<script>var lightboxQuarto = GLightbox({"closeEffect":"zoom","descPosition":"bottom","loop":false,"openEffect":"zoom","selector":".lightbox"});
+(function() {
+  let previousOnload = window.onload;
+  window.onload = () => {
+    if (previousOnload) {
+      previousOnload();
+    }
+    lightboxQuarto.on('slide_before_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      const href = trigger.getAttribute('href');
+      if (href !== null) {
+        const imgEl = window.document.querySelector(`a[href="${href}"] img`);
+        if (imgEl !== null) {
+          const srcAttr = imgEl.getAttribute("src");
+          if (srcAttr && srcAttr.startsWith("data:")) {
+            slideConfig.href = srcAttr;
+          }
+        }
+      } 
+    });
+  
+    lightboxQuarto.on('slide_after_load', (data) => {
+      const { slideIndex, slideNode, slideConfig, player, trigger } = data;
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(slideNode);
+      }
+    });
+  
+  };
+  
+})();
+          </script>
+
+
+
+
+</body></html>
