@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 
-slidedecks=("e.001-introduction" "e.100-information-sharing" "e.200-dfir-pdf-analysis" "e.201-digital-forensic-primer" "e.202-network-forensic" "e.203-file-system-data-recovery" "e.204-windows-memory-files" "e.300-data-mining" "e.301-cryptography")
+slidedecks=("e.001-introduction" "e.100-information-sharing" "e.200-dfir-pdf-analysis" "e.201-digital-forensic-primer" "e.202-network-forensic" "e.203-file-system-data-recovery" "e.204-windows-memory-files" "e.205-dfir-elf-analysis" "e.300-data-mining" "e.301-cryptography")
 mkdir output
 export TEXINPUTS=::`pwd`/themes/
 echo ${TEXINPUTS}
