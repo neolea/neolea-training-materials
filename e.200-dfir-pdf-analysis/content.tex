@@ -586,6 +586,24 @@ openssl asn1parse -inform DER \
 
 \end{frame}
 
+\begin{frame}[fragile]
+\begin{block}{Output example}
+\begin{verbatim}
+...
+   d.data: <ABSENT>
+    cert:
+        cert_info:
+          version: 2
+          serialNumber: 8646704272364946413
+          signature:
+            algorithm: sha256WithRSAEncryption (1.2.840.113549.1.1.11)
+            parameter: NULL
+          issuer: C=GR, O=BYTE Computer S.A./organizationIdentifier=VATGR-094265075, OU=BYTE-PKI, CN=BYTE KSHDE Certification Authority 001
+...
+\end{verbatim}
+\end{block}
+\end{frame}
+
 \begin{frame}[fragile]{Inspecting PDF electronic signatures}
 
 Assessing which tools were used to create the signatures.
