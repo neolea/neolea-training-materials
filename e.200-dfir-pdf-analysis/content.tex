@@ -520,6 +520,52 @@ display signature.png
         \end{itemize}
     \end{itemize}
 \end{frame}
+
+\begin{frame}[fragile]{Inspecting PDF electronic Signatures}
+
+The tool \alert{pdfsig} can list PDF signatures and dump the embedded DER-encoded
+PKCS\#7/CMS signature objects for deeper analysis.
+
+\medskip
+
+\begin{block}{List and dump signatures}
+\begin{verbatim}
+pdfsig -dump signed-by-two.pdf
+\end{verbatim}
+\end{block}
+
+This creates files such as:
+
+\begin{verbatim}
+signed-by-two.pdf.sig0
+signed-by-two.pdf.sig1
+signed-by-two.pdf.sig2
+\end{verbatim}
+
+
+\end{frame}
+
+\begin{frame}[fragile]{Inspecting PDF electronic signatures}
+
+The tool \alert{openssl} can be used to parse the signature files.
+
+\begin{block}{Analyze dumped DER signatures with OpenSSL}
+\begin{verbatim}
+openssl pkcs7 -inform DER \
+-in signed-by-two.pdf.sig0 \
+-print -noout
+\end{verbatim}
+\end{block}
+
+\begin{block}{Alternative low-level ASN.1 dump}
+\begin{verbatim}
+openssl asn1parse -inform DER \
+    -in signed-by-two.pdf.sig0 -i
+\end{verbatim}
+\end{block}
+
+\end{frame}
+
 \small
 %TODO office365
 %Observed cases. Change of bank accounts, change of delivery addresses
