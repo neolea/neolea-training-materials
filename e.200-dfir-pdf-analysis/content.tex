@@ -566,6 +566,27 @@ openssl asn1parse -inform DER \
 
 \end{frame}
 
+\begin{frame}[fragile]{Inspecting PDF electronic signatures}
+
+Assessing which tools were used to create the signatures.
+
+The local script with these slides called \alert{extract-tool-indication.py} can be used.
+
+\begin{verbatim}
+./extract-tool-indication.py signed-by-two.pdf
+
+==== 2117 0 obj ====
+/Filter: /FlateDecode
+/SubFilter: /ETSI.CAdES.detached
+/Name: /Docusign#20Signature#20Appliance
+/M: (D:20260522150034+03'00')
+/Prop_Build:
+/App <<
+/Name /Docusign#20Signature#20Appliance
+
+\end{verbatim}
+\end{frame}
+
 \small
 %TODO office365
 %Observed cases. Change of bank accounts, change of delivery addresses
