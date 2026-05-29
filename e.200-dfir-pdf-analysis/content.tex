@@ -545,6 +545,26 @@ signed-by-two.pdf.sig2
 
 \end{frame}
 
+\begin{frame}[fragile]{Analyze electronic signatures}
+\begin{verbatim}
+pdfsig  signed-by-two.pdf
+
+Signature #2:
+  - Signature Field Name: Signature1
+  - Signer Certificate Common Name: REDACTED
+  - Signer full Distinguished Name: CN=REDACTED,
+serialNumber=REDACTED,givenName=REDACTED,SN=REDACTED,C=GR
+  - Signing Time: May 22 2026 14:00:34
+  - Signing Hash Algorithm: SHA-256
+  - Signature Type: ETSI.CAdES.detached
+  - Signed Ranges: [0 - 642079], [683041 - 691472]
+  - Not total document signed
+  - Signature Validation: Signature is Valid.
+  - Certificate Validation: Certificate issuer is unknown.
+\end{verbatim}
+
+\end{frame}
+
 \begin{frame}[fragile]{Inspecting PDF electronic signatures}
 
 The tool \alert{openssl} can be used to parse the signature files.
